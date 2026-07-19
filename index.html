@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<!-- مجهز للتبديل بين اللغات والوضع المظلم/الفاتح -->
+<html lang="en" dir="ltr" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO Basics -->
+    <title>Mohamed Abdallah </title>
+    <meta name="description" content="Portfolio of Mohamed Abdallah, a Frontend Developer and Cybersecurity enthusiast based in Egypt. View my projects, skills, and certifications.">
+    <meta name="keywords" content= "Mohamed Abdallah, Frontend Developer, Web Developer, Cybersecurity, Portfolio, HTML, CSS, JavaScript,Egypt">
+    <meta name="author" content="Mohamed Abdallah">
+    
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#09090F">
+    
+    <!-- Open Graph / Social Media Sharing -->
+    <meta property="og:title" content="Mohamed Abdallah | portfolio">
+    <meta property="og:description" content="Frontend Developer building high-performance web experiences with a security-first mindset.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain-here.com">
+    <meta property="og:image" content="./assets/images/profile/hero.jpg"> <!-- يُفضل وضع رابط صورة حقيقية مصغرة هنا لاحقاً -->
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+   
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="manifest" href="./manifest.json">
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/components/navbar.css">
+    <link rel="stylesheet" href="./css/components/hero.css">
+    <link rel="stylesheet" href="./css/components/about.css">
+    <link rel="stylesheet" href="./css/components/skills.css">
+    <link rel="stylesheet" href="./css/components/projects.css">
+    <link rel="stylesheet" href="./css/components/certificates.css">
+    <link rel="stylesheet" href="./css/components/contact.css">
+    <link rel="stylesheet" href="./css/components/footer.css">
+    <link rel="stylesheet" href="./css/animations.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+    <div class="preloader">
+    <div class="loader"></div>
+</div>
+
+<!-- 5. Scroll Progress Bar (تحت الـ Preloader) -->
+<div class="progress-container">
+    <div class="progress-fill"></div>
+</div>
+
+<!-- تأكد أن الـ Navbar عندك واخد كلاس navbar -->
+<nav class="navbar">
+    <!-- ... محتوى الـ navbar الخاص بك ... -->
+</nav>
+
+<!-- تأكد من وجود زرار الصعود -->
+    <header class="header">
+    <nav class="navbar">
+        <a href="#home" class="navbar__logo">
+            <span>Mohamed Abdallah</span>
+        </a>
+
+        <ul class="navbar__menu">
+            <li class="navbar__item"><a href="#home" class="navbar__link active">Home</a></li>
+            <li class="navbar__item"><a href="#about" class="navbar__link">About</a></li>
+            <li class="navbar__item"><a href="#skills" class="navbar__link">Skills</a></li>
+            <li class="navbar__item"><a href="#projects" class="navbar__link">Projects</a></li>
+            <li class="navbar__item"><a href="#certificates" class="navbar__link">Certificates</a></li>
+            <li class="navbar__item"><a href="#contact" class="navbar__link">Contact</a></li>
+        </ul>
+
+        <div class="navbar__controls">
+            <button class="theme-toggle" aria-label="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+            <button class="language-toggle" aria-label="Change Language"><i class="fa-solid fa-language"></i></button>
+            <a href="./assets/files/CV.pdf" class="btn-cv" aria-label="Download CV" download><i class="fa-solid fa-file-arrow-down"></i></a>
+            <button class="navbar__toggle" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+</header>
+
+
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <p class="hero__greeting">👋 Hello, I'm</p>
+                    <h1 class="hero__title">Mohamed Abdallah</h1>
+                    <h2 class="hero__subtitle"><span id="typing"></span></h2>
+                    <p class="hero__description">
+                        Frontend Developer & Cybersecurity Enthusiast building high-performance web experiences with a security-first mindset.
+                    </p>
+                    <div class="hero__buttons">
+                        <a href="#contact" class="btn btn-primary">Hire Me</a>
+                        <a href="./assets/files/mohamed_abdallah_cv.pdf" class="btn btn-secondary" download>
+                            <i class="fa-solid fa-download"></i> Download CV
+                        </a>
+                    </div>
+                    <div class="hero__social">
+                        <a href="https://github.com/budiabdallah20" class="social social--github" target="_blank" title="GitHub">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/github.svg'); mask-image: url('./assets/icons/github.svg');"></span>
+                        </a>
+                        <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" class="social social--linkedin" target="_blank" title="LinkedIn">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/linkedin.svg'); mask-image: url('./assets/icons/linkedin.svg');"></span>
+                        </a>
+                        <a href="https://www.facebook.com/mohamed.abdallah.45254?locale=ar_AR" class="social social--facebook" target="_blank" title="Facebook">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/facebook.svg'); mask-image: url('./assets/icons/facebook.svg');"></span>
+                        </a>
+                        <a href="https://www.instagram.com/mohamedabdallahh_18/" class="social social--instagram" target="_blank" title="Instagram">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/instagram.svg'); mask-image: url('./assets/icons/instagram.svg');"></span>
+                        </a>
+                        <a href="https://www.youtube.com/@budiabdallah5695" class="social social--youtube" target="_blank" title="YouTube">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/youtube.svg'); mask-image: url('./assets/icons/youtube.svg');"></span>
+                        </a>
+                        <a href="https://www.tiktok.com/@mohamedabdallah_10" class="social social--tiktok" target="_blank" title="TikTok">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/tiktok.svg'); mask-image: url('./assets/icons/tiktok.svg');"></span>
+                        </a>
+                        <a href="https://x.com/BudiAbdall40046" class="social social--x" target="_blank" title="X">
+                            <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/x-twitter.svg'); mask-image: url('./assets/icons/x-twitter.svg');"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero__image">
+                    <div class="hero__image-wrapper">
+                        <img src="./assets/images/profile/hero.jpg" alt="Mohamed Abdallah">
+                    </div>
+                </div>
+            </div>
+        </section>         
+
+        <section id="about" class="about">
+            <div class="about__container">
+                <div class="about__image">
+                    <img src="./assets/images/profile/about.jpg" alt="Mohamed Abdallah">
+                </div>
+                <div class="about__content">
+                    <span class="section-subtitle">About Me</span>
+                    <h2 class="section-title">Know More About Me</h2>
+                    <p class="about__text">
+                        I am Mohamed Abdallah, a Mathematics and Computer Science student at the Faculty of Science, Suez University. I am passionate about Frontend Development, Cybersecurity, and building modern web applications. I enjoy solving problems, learning new technologies, and continuously improving my skills through real-world projects.
+                    </p>
+                    <div class="about__info">
+                        <div class="about__card"><h3>Education</h3><p>Faculty of Science</p></div>
+                        <div class="about__card"><h3>Department</h3><p>Mathematics & Computer Science</p></div>
+                        <div class="about__card"><h3>Location</h3><p>Suez, Egypt</p></div>
+                        <div class="about__card"><h3>Career Goal</h3><p>Full Stack Developer</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="skills">
+            <div class="skills__container">
+                <span class="section-subtitle">My Skills</span>
+                <h2 class="section-title">Technologies & Skills</h2>
+                <p class="skills__description">
+                    Here are the technologies, tools, and professional skills I have learned and continue improving through continuous practice and real-world projects.
+                </p>
+                
+                <div class="skills__category">
+                    <h3 class="skills__heading">💻 Web Development</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>HTML5</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>CSS3</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>JavaScript</h4><span>Learning</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">💻 Programming</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>C++</h4><span>Beginner</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">📊 Microsoft Office</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>Microsoft Excel</h4><span>Advanced</span></div>
+                        <div class="skill__card"><h4>PowerPoint</h4><span>Advanced</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">🎨 Creative Skills</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>Graphic Design</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>Video Editing</h4><span>Intermediate</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">⚙️ Tools</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>Git</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>GitHub</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>VS Code</h4><span>Daily Use</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">🚀 Currently Learning</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>Linux</h4><span>Learning</span></div>
+                        <div class="skill__card"><h4>Networking</h4><span>Learning</span></div>
+                        <div class="skill__card"><h4>Cybersecurity</h4><span>Learning</span></div>
+                    </div>
+                </div>
+
+                <div class="skills__category">
+                    <h3 class="skills__heading">🌍 Languages</h3>
+                    <div class="skills__grid">
+                        <div class="skill__card"><h4>Arabic</h4><span>Native</span></div>
+                        <div class="skill__card"><h4>English</h4><span>Intermediate</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+       <!-- ==================== Projects Section ==================== -->
+
+<section id="projects" class="projects section">
+
+    <div class="container">
+        <div class="counter-item">
+    <span class="counter-value" data-target="2">0</span>
+    <p>Projects Completed</p>
+</div>
+
+        <div class="section-header">
+            <span class="section-subtitle projects__subtitle">My Work</span>
+            <h2 class="section-title">Featured Projects</h2>
+            <p class="section-description">
+                Here are some of the projects I have worked on during my learning journey,
+                showcasing my skills in web development, artificial intelligence research,
+                and academic presentations.
+            </p>
+        </div>
+
+        <div class="projects-grid">
+
+            <!-- Project 1 -->
+
+            <article class="project-card">
+
+                <div class="project-image">
+
+                    <img src="assets/projects/images/portfolio.png"
+                        alt="Personal Portfolio">
+
+                    <div class="project-overlay">
+                        <span>Featured Project</span>
+                    </div>
+
+                </div>
+
+                <div class="project-content">
+
+                    <span class="project-status completed">
+                        Completed
+                    </span>
+
+                    <h3>Personal Portfolio</h3>
+
+                    <p>
+                        A modern responsive personal portfolio built using HTML, CSS and
+                        JavaScript. Designed with Glassmorphism UI, reusable components,
+                        responsive layouts and clean architecture.
+                    </p>
+
+                    <div class="project-tech">
+
+                        <span>HTML5</span>
+                        <span>CSS3</span>
+                        <span>JavaScript</span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+            <!-- Project 2 -->
+
+            <article class="project-card">
+
+                <div class="project-image">
+
+                    <img src="assets/projects/images/ai.png"
+                        alt="Bio Inspired AI">
+
+                    <div class="project-overlay">
+                        <span>University Project</span>
+                    </div>
+
+                </div>
+
+                <div class="project-content">
+
+                    <span class="project-status completed">
+                        Completed
+                    </span>
+
+                    <h3>Bio-Inspired AI and Wearable Technology</h3>
+
+                    <p>
+                        An academic presentation exploring bio-inspired artificial
+                        intelligence and wearable technology, highlighting intelligent
+                        systems, healthcare innovations and future AI applications.
+                    </p>
+
+                    <div class="project-tech">
+
+                        <span>AI</span>
+                        <span>PowerPoint</span>
+                        <span>Research</span>
+
+                    </div>
+
+ <div class="project-buttons">
+
+    <a href="https://docs.google.com/viewer?url=https://your-website-url.com/assets/projects/bio-inspired-ai-presentation.pdf"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn-view">
+        <i class="fa-solid fa-eye"></i>  View PDF
+    </a>
+    <a href="assets/projects/files/bio-inspired-ai-presentation.pdf"
+    download="bio-inspired-ai-presentation.pdf"
+       class="btn-download">
+        <i class="fa-solid fa-download"></i> Download
+   </a>
+    </div>
+
+</div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+   <section id="certificates" class="certificates">
+    <div class="certificates-container">
+        <div class="certificates__header">
+            <span class="section-subtitle">Achievements</span>
+            <h2 class="certificates__title">Certificates & Learning</h2>
+            <p>I am continuously improving my skills through real-world projects...</p>
+        </div>
+        <div class="certificate-card">
+            <div class="certificate-icon">
+                <i class="fa-solid fa-award"></i>
+            </div>
+            <h3>More Certificates Coming Soon</h3>
+            <p>
+                Currently focusing on building real projects, strengthening my
+                programming skills, and preparing for professional certifications
+                in Web Development and Cybersecurity.
+            </p>
+            <div class="learning-tags">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+                <span>Git & GitHub</span>
+                <span>React</span>
+                <span>Node.js</span>
+                <span>Cybersecurity</span>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ==========================================
+     CONTACT SECTION - FINAL PREMIUM VERSION
+=========================================== -->
+<section id="contact" class="contact">
+    <!-- العنوان -->
+    <div class="contact-header">
+        <span class="section-subtitle">Get In Touch</span>
+        <h2 class="section-title">Contact Me</h2>
+        <p class="section-description">Let's build something amazing together. Reach out via any of these channels:</p>
+    </div>
+
+    <!-- الحاوية الأساسية (Grid لتقسيم الشاشة نصفين) -->
+    <div class="contact-container">        
+<!-- ================= النصف الأيسر: كرت المعلومات ================= -->
+        <div class="contact-info-card glass-card">
+            <div class="profile-header">
+                    <div class="profile-img-container">
+                        <img src="assets/images/profile/contact.jpg" alt="Mohamed Abdallah">
+                    <!-- النقطة الخضراء -->
+                    <span class="status-dot" title="Online & Ready"></span>
+                </div>
+                
+                <h3 class="contact-name">Mohamed Abdallah</h3>
+                <p class="role-text">Frontend Developer and Mathematics & Computer Science  Student</p>
+                <!-- البادجات (الموقع وتحميل الـ CV) -->
+                <div class="contact-badges">
+                    <a href="https://maps.app.goo.gl/VrreVCXBdgWaMZVq9" target="_blank" class="badge location-badge">
+                        <i class="fa-solid fa-location-dot"></i> Suez, Egypt
+                    </a>
+                    <a href="assets/files/CV.pdf" download class="badge cv-badge">
+                        <i class="fa-solid fa-file-arrow-down"></i> Download CV
+                    </a>
+                </div>
+            </div>
+
+            <!-- أزرار التواصل المترتبة في شبكة (Grid) -->
+            <div class="contact-links-modern">
+                <div class="link-item">
+                    <a href="tel:+201065228072" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-solid fa-phone"></i></div>
+                        <span>Call</span>
+                    </a>
+                </div>
+                <!-- الإيميل مع زر النسخ -->
+                <div class="link-item">
+                    <a href="mailto:budiabdallah922@gmail.com" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <span>Email</span>
+                    </a>
+                    <button class="copy-action-btn" onclick="copyMyEmail('budiabdallah922@gmail.com', this)" title="Copy Email">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+
+                <!-- الواتساب -->
+                <div class="link-item">
+                    <a href="https://wa.me/201065228072" target="_blank" class="main-link">
+                        <div class="link-icon whatsapp-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- لينكد إن -->
+                <div class="link-item">
+                    <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank" class="main-link">
+                        <div class="link-icon linkedin-icon"><i class="fa-brands fa-linkedin"></i></div>
+                        <span>LinkedIn</span>
+                    </a>
+                </div>
+
+                <!-- جيت هاب -->
+                <div class="link-item">
+                    <a href="https://github.com/budiabdallah20" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-brands fa-github"></i></div>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= النصف الأيمن: كرت الفورم ================= -->
+        <div class="contact-form-card glass-card">
+            <form class="contact__form" action="https://formspree.io/f/mojgegky" method="POST">
+                <div class="form-group">
+                    <input type="text"
+                    name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                </div>
+                <input type="text" name="subject" placeholder="Subject" required>
+                <textarea rows="5" name="message" placeholder="Your Message" required></textarea>
+                <button type="submit" class="btn-primary">Send Message</button>
+                
+                <!-- رسالة الخصوصية (تأثير النيون) -->
+                <p class="privacy-note">
+                    <i class="fa-solid fa-shield-halved"></i> Your data is safe with me. No spam.
+                </p>
+            </form>
+        </div>
+
+    </div>
+</section>
+        
+
+        
+    </main>
+    </main>
+
+    </main>
+<!-- Footer Section -->
+<footer id="footer">
+    <div class="footer-container">
+        <!-- Logo & Bio -->
+        <div class="footer-logo">
+            <h2>Mohamed <span>Abdallah</span></h2>
+            <p>Frontend Developer • Mathematics & Computer Science Student • Learning Cybersecurity</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+            <h3>Legal</h3>
+    <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+    </ul>
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#certificates">Certificates</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Social Links -->
+        <div class="footer-social">
+            <h3>Connect</h3>
+            <div class="social-icons">
+                <a href="tel:+201065228072"><i class="fa-solid fa-phone"></i></a>
+                <a href="https://wa.me/201065228072" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="mailto:budiabdallah922@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+                <a href="https://github.com/budiabdallah20" target="_blank"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+
+   <div class="footer-bottom">
+    <div class="tech-stack">
+        <span>Built with Passion |</span>
+        <i class="fa-brands fa-html5" title="HTML5"></i>
+        <i class="fa-brands fa-css3-alt" title="CSS3"></i>
+        <i class="fa-brands fa-js" title="JavaScript"></i>
+    </div>
+    <div class="live-status">
+        <span class="status-indicator"></span> Live & Secured
+    </div>
+    <p>© <span id="year"></span> <span class="neon-name">Mohamed Abdallah</span>. All Rights Reserved.</p>
+</div>
+<div class="social-counters">
+    <div class="counter-card">
+        <i class="fab fa-instagram"></i>
+        <h3 data-target="587">0</h3> <!-- حط هنا الرقم اللي عايزه -->
+        <p>Followers</p>
+    </div>
+    <div class="counter-card">
+        <i class="fab fa-facebook"></i>
+        <h3 data-target="1400">0</h3>
+        <p>Friends</p>
+    </div>
+    <div class="counter-card">
+        <i class="fab fa-tiktok"></i>
+        <h3 data-target="177">0</h3>
+        <p>Followers</p>
+    </div>
+</div>
+</footer>
+    
+
+    <script src="./js/typing.js"></script>
+    <script src="./js/animation.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/app.js"></script>
+    
+
+     <button id="backToTop" title="Go to top">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+</body>
+</html>
+
+   

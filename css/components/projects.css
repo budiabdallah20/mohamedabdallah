@@ -1,0 +1,249 @@
+/* ===================================
+   Projects Section (Cleaned & Polished)
+=================================== */
+
+.projects {
+    padding: 100px 0;
+}
+
+.projects .section-header {
+    text-align: center;
+    margin-bottom: 70px;
+}
+
+.projects .section-subtitle {
+    display: inline-block;
+    color: var(--color-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.projects .section-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 18px;
+     color: var(--color-text);
+}
+
+.projects .section-description {
+    max-width: 700px;
+    margin: auto;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+/* --- Grid --- */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+/* --- Card --- */
+.project-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-card);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.project-card:hover {
+    transform: translateY(-12px);
+    border-color: rgba(140, 82, 255, 0.45);
+    box-shadow: 0 25px 55px rgba(140, 82, 255, 0.22);
+}
+
+/* --- Image --- */
+.project-image {
+    position: relative;
+    overflow: hidden;
+    height: 240px;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover img {
+    transform: scale(1.05); /* زووم أنعم وأكثر احترافية */
+}
+
+/* --- Overlay --- */
+.project-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.project-overlay span {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.project-card:hover .project-overlay {
+    opacity: 1;
+}
+
+/* --- Content --- */
+.project-content {
+    padding: 28px;
+    position: relative;
+    z-index: 2;
+}
+
+.project-content h3 {
+    font-size: 1.45rem;
+    margin: 18px 0;
+    color: var(--text-color);
+}
+
+.project-content p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 22px;
+}
+
+/* --- Status --- */
+.project-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.project-status.completed {
+    background: rgba(0, 255, 140, 0.15);
+    color: #34d399;
+}
+
+/* --- Technologies --- */
+.project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.project-tech span {
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: rgba(140, 82, 255, 0.1);
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    border: 1px solid rgba(140, 82, 255, 0.2);
+    white-space: nowrap; /* منع انقسام كلمة التقنية */
+    transition: all 0.3s ease;
+}
+
+.project-tech span:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* --- Buttons --- */
+.project-buttons {
+    position: relative;
+    z-index: 10; /* يضمن أن الأزرار فوق أي شيء آخر */
+    display: flex;
+    gap: 10px;
+    pointer-events: auto; /* التأكد من أن الأزرار تستقبل الضغط */
+   
+}
+
+.project-buttons .btn {
+    flex: 1;
+    text-align: center;
+}
+
+/* --- Hover Border Glow --- */
+.project-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    padding: 1px; /* تم تصليح الخطأ هنا */
+    background: linear-gradient(135deg, transparent, rgba(140, 82, 255, 0.6), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude; /* هذا هو البديل القياسي لـ xor */
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+/* إطار الـ Counter */
+.counter-item {
+    background: rgba(255, 255, 255, 0.05); /* شفافية خفيفة */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* إطار نحيف وشيك */
+    padding: 20px 30px;
+    border-radius: 15px; /* حواف دائرية */
+    text-align: center;
+    backdrop-filter: blur(10px); /* تأثير الزجاج */
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    display: inline-block; /* عشان ياخد حجم المحتوى بس */
+    margin: 10px;
+}
+
+/* تأثير عند المرور بالماوس (Hover) */
+.counter-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primary); /* الإطار يقلب لون الـ primary */
+}
+
+/* تنسيق الرقم */
+.counter-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 5px;
+}
+
+/* تنسيق النص اللي تحت الرقم */
+.counter-item p {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* --- Responsive --- */
+@media(max-width: 992px) {
+    .projects { padding: 80px 0; }
+}
+
+@media(max-width: 768px) {
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-image { height: 220px; }
+    .project-content { padding: 22px; }
+    .project-content h3 { font-size: 1.3rem; }
+}
+
+@media(max-width: 480px) {
+    .project-buttons { flex-direction: column; }
+    .project-tech { gap: 8px; }
+    .project-tech span { font-size: 0.78rem; }
+}

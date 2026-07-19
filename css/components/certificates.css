@@ -1,0 +1,103 @@
+/*==================================
+        CERTIFICATES SECTION (V1.0)
+==================================*/
+.certificates__title {
+    font-size: 2rem !important; /* تحكم فيه كما تحب */
+    margin-bottom: 1rem;
+}
+.certificates .section-subtitle {
+    color: var(--color-primary); /* اللون البنفسجي */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+#certificates {
+    padding: 120px 0;
+}
+
+.certificates-container {
+    width: min(1200px, 90%);
+    margin: auto;
+    text-align: center; /* هذا السطر هو السر، سيجعل كل ما بداخل الحاوية في المنتصف */
+    padding: 50px 20px;
+}
+
+.certificate-card {
+    max-width: 750px;
+    margin: 50px auto 0;
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    padding: 45px 35px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.certificate-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.certificate-icon {
+    width: 90px;
+    height: 90px;
+    margin: auto;
+    border-radius: var(--radius-circle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-2xl);
+    color: var(--color-primary);
+    background: rgba(124, 92, 255, 0.1);
+    margin-bottom: 25px;
+    box-shadow: 0 0 20px rgba(124, 92, 255, 0.2);
+}
+
+.certificate-card h3 {
+    color: var(--color-text);
+    margin-bottom: 18px;
+    font-size: var(--fs-lg);
+    font-weight: 600;
+}
+
+.certificate-card p {
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    font-size: var(--fs-md);
+    margin-bottom: 30px;
+}
+
+.learning-tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.learning-tags span {
+    padding: 8px 18px;
+    border-radius: var(--radius-xl);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+    border: 1px solid var(--color-border);
+    transition: var(--transition);
+}
+
+.learning-tags span:hover {
+    background: #00ff8c;
+    color: #ffffff;
+   border-color: var(--color-primary);
+    box-shadow: var(--shadow-primary);
+}
+/* تنسيق العنوان الرئيسي للقسم */
+.certificates__header {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* يضمن توسيط العنوان والفقرة */
+}

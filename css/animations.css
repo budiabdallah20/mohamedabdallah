@@ -1,0 +1,34 @@
+/* --- Premium Reveal Animation --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+    /* --- Premium Button Hover --- */
+.btn-primary, .btn-cv {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* حركة ارتدادية ناعمة */
+}
+
+.btn-primary:hover, .btn-cv:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 25px rgba(124, 92, 255, 0.4); /* توهج بنفسجي */
+}
+
+/* --- Premium Card Hover (للـ Skills والـ Projects) --- */
+.skill__card, .about__card {
+    transition: all 0.4s ease;
+    border: 1px solid var(--color-border);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+}
+
+.skill__card:hover, .about__card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(124, 92, 255, 0.2);
+}
+}
