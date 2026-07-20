@@ -84,6 +84,20 @@ main {
     transform: translateY(-3px);
 }
 
+.btn span {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ripple 0.6s linear infinite;
+}
+
+@keyframes ripple {
+    0% { width: 0; height: 0; opacity: 0.5; }
+    100% { width: 500px; height: 500px; opacity: 0; }
+}
+
 /* ==================================
         DYNAMIC UI ELEMENTS
 ================================== */
@@ -134,52 +148,36 @@ main {
     transform: translateY(0);
 }
 
-.counter-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-primary);
-}
-
-.btn span {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: ripple 0.6s linear infinite;
-}
-
-@keyframes ripple {
-    0% {
-        width: 0;
-        height: 0;
-        opacity: 0.5;
-    }
-    100% {
-        width: 500px;
-        height: 500px;
-        opacity: 0;
-    }
-}
 #backToTop {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: none; /* مخفي في البداية */
-    z-index: 9999;
-    padding: 10px 15px;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     background: var(--color-primary);
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    box-shadow: var(--shadow-primary);
     transition: 0.3s;
 }
 
-
 #backToTop.show {
-    display: block; /* بيظهر لما الكلاس show يتضاف */
+    display: flex;
 }
+
+#backToTop:hover {
+    transform: translateY(-5px);
+}
+
+/* ==================================
+        SOCIAL COUNTERS
+================================== */
 .social-counters {
     display: flex;
     justify-content: space-around;
@@ -189,7 +187,7 @@ main {
 
 .counter-card {
     padding: 20px;
-    border: 1px solid var(--color-primary); /* الإطار */
+    border: 1px solid var(--color-primary);
     border-radius: 15px;
     text-align: center;
     width: 150px;
@@ -197,10 +195,18 @@ main {
 }
 
 .counter-card:hover {
-    box-shadow: 0 0 15px var(--color-primary); /* تأثير النيون عند الوقوف */
+    box-shadow: 0 0 15px var(--color-primary);
 }
-/* Debug mode - بيعمل إطار ملون لكل العناصر عشان تشوف مين فيهم اللي طالع بره الشاشة */
-/* --- تنسيق نافذة الشروط والخصوصية (Modal) --- */
+
+.counter-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* ==================================
+        LEGAL MODAL (Terms & Privacy)
+================================== */
 .legal-modal {
     display: none;
     position: fixed;
@@ -256,25 +262,21 @@ main {
     line-height: 1.7;
     font-size: 0.95rem;
 }
-/* ===================================
-   التجاوب الشامل (Responsive Design)
-=================================== */
 
-/* --- شاشات التابلت والشاشات المتوسطة (أقل من 992px) --- */
+/* ===================================
+   GENERAL RESPONSIVE TWEAKS
+=================================== */
 @media (max-width: 992px) {
     .footer-container {
         grid-template-columns: 1fr 1fr;
         gap: 30px;
     }
-    
     .projects-grid {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 }
 
-/* --- شاشات الموبايل الكبيرة والتابلت الصغير (أقل من 768px) --- */
 @media (max-width: 768px) {
-    /* الفوتر وعدادات السوشيال */
     .footer-container {
         grid-template-columns: 1fr;
         gap: 25px;
@@ -292,7 +294,8 @@ main {
     }
 
     .social-counters {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
         gap: 15px;
     }
 
@@ -302,7 +305,6 @@ main {
         gap: 12px;
     }
 
-    /* كروت المشاريع */
     .projects-grid {
         grid-template-columns: 1fr;
     }
@@ -315,7 +317,6 @@ main {
         padding: 20px;
     }
 
-    /* النافذة المنبثقة للـ Legal Modal */
     .legal-modal-content {
         margin: 15px;
         padding: 20px;
@@ -323,7 +324,6 @@ main {
     }
 }
 
-/* --- شاشات الموبايل الصغيرة (أقل من 480px) --- */
 @media (max-width: 480px) {
     .project-buttons {
         flex-direction: column;
@@ -342,4 +342,3 @@ main {
         font-size: 1.6rem;
     }
 }
-

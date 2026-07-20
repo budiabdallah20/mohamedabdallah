@@ -1,5 +1,5 @@
 /* ========================================================
-        PORTFOLIO APP - V1.0 (Production Optimized)
+        PORTFOLIO APP - NAVBAR & CORE LOGIC
 ======================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,67 +14,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 2. Console Welcome
-    console.log(`%cWelcome 👋 Portfolio by Mohamed Abdallah`, "color: #7b2cbf; font-size: 20px; font-weight: bold;");
-    console.log(`%cFrontend Developer | Mathematics & Computer Science Student`, "color: #555; font-size: 14px;");
-    console.log(`%cCheck out my GitHub: https://github.com/MohamedAbdallah`, "color: #7b2cbf;");
+    console.log(`%cWelcome 👋 Portfolio by Mohamed`, "color: #7b2cbf; font-size: 20px; font-weight: bold;");
 
-    // 3. Theme Toggle Logic
-    const themeToggle = document.querySelector(".theme-toggle");
-    const themeIcon = themeToggle?.querySelector("i");
+    // 3. Theme Toggle Logic (Crescent Moon for both modes)
+    const themeToggle = document.querySelector(".theme-toggle") || document.getElementById("theme-toggle");
     const savedTheme = localStorage.getItem("theme") || "dark";
     document.documentElement.setAttribute("data-theme", savedTheme);
     
-    // استخدام الهلال دائماً للثيم (ممتلئ للمظلم، ومفرغ للفاتح)
-    if (themeIcon) {
-        themeIcon.className = savedTheme === "dark" ? "fa-solid fa-moon" : "fa-regular fa-moon";
+    if (themeToggle) {
+        const themeIcon = themeToggle.querySelector("i");
+        if (themeIcon) {
+            themeIcon.className = savedTheme === "dark" ? "fa-solid fa-moon" : "fa-regular fa-moon";
+        }
+
+        themeToggle.addEventListener("click", () => {
+            let theme = document.documentElement.getAttribute("data-theme");
+            let newTheme = theme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            
+            if (themeIcon) {
+                themeIcon.className = newTheme === "dark" ? "fa-solid fa-moon" : "fa-regular fa-moon";
+            }
+        });
     }
 
-    themeToggle?.addEventListener("click", () => {
-        let theme = document.documentElement.getAttribute("data-theme");
-        let newTheme = theme === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", newTheme);
-        localStorage.setItem("theme", newTheme);
-        
-        if (themeIcon) {
-            themeIcon.className = newTheme === "dark" ? "fa-solid fa-moon" : "fa-regular fa-moon";
-        }
-    });
-
-    // 4. UI Selection
+    // 4. Unified Scroll Events
     const navbar = document.querySelector(".navbar");
     const progressFill = document.querySelector(".progress-fill");
     const backToTop = document.getElementById("backToTop");
-    const menu = document.querySelector(".navbar__menu");
-    const toggle = document.querySelector(".navbar__toggle");
-    const toggleIcon = toggle?.querySelector("i");
-    const navLinks = document.querySelectorAll(".navbar__link");
     const sections = document.querySelectorAll("section");
-
-    // 5. Navbar Mobile Toggle & Close Logic
-    toggle?.addEventListener("click", () => {
-        menu.classList.toggle("active");
-        const isOpen = menu.classList.contains("active");
-        if (toggleIcon) toggleIcon.className = isOpen ? "fa-solid fa-xmark" : "fa-solid fa-bars";
-    });
-
-    // إغلاق المنيو عند الضغط في أي مكان
-    document.addEventListener("click", (e) => {
-        if (menu?.classList.contains("active") && !menu.contains(e.target) && !toggle?.contains(e.target)) {
-            menu.classList.remove("active");
-            if (toggleIcon) toggleIcon.className = "fa-solid fa-bars";
-        }
-    });
-
-    // قفل المنيو عند اختيار لينك
-    navLinks.forEach(link => {
-        link.addEventListener("click", () => {
-            menu.classList.remove("active");
-            if (toggleIcon) toggleIcon.className = "fa-solid fa-bars";
-        });
-    });
-
-    // 6. Unified Scroll Events (Performance Optimized)
+    const navLinksList = document.querySelectorAll(".navbar__menu a, .navbar__link"); 
     let ticking = false;
+
     window.addEventListener("scroll", () => {
         if (!ticking) {
             window.requestAnimationFrame(() => {
@@ -86,8 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (backToTop) backToTop.classList.toggle("show", window.scrollY > 300);
                 
                 let current = "";
-                sections.forEach(s => { if (window.scrollY >= s.offsetTop - 150) current = s.getAttribute("id"); });
-                navLinks.forEach(l => {
+                sections.forEach(s => { 
+                    if (window.scrollY >= s.offsetTop - 150) current = s.getAttribute("id"); 
+                });
+                
+                navLinksList.forEach(l => {
                     l.classList.remove("active");
                     if (l.getAttribute("href")?.includes(current)) l.classList.add("active");
                 });
@@ -97,17 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // تفعيل وظيفة الصعود للأعلى عند الضغط على الزرار (تمت الإضافة)
     if (backToTop) {
         backToTop.addEventListener("click", () => {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
 
-    // 7. Ripple Effect for Buttons
+    // 5. Ripple Effect for Buttons
     document.querySelectorAll('.btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             let ripple = document.createElement("span");
@@ -120,83 +91,144 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 8. Scroll Reveal & Counter
-    const revealElements = document.querySelectorAll('.section-title, .about__card, .skill__card, .counter-item');
-    const observer = new IntersectionObserver((entries) => {
+    // 6. Scroll Reveal & Counters
+    const revealElements = document.querySelectorAll('.section-title, .about__card, .skill__card, .counter-item, .counter-card');
+    const observer = new IntersectionObserver((entries, observerInstance) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add("active");
-                if (entry.target.classList.contains('counter-item')) startCounter(entry.target);
+                entry.target.classList.add("active", "reveal-active");
+                
+                const val = entry.target.querySelector(".counter-value") || entry.target.querySelector("h3[data-target]");
+                if (val && !val.classList.contains("counted")) {
+                    startCounter(val);
+                    val.classList.add("counted"); 
+                }
+                observerInstance.unobserve(entry.target);
             }
         });
     }, { threshold: 0.15 });
-    revealElements.forEach(el => { el.classList.add("reveal"); observer.observe(el); });
 
-    function startCounter(item) {
-        const val = item.querySelector(".counter-value");
+    revealElements.forEach(el => { 
+        el.classList.add("reveal"); 
+        observer.observe(el); 
+    });
+
+    function startCounter(val) {
         const target = parseInt(val.getAttribute("data-target"));
+        if (!target) return;
         let count = 0;
-        let timer = setInterval(() => {
-            count++;
-            val.textContent = count;
-            if (count >= target) clearInterval(timer);
-        }, 2000 / target);
+        let speed = 200;
+        let inc = target / speed;
+        
+        const updateCount = () => {
+            count += inc;
+            if (count < target) {
+                val.textContent = Math.ceil(count);
+                requestAnimationFrame(updateCount);
+            } else {
+                val.textContent = target;
+            }
+        };
+        updateCount();
     }
 
-    // 9. Keyboard Shortcuts
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Home") window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    // 10. Footer Year
+    // 7. Footer Year
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-});
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker Registered!'))
-            .catch(err => console.log('Service Worker Failed', err));
-    });
-    // --- تفعيل نافذة الشروط والأحكام والخصوصية ---
-document.addEventListener("DOMContentLoaded", () => {
+
+    // ========================================================
+    // 8. MOBILE MENU LOGIC (Perfected with Body Scroll Lock)
+    // ========================================================
+    const mobileMenuBtn = document.querySelector(".navbar__toggle");
+    const navMenu = document.querySelector(".navbar__menu");
+
+    if (mobileMenuBtn && navMenu) {
+        const menuIcon = mobileMenuBtn.querySelector("i");
+
+        const toggleMenu = (isActive) => {
+            if (isActive) {
+                navMenu.classList.add("active");
+                if (menuIcon) {
+                    menuIcon.classList.remove("fa-bars");
+                    menuIcon.classList.add("fa-xmark");
+                }
+                document.body.style.overflow = "hidden"; // قفل التمرير (Scroll Lock)
+            } else {
+                navMenu.classList.remove("active");
+                if (menuIcon) {
+                    menuIcon.classList.add("fa-bars");
+                    menuIcon.classList.remove("fa-xmark");
+                }
+                document.body.style.overflow = ""; // إرجاع التمرير لطبيعته
+            }
+        };
+
+        // فتح/قفل عند الضغط على زر الـ Hamburger
+        mobileMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isCurrentlyActive = navMenu.classList.contains("active");
+            toggleMenu(!isCurrentlyActive);
+        });
+
+        // قفل القائمة عند الضغط على أي رابط داخلها
+        navMenu.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                toggleMenu(false);
+            });
+        });
+
+        // قفل القائمة عند الضغط في أي مكان خارجها
+        document.addEventListener("click", (e) => {
+            if (navMenu.classList.contains("active") && !navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                toggleMenu(false);
+            }
+        });
+
+        // قفل القائمة لو الشاشة اتكبرت لوضع الديسكتوب
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 992) {
+                toggleMenu(false);
+            }
+        });
+    }
+
+    // 9. Legal Modal Logic
     const modal = document.getElementById("legalModal");
     const modalTitle = document.getElementById("modal-title");
     const modalText = document.getElementById("modal-text");
     const closeBtn = document.querySelector(".close-modal");
     const legalButtons = document.querySelectorAll(".legal-btn");
 
-    const contentData = {
-        privacy: {
-            title: "Privacy Policy",
-            text: "Welcome to my portfolio. I respect your privacy. This website does not collect personal data from visitors, except for standard analytics or messages sent directly via contact forms or direct communication links (like WhatsApp and Email). Your data is safe and secure."
-        },
-        terms: {
-            title: "Terms of Service",
-            text: "All content, designs, and code presented in this personal portfolio (Mohamed Abdallah) are protected. You are welcome to view and explore the projects, but copying code or assets for commercial use without permission is strictly prohibited."
-        }
-    };
+    if (modal && legalButtons.length > 0) {
+        const contentData = {
+            privacy: {
+                title: "Privacy Policy",
+                text: "Welcome to my portfolio. I respect your privacy. This website does not collect personal data from visitors, except for standard analytics or messages sent directly via contact forms."
+            },
+            terms: {
+                title: "Terms of Service",
+                text: "All content, designs, and code presented in this personal portfolio are protected. You are welcome to view and explore the projects."
+            }
+        };
 
-    legalButtons.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const type = btn.getAttribute("data-type");
-            modalTitle.textContent = contentData[type].title;
-            modalText.textContent = contentData[type].text;
-            modal.style.display = "flex";
+        legalButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const type = btn.getAttribute("data-type");
+                if (contentData[type]) {
+                    modalTitle.textContent = contentData[type].title;
+                    modalText.textContent = contentData[type].text;
+                    modal.style.display = "flex";
+                }
+            });
         });
-    });
 
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-            modal.style.display = "none";
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => modal.style.display = "none");
+        }
+
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) modal.style.display = "none";
         });
     }
-
-    window.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
-    });
 });
-}
