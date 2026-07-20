@@ -158,4 +158,45 @@ if ('serviceWorker' in navigator) {
             .then(reg => console.log('Service Worker Registered!'))
             .catch(err => console.log('Service Worker Failed', err));
     });
+    // --- تفعيل نافذة الشروط والأحكام والخصوصية ---
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("legalModal");
+    const modalTitle = document.getElementById("modal-title");
+    const modalText = document.getElementById("modal-text");
+    const closeBtn = document.querySelector(".close-modal");
+    const legalButtons = document.querySelectorAll(".legal-btn");
+
+    const contentData = {
+        privacy: {
+            title: "Privacy Policy",
+            text: "Welcome to my portfolio. I respect your privacy. This website does not collect personal data from visitors, except for standard analytics or messages sent directly via contact forms or direct communication links (like WhatsApp and Email). Your data is safe and secure."
+        },
+        terms: {
+            title: "Terms of Service",
+            text: "All content, designs, and code presented in this personal portfolio (Mohamed Abdallah) are protected. You are welcome to view and explore the projects, but copying code or assets for commercial use without permission is strictly prohibited."
+        }
+    };
+
+    legalButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const type = btn.getAttribute("data-type");
+            modalTitle.textContent = contentData[type].title;
+            modalText.textContent = contentData[type].text;
+            modal.style.display = "flex";
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+});
 }
