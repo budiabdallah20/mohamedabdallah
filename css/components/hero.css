@@ -115,3 +115,23 @@
     height: 100%; 
     object-fit: cover; 
 }
+/* ==================================
+   MOBILE TYPOGRAPHY ADJUSTMENTS
+================================== */
+@media (max-width: 768px) {
+    /* تصغير العناوين الكبيرة على الموبايل لتشبه التطبيقات الكبرى */
+    h1, .hero-title {
+        font-size: 2.2rem !important; /* تحجيم الخط عشان ميبقاش ضخم بزيادة */
+        line-height: 1.2;
+    }
+    
+    p {
+        font-size: 0.95rem; /* تصغير نص الوصف ليكون مريح للعين */
+    }
+
+    /* ضبط مسافات الهيرو سكشن عشان يب2 متناسق زي السوشيال ميديا */
+    .hero, header + section {
+        padding-top: 40px;
+        padding-bottom: 20px;
+    }
+}
