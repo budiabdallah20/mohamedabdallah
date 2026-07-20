@@ -107,7 +107,7 @@
 
 .hero__image-wrapper:hover {
     transform: scale(1.02);
-    box-shadow: 0 15px 40px rgba(124, 92, 255, 0.5);
+    box-shadow: 0 15px 40px rgba(78, 171, 61, 0.827);
 }
 
 .hero__image-wrapper img { 
