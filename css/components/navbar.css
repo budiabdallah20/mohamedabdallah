@@ -1,110 +1,138 @@
-/* حل مشكلة نزول السكاشن تحت القائمة */
-section {
-    scroll-margin-top: 100px;
-}
-
 /* ==================================
-            NAVBAR STYLES (Desktop)
+    NAVBAR STYLES (Desktop)
 ================================== */
 .header {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: rgba(9, 9, 15, 0.85); 
+    background: rgba(9, 9, 15, 0.85);
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--color-border); 
+    border-bottom: 1px solid var(--color-border);
     z-index: 1000;
 }
 
 .navbar {
-    width: min(1200px, 90%); 
-    height: 80px; 
+    width: min(1200px, 90%);
+    height: 80px;
     margin: 0 auto;
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 
 .navbar__logo {
-    font-size: 1.5rem; 
-    font-weight: 700; 
-    color: var(--color-text); 
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
     text-decoration: none;
 }
-.navbar__logo span { 
-    color: var(--color-primary); 
+
+.navbar__logo span {
+    color: var(--color-primary);
 }
 
-.navbar__menu { 
-    display: flex; 
-    gap: 25px; 
-    list-style: none; 
-    align-items: center; 
+.navbar__menu {
+    display: flex;
+    gap: 25px;
+    list-style: none;
+    align-items: center;
 }
 
 /* === تظبيط الخط البنفسجي === */
 .navbar__link {
-    color: var(--color-text-muted); 
-    text-decoration: none; 
+    color: var(--color-text-muted);
+    text-decoration: none;
     font-size: var(--fs-sm);
-    position: relative; 
-    padding: 10px 0; 
+    position: relative;
+    padding: 10px 0;
     transition: var(--transition);
 }
-.navbar__link.active { 
-    color: var(--color-primary); 
+
+.navbar__link.active {
+    color: var(--color-primary);
 }
+
 .navbar__link.active::after {
-    content: ""; 
-    position: absolute; 
-    bottom: -5px; 
+    content: "";
+    position: absolute;
+    bottom: -5px;
     left: 0;
-    width: 100%; 
-    height: 3px; 
-    background-color: var(--color-primary); 
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-primary);
     border-radius: 2px;
 }
 
-.navbar__controls { 
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
+.navbar__controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
+/* === الأزرار وأيقونة الـ CV === */
 /* === الأزرار === */
 .theme-toggle, .language-toggle, .navbar__toggle {
-    width: 40px; 
-    height: 40px; 
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--color-surface); 
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
-    color: var(--color-text); 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
+
 .btn-cv {
-    width: 40px; 
-    height: 40px; 
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--color-primary); 
-    color: #fff; 
+    background: var(--color-primary);
+    color: #fff;
     display: flex;
-    align-items: center; 
-    justify-content: center; 
-    text-decoration: none; 
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     transition: 0.3s;
 }
-.btn-cv:hover { 
-    background: var(--color-primary-hover); 
-    transform: translateY(-2px); 
+
+.btn-cv:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
 }
 
-/* إخفاء زر الموبايل على الشاشات الكبيرة */
-.navbar__toggle { 
-    display: none; 
+.navbar__toggle {
+    display: none;
+}
+
+/* === تظبيط زر Back to Top === */
+#backToTop {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    box-shadow: var(--shadow-primary);
+    transition: 0.3s;
+}
+
+#backToTop.show {
+    display: flex;
+}
+
+#backToTop:hover {
+    transform: translateY(-5px);
 }
 
 /* ==================================
@@ -112,8 +140,9 @@ section {
 ================================== */
 @media (max-width: 992px) {
     /* إظهار زر الـ Hamburger وتوسيط محتواه */
-    .navbar__toggle { 
-        display: flex; 
+    /* إظهار زر الـ Hamburger وتوسيط محتواه */
+    .navbar__toggle {
+        display: flex;
         align-items: center;
         justify-content: center;
     }
@@ -121,8 +150,8 @@ section {
     /* تحويل القائمة للوضع الجانبي المخفي */
     .navbar__menu {
         position: fixed;
-        top: 80px; 
-        right: -100%; 
+        top: 80px;
+        right: -100%;
         width: min(320px, 80%);
         height: calc(100vh - 80px);
         background: rgba(9, 9, 15, 0.98);
@@ -138,23 +167,28 @@ section {
     }
 
     /* الكلاس اللي الجافاسكريبت هيضيفه عشان تظهر */
-    .navbar__menu.active { 
-        right: 0; 
+    .navbar__menu.active {
+        right: 0;
     }
 }
 
 @media (max-width: 768px) {
-    .navbar { 
-        width: 92%; 
+    .navbar {
+        width: 92%;
     }
-    .navbar__logo { 
-        font-size: 1.5rem; 
+
+    .navbar__logo {
+        font-size: 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
-    .navbar__menu { 
-        width: 100%; 
-        border-left: none; 
+    .navbar__menu {
+        width: 100%;
+        border-left: none;
+    }
+
+    .navbar__menu.active {
+        display: flex;
     }
 }
