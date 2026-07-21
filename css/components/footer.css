@@ -6,7 +6,7 @@
     transition: background 0.3s ease;
     margin-top: 100px;
     padding: 60px 0 25px;
-    background: rgba(9, 9, 15, 0.95);
+    background: rgba(0, 0, 0, 0.95);
     border-top: var(--glass-border);
 }
 
@@ -60,7 +60,7 @@
 .footer-links a:hover {
     color: var(--color-primary);
     padding-left: 10px;
-    text-shadow: 0 0 8px rgba(124, 92, 255, 0.5); /* تأثير نيون خفيف */
+    text-shadow: 0 0 8px rgba(114, 255, 92, 0.5); /* تأثير نيون خفيف */
 }
 
 /* --- Social Icons --- */
@@ -77,7 +77,7 @@
     justify-content: center;
     align-items: center;
     border-radius: var(--radius-circle);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(2, 43, 248, 0.129);
     color: var(--color-text);
     text-decoration: none;
     border: 1px solid var(--color-border);
@@ -87,12 +87,12 @@
 .social-icons a:hover {
     background: var(--color-primary);
     border-color: var(--color-primary);
-    color: #fff;
+    color: #09e9a2;
     transform: translateY(-5px);
     box-shadow: 0 0 20px rgba(124, 92, 255, 0.4);
 }
 .neon-name {
-    color: #e0fc07; /* اللون الأساسي */
+    color: #07fcdf; /* اللون الأساسي */
     text-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
     font-weight: 500 ;
 }

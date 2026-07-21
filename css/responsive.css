@@ -1,0 +1,364 @@
+/* ==========================================================
+   ADVANCED MOBILE & APP-LIKE OPTIMIZATION (All Sections)
+   ========================================================== */
+
+/* --- 1. Global Safeguards & Mobile Typography Scale --- */
+@media (max-width: 768px) {
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        font-size: 14px !important;
+    }
+
+    .container {
+        width: 92% !important;
+        padding-inline: 0 !important;
+    }
+
+    /* تصغير وتوحيد أحجام العناوين والخطوط في كل السكاشن للموبايل */
+    h1, .section-title {
+        font-size: 1.6rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    h2 {
+        font-size: 1.3rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    p, .section-description, .modal-body-text {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
+    }
+
+    /* تقليل الفراغات العامة بين السكاشن */
+    section {
+        padding: 40px 0 !important;
+    }
+}
+
+/* --- 2. Hero Section (App Profile Style) --- */
+@media (max-width: 768px) {
+    .hero {
+        padding: 20px 0 !important;
+        min-height: auto !important;
+    }
+
+    .hero__container {
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        align-items: center !important;
+        gap: 15px !important;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--color-border);
+        border-radius: 16px;
+        padding: 20px 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .hero__image-wrapper {
+        width: 120px !important;
+        height: 120px !important;
+        border-radius: 50% !important;
+        overflow: hidden;
+        border: 3px solid var(--color-primary);
+        margin: 0 auto !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero__image-wrapper img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover;
+    }
+
+    .hero__content {
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    .hero__title {
+        font-size: 1.4rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .hero__subtitle {
+        font-size: 0.9rem !important;
+        color: var(--color-primary) !important;
+        margin-bottom: 8px !important;
+    }
+
+    .hero__description {
+        font-size: 0.82rem !important;
+        margin-bottom: 12px !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    .hero__buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .hero__buttons .btn {
+        flex: 1 !important;
+        padding: 9px 10px !important;
+        font-size: 0.8rem !important;
+        border-radius: 10px !important;
+        min-height: 38px !important;
+    }
+
+    .hero__social {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin-top: 8px !important;
+    }
+
+    .hero__social a {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--color-border);
+        font-size: 0.8rem;
+    }
+}
+
+/* --- 3. About Section --- */
+@media (max-width: 768px) {
+    .about__container {
+        grid-template-columns: 1fr !important;
+        text-align: center;
+        gap: 20px !important;
+    }
+
+    .about__image {
+        max-width: 200px !important;
+        margin: 0 auto;
+    }
+
+    .about__info {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .about__card {
+        padding: 12px !important;
+        border-radius: 12px !important;
+    }
+}
+
+/* --- 4. Skills Section (Grid Columns) --- */
+@media (max-width: 768px) {
+    .skills__grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .skill__card {
+        padding: 12px 10px !important;
+        border-radius: 12px !important;
+        text-align: center;
+    }
+
+    .skill__card i, .skill__card img {
+        font-size: 1.5rem !important;
+        margin-bottom: 6px !important;
+    }
+}
+
+/* --- 5. Projects Section (Card Layouts) --- */
+@media (max-width: 768px) {
+    .projects-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+
+    .project-card {
+        border-radius: 14px !important;
+        overflow: hidden;
+    }
+
+    .project-image {
+        height: 160px !important;
+    }
+
+    .project-content {
+        padding: 15px !important;
+    }
+
+    .project-buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+    }
+
+    .project-buttons a {
+        flex: 1 !important;
+        padding: 8px !important;
+        font-size: 0.8rem !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* --- 6. Certificates Section --- */
+@media (max-width: 768px) {
+    .certificates-grid, .certificates-container {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+
+/* --- 7. Contact Section --- */
+@media (max-width: 768px) {
+    /* --- 1. قسم التواصل (Contact Section) --- */
+    .contact {
+        padding: 30px 0 !important;
+    }
+    .contact-container {
+        grid-template-columns: 1fr !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 0 !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    .contact__form-div {
+        margin-bottom: 10px !important;
+    }
+
+    /* كرت النموذج وكرت معلومات التواصل */
+    .contact__form, .contact__info, .glass-card {
+        padding: 16px 14px !important;
+        border-radius: 16px !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid var(--color-border) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .contact__form input, 
+    .contact__form textarea,
+    .contact__form input {
+       padding: 10px 12px !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--color-border) !important;
+        color: var(--color-text) !important;
+        width: 100% !important;
+    }
+    .contact__form textarea {
+        height: 100px !important; /* تقليل طول حقل الرسالة لكي لا يأخذ مساحة كبيرة */
+    }
+
+    .contact__form button, .contact-btn {
+      width: 100% !important;
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+}
+
+/* --- 8. Footer & Social Counters --- */
+@media (max-width: 768px) {
+    footer {
+        padding: 25px 0 15px 0 !important;
+        background: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid var(--color-border);
+    }
+    .footer-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 15px !important;
+    }
+
+    .social-counters {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: 100% !important;
+        padding: 10px 0 !important;
+    }
+
+    .counter-card {
+        display: flex !important;
+        flex-direction: row !important; /* جعل العدادات بجانب بعضها بشكل شبكي مدمج أو عمودي منظم */
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        padding: 5px 0 !important;
+        width: 100% !important;
+        max-width: 240px !important;
+        padding: 12px !important;
+        border-radius: 12px !important;
+    }
+    .counter-card i {
+        font-size: 1.1rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .counter-value {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        margin-bottom: 2px !important;
+    }
+    .counter-label {
+        font-size: 0.7rem !important;
+        opacity: 0.8;
+    }
+
+    /* روابط الفوتر وحقوق النشر */
+    .footer-links {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 15px !important;
+        margin: 10px 0 !important;
+        font-size: 0.82rem !important;
+    }
+   
+
+    .footer-bottom {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 5px !important;
+        font-size: 0.75rem !important;
+        opacity: 0.7;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 12px;
+        width: 100%;
+    }
+}
+
+/* --- 9. Micro-Screens (320px & 375px Specifics) --- */
+@media (max-width: 375px) {
+    .skills__grid {
+        grid-template-columns: 1fr !important; /* شاشات صغيرة جداً تعرض المهارات كصفوف مدمجة */
+    }
+    
+    .hero__title {
+        font-size: 1.25rem !important;
+    }
+}
