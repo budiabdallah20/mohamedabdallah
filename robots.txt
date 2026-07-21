@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://budiabdallah20.github.io/mohamedabdallah///sitemap.xml
