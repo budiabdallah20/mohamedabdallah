@@ -136,7 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // 8. MOBILE MENU LOGIC
+    // ========================================================
+    // 8. MOBILE MENU LOGIC (Perfected with Body Scroll Lock)
+    // ========================================================
     const mobileMenuBtn = document.querySelector(".navbar__toggle");
     const navMenu = document.querySelector(".navbar__menu");
 
@@ -150,35 +152,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     menuIcon.classList.remove("fa-bars");
                     menuIcon.classList.add("fa-xmark");
                 }
-                document.body.style.overflow = "hidden";
+                document.body.style.overflow = "hidden"; // قفل التمرير (Scroll Lock)
             } else {
                 navMenu.classList.remove("active");
                 if (menuIcon) {
                     menuIcon.classList.add("fa-bars");
                     menuIcon.classList.remove("fa-xmark");
                 }
-                document.body.style.overflow = "";
+                document.body.style.overflow = ""; // إرجاع التمرير لطبيعته
             }
         };
 
+        // فتح/قفل عند الضغط على زر الـ Hamburger
         mobileMenuBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             const isCurrentlyActive = navMenu.classList.contains("active");
             toggleMenu(!isCurrentlyActive);
         });
 
+        // قفل القائمة عند الضغط على أي رابط داخلها
         navMenu.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", () => {
                 toggleMenu(false);
             });
         });
 
+        // قفل القائمة عند الضغط في أي مكان خارجها
         document.addEventListener("click", (e) => {
             if (navMenu.classList.contains("active") && !navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
                 toggleMenu(false);
             }
         });
 
+        // قفل القائمة لو الشاشة اتكبرت لوضع الديسكتوب
         window.addEventListener("resize", () => {
             if (window.innerWidth > 992) {
                 toggleMenu(false);

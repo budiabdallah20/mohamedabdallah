@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- مجهز للتبديل بين اللغات والوضع المظلم/الفاتح، اللغة الافتراضية الآن العربية -->
-<html lang="ar" dir="rtl" data-theme="dark">
+<!-- مجهز للتبديل بين اللغات والوضع المظلم/الفاتح -->
+<html lang="en" dir="ltr" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -8,36 +8,34 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
     <!-- SEO Basics -->
-    <title data-i18n="page_title">محمد عبد الله | مطور واجهات أمامية</title>
-    <meta name="description" content="معرض أعمال محمد عبد الله، مطور واجهات أمامية وشغوف بالأمن السيبراني مقيم في مصر. تصفح مشاريعي، مهاراتي، وشهاداتي.">
-    <meta name="keywords" content= "محمد عبد الله, مطور واجهات أمامية, مطور ويب, أمن سيبراني, معرض أعمال, HTML, CSS, JavaScript, مصر">
+    <title>Mohamed Abdallah | Frontend Developer</title>
+    <meta name="description" content="Portfolio of Mohamed Abdallah, a Frontend Developer and Cybersecurity enthusiast based in Egypt. View my projects, skills, and certifications.">
+    <meta name="keywords" content= "Mohamed Abdallah, Frontend Developer, Web Developer, Cybersecurity, Portfolio, HTML, CSS, JavaScript,Egypt">
     <meta name="author" content="Mohamed Abdallah">
     
     <!-- Theme Color for Mobile Browsers -->
     <meta name="theme-color" content="#09090F">
     
     <!-- Open Graph / Social Media Sharing -->
-    <meta property="og:title" content="Mohamed Abdallah | Portfolio">
+    <meta property="og:title" content="Mohamed Abdallah | portfolio">
     <meta property="og:description" content="Frontend Developer building high-performance web experiences with a security-first mindset.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://your-domain-here.com">
-    <meta property="og:image" content="./assets/images/profile/hero.jpg"> 
+    <meta property="og:image" content="./assets/images/profile/hero.jpg"> <!-- يُفضل وضع رابط صورة حقيقية مصغرة هنا لاحقاً -->
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- تم إضافة خط كايرو أو تجوال لدعم العربية بشكل أفضل بجانب بوبينز (اختياري يمكنك تعديله) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="manifest" href="./manifest.json">
-    
+   
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="manifest" href="./manifest.json">
     <!-- CSS Files -->
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/variables.css">
     <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/components/navbar.css">
     <link rel="stylesheet" href="./css/components/hero.css">
     <link rel="stylesheet" href="./css/components/about.css">
@@ -47,60 +45,65 @@
     <link rel="stylesheet" href="./css/components/contact.css">
     <link rel="stylesheet" href="./css/components/footer.css">
     <link rel="stylesheet" href="./css/animations.css">
+    <link rel="stylesheet" href="./css/responsive.css">
 </head>
 
 <body>
     <div class="preloader">
-        <div class="loader"></div>
-    </div>
+    <div class="loader"></div>
+</div>
 
-    <!-- Scroll Progress Bar -->
-    <div class="progress-container">
-        <div class="progress-fill"></div>
-    </div>
+<!-- 5. Scroll Progress Bar (تحت الـ Preloader) -->
+<div class="progress-container">
+    <div class="progress-fill"></div>
+</div>
 
+<!-- تأكد أن الـ Navbar عندك واخد كلاس navbar -->
+<nav class="navbar">
+    <!-- ... محتوى الـ navbar الخاص بك ... -->
+</nav>
+
+<!-- تأكد من وجود زرار الصعود -->
     <header class="header">
-        <nav class="navbar">
-            <a href="#home" class="navbar__logo">
-                <span data-i18n="nav_logo">محمد عبد الله</span>
-            </a>
+    <nav class="navbar">
+        <a href="#home" class="navbar__logo">
+            <span>Mohamed Abdallah</span>
+        </a>
 
-            <ul class="navbar__menu">
-                <li class="navbar__item"><a href="#home" class="navbar__link active" data-i18n="nav_home">الرئيسية</a></li>
-                <li class="navbar__item"><a href="#about" class="navbar__link" data-i18n="nav_about">عني</a></li>
-                <li class="navbar__item"><a href="#skills" class="navbar__link" data-i18n="nav_skills">المهارات</a></li>
-                <li class="navbar__item"><a href="#projects" class="navbar__link" data-i18n="nav_projects">المشاريع</a></li>
-                <li class="navbar__item"><a href="#journey" class="navbar__link" data-i18n="nav_journey">رحلة الحياة</a></li>
-                <li class="navbar__item"><a href="#certificates" class="navbar__link" data-i18n="nav_certificates">الشهادات</a></li>
-                <li class="navbar__item"><a href="#contact" class="navbar__link" data-i18n="nav_contact">تواصل معي</a></li>
-            </ul>
+        <ul class="navbar__menu">
+            <li class="navbar__item"><a href="#home" class="navbar__link active">Home</a></li>
+            <li class="navbar__item"><a href="#about" class="navbar__link">About</a></li>
+            <li class="navbar__item"><a href="#skills" class="navbar__link">Skills</a></li>
+            <li class="navbar__item"><a href="#projects" class="navbar__link">Projects</a></li>
+            <li class="navbar__item"><a href="#certificates" class="navbar__link">Certificates</a></li>
+            <li class="navbar__item"><a href="#contact" class="navbar__link">Contact</a></li>
+        </ul>
 
-            <div class="navbar__controls">
-                <button class="theme-toggle" aria-label="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
-                <button id="langtoggle" class="language-toggle" aria-label="Change Language">
-                    <i class="fa-solid fa-language"></i>
-                </button>
-                <a href="./assets/files/CV.pdf" class="btn-cv" aria-label="Download CV" download><i class="fa-solid fa-file-arrow-down"></i></a>
-                <button class="navbar__toggle" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
-            </div>
-        </nav>
-    </header>
+        <div class="navbar__controls">
+            <button class="theme-toggle" aria-label="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+            <button class="language-toggle" aria-label="Change Language"><i class="fa-solid fa-language"></i></button>
+            <a href="./assets/files/CV.pdf" class="btn-cv" aria-label="Download CV" download><i class="fa-solid fa-file-arrow-down"></i></a>
+            <button class="navbar__toggle" aria-label="Open Menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+</header>
+
+
 
     <main>
-        <!-- ==================== Hero Section ==================== -->
         <section class="hero" id="home">
             <div class="hero__container">
                 <div class="hero__content">
-                    <p class="hero__greeting" data-i18n="hero_greeting">👋 أهلاً، أنا</p>
-                    <h1 class="hero__title" data-i18n="hero_name">محمد عبد الله</h1>
+                    <p class="hero__greeting">👋 Hello, I'm</p>
+                    <h1 class="hero__title">Mohamed Abdallah</h1>
                     <h2 class="hero__subtitle"><span id="typing"></span></h2>
-                    <p class="hero__description" data-i18n="hero_desc">
-                        مطور واجهات أمامية وشغوف بأمن المعلومات، أبني تجارب ويب عالية الأداء بعقلية تضع الأمان في المقام الأول.
+                    <p class="hero__description">
+                        Frontend Developer & Cybersecurity Enthusiast building high-performance web experiences with a security-first mindset.
                     </p>
                     <div class="hero__buttons">
-                        <a href="#contact" class="btn btn-primary" data-i18n="btn_hire">وظفني</a>
+                        <a href="#contact" class="btn btn-primary">Hire Me</a>
                         <a href="./assets/files/mohamed_abdallah_cv.pdf" class="btn btn-secondary" download>
-                            <i class="fa-solid fa-download"></i> <span data-i18n="btn_cv">تحميل السيرة الذاتية</span>
+                            <i class="fa-solid fa-download"></i> Download CV
                         </a>
                     </div>
                     <div class="hero__social">
@@ -135,410 +138,465 @@
             </div>
         </section>         
 
-        <!-- ==================== About Section ==================== -->
         <section id="about" class="about">
             <div class="about__container">
                 <div class="about__image">
                     <img src="./assets/images/profile/about.jpg" alt="Mohamed Abdallah">
                 </div>
                 <div class="about__content">
-                    <span class="section-subtitle" data-i18n="about_subtitle">عني</span>
-                    <h2 class="section-title" data-i18n="about_title">تعرف علي أكثر</h2>
-                    <p class="about__text" data-i18n="about_desc">
-                        أنا محمد عبد الله، طالب رياضيات وعلوم حاسب بكلية العلوم، جامعة السويس. شغوف بتطوير الواجهات الأمامية، الأمن السيبراني، وبناء تطبيقات ويب حديثة. أستمتع بحل المشكلات، تعلم تقنيات جديدة، وتحسين مهاراتي باستمرار من خلال مشاريع واقعية.
+                    <span class="section-subtitle">About Me</span>
+                    <h2 class="section-title">Know More About Me</h2>
+                    <p class="about__text">
+                        I am Mohamed Abdallah, a Mathematics and Computer Science student at the Faculty of Science, Suez University. I am passionate about Frontend Development, Cybersecurity, and building modern web applications. I enjoy solving problems, learning new technologies, and continuously improving my skills through real-world projects.
                     </p>
                     <div class="about__info">
-                        <div class="about__card"><h3 data-i18n="about_edu_title">التعليم</h3><p data-i18n="about_edu_val">كلية العلوم</p></div>
-                        <div class="about__card"><h3 data-i18n="about_dept_title">القسم</h3><p data-i18n="about_dept_val">رياضيات وعلوم حاسب</p></div>
-                        <div class="about__card"><h3 data-i18n="about_loc_title">الموقع</h3><p data-i18n="about_loc_val">السويس، مصر</p></div>
-                        <div class="about__card"><h3 data-i18n="about_goal_title">الهدف المهني</h3><p data-i18n="about_goal_val">مطور ويب شامل</p></div>
+                        <div class="about__card"><h3>Education</h3><p>Faculty of Science</p></div>
+                        <div class="about__card"><h3>Department</h3><p>Mathematics & Computer Science</p></div>
+                        <div class="about__card"><h3>Location</h3><p>Suez, Egypt</p></div>
+                        <div class="about__card"><h3>Career Goal</h3><p>Full Stack Developer</p></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ==================== Skills Section ==================== -->
         <section id="skills" class="skills">
             <div class="skills__container">
-                <span class="section-subtitle" data-i18n="skills_subtitle">مهاراتي</span>
-                <h2 class="section-title" data-i18n="skills_title">التقنيات والمهارات</h2>
-                <p class="skills__description" data-i18n="skills_desc">
-                    إليك التقنيات، الأدوات، والمهارات الاحترافية التي تعلمتها وأستمر في تطويرها من خلال الممارسة المستمرة والمشاريع الواقعية.
+                <span class="section-subtitle">My Skills</span>
+                <h2 class="section-title">Technologies & Skills</h2>
+                <p class="skills__description">
+                    Here are the technologies, tools, and professional skills I have learned and continue improving through continuous practice and real-world projects.
                 </p>
                 
                 <div class="skills__category">
-                    <h3 class="skills__heading">💻 <span data-i18n="skill_cat_web">تطوير الويب</span></h3>
+                    <h3 class="skills__heading">💻 Web Development</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>HTML5</h4><span data-i18n="level_intermediate">متوسط</span></div>
-                        <div class="skill__card"><h4>CSS3</h4><span data-i18n="level_intermediate">متوسط</span></div>
-                        <div class="skill__card"><h4>JavaScript</h4><span data-i18n="level_learning">قيد التعلم</span></div>
+                        <div class="skill__card"><h4>HTML5</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>CSS3</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>JavaScript</h4><span>Learning</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">💻 <span data-i18n="skill_cat_prog">البرمجة</span></h3>
+                    <h3 class="skills__heading">💻 Programming</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>C++</h4><span data-i18n="level_beginner">مبتدئ</span></div>
+                        <div class="skill__card"><h4>C++</h4><span>Beginner</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">📊 <span data-i18n="skill_cat_office">مايكروسوفت أوفيس</span></h3>
+                    <h3 class="skills__heading">📊 Microsoft Office</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>Microsoft Excel</h4><span data-i18n="level_advanced">متقدم</span></div>
-                        <div class="skill__card"><h4>PowerPoint</h4><span data-i18n="level_advanced">متقدم</span></div>
+                        <div class="skill__card"><h4>Microsoft Excel</h4><span>Advanced</span></div>
+                        <div class="skill__card"><h4>PowerPoint</h4><span>Advanced</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">🎨 <span data-i18n="skill_cat_creative">مهارات إبداعية</span></h3>
+                    <h3 class="skills__heading">🎨 Creative Skills</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>Graphic Design</h4><span data-i18n="level_intermediate">متوسط</span></div>
-                        <div class="skill__card"><h4>Video Editing</h4><span data-i18n="level_intermediate">متوسط</span></div>
+                        <div class="skill__card"><h4>Graphic Design</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>Video Editing</h4><span>Intermediate</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">⚙️ <span data-i18n="skill_cat_tools">الأدوات</span></h3>
+                    <h3 class="skills__heading">⚙️ Tools</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>Git</h4><span data-i18n="level_intermediate">متوسط</span></div>
-                        <div class="skill__card"><h4>GitHub</h4><span data-i18n="level_intermediate">متوسط</span></div>
-                        <div class="skill__card"><h4>VS Code</h4><span data-i18n="level_daily">استخدام يومي</span></div>
+                        <div class="skill__card"><h4>Git</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>GitHub</h4><span>Intermediate</span></div>
+                        <div class="skill__card"><h4>VS Code</h4><span>Daily Use</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">🚀 <span data-i18n="skill_cat_learning">أتعلم حالياً</span></h3>
+                    <h3 class="skills__heading">🚀 Currently Learning</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4>Linux</h4><span data-i18n="level_learning">قيد التعلم</span></div>
-                        <div class="skill__card"><h4>Networking</h4><span data-i18n="level_learning">قيد التعلم</span></div>
-                        <div class="skill__card"><h4>Cybersecurity</h4><span data-i18n="level_learning">قيد التعلم</span></div>
+                        <div class="skill__card"><h4>Linux</h4><span>Learning</span></div>
+                        <div class="skill__card"><h4>Networking</h4><span>Learning</span></div>
+                        <div class="skill__card"><h4>Cybersecurity</h4><span>Learning</span></div>
                     </div>
                 </div>
 
                 <div class="skills__category">
-                    <h3 class="skills__heading">🌍 <span data-i18n="skill_cat_langs">اللغات</span></h3>
+                    <h3 class="skills__heading">🌍 Languages</h3>
                     <div class="skills__grid">
-                        <div class="skill__card"><h4 data-i18n="lang_arabic">العربية</h4><span data-i18n="level_native">اللغة الأم</span></div>
-                        <div class="skill__card"><h4 data-i18n="lang_english">الإنجليزية</h4><span data-i18n="level_intermediate">متوسط</span></div>
+                        <div class="skill__card"><h4>Arabic</h4><span>Native</span></div>
+                        <div class="skill__card"><h4>English</h4><span>Intermediate</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ==================== Projects Section ==================== -->
-        <section id="projects" class="projects section">
-            <div class="container">
-                <div class="counter-item">
-                    <span class="counter-value" data-target="2">0</span>
-                    <p data-i18n="projects_completed_text">مشاريع مكتملة</p>
-                </div>
+       <!-- ==================== Projects Section ==================== -->
 
-                <div class="section-header">
-                    <span class="section-subtitle projects__subtitle" data-i18n="projects_subtitle">أعمالي</span>
-                    <h2 class="section-title" data-i18n="projects_title">أبرز المشاريع</h2>
-                    <p class="section-description" data-i18n="projects_desc">
-                        إليك بعض المشاريع التي عملت عليها خلال رحلة تعلمي، والتي تعكس مهاراتي في تطوير الويب، أبحاث الذكاء الاصطناعي، والعروض الأكاديمية.
-                    </p>
-                </div>
+<section id="projects" class="projects section">
 
-                <div class="projects-grid">
-                    <!-- Project 1 -->
-                    <article class="project-card">
-                        <div class="project-image">
-                            <img src="assets/projects/images/portfolio.png" alt="Personal Portfolio" loading="lazy">
-                            <div class="project-overlay">
-                                <span data-i18n="project1_badge">مشروع مميز</span>
-                            </div>
-                        </div>
+    <div class="container">
+        <div class="counter-item">
+    <span class="counter-value" data-target="2">0</span>
+    <p>Projects Completed</p>
+</div>
 
-                        <div class="project-content">
-                            <span class="project-status completed" data-i18n="project_status_completed">مكتمل</span>
-                            <h3 data-i18n="project1_title">معرض الأعمال الشخصي</h3>
-                            <p data-i18n="project1_desc">
-                                معرض أعمال شخصي حديث ومتجاوب مبني باستخدام HTML, CSS و JavaScript. مصمم بواجهة Glassmorphism، مكونات قابلة لإعادة الاستخدام، وتخطيط نظيف.
-                            </p>
-                            <div class="project-tech">
-                                <span>HTML5</span>
-                                <span>CSS3</span>
-                                <span>JavaScript</span>
-                            </div>
-                            <div class="project-buttons">
-                                <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" rel="noopener noreferrer" class="btn-view">
-                                    <i class="fa-solid fa-eye"></i> <span data-i18n="btn_live_demo">عرض مباشر</span>
-                                </a>
-                                <a href="https://github.com/budiabdallah20/mohamedabdallah" target="_blank" rel="noopener noreferrer" class="btn-github">
-                                    <i class="fa-brands fa-github"></i> <span data-i18n="btn_github_repo">كود المصدر</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
+        <div class="section-header">
+            <span class="section-subtitle projects__subtitle">My Work</span>
+            <h2 class="section-title">Featured Projects</h2>
+            <p class="section-description">
+                Here are some of the projects I have worked on during my learning journey,
+                showcasing my skills in web development, artificial intelligence research,
+                and academic presentations.
+            </p>
+        </div>
 
-                    <!-- Project 2 -->
-                    <article class="project-card">
-                        <div class="project-image">
-                            <img src="assets/projects/images/ai.png" alt="Bio Inspired AI" loading="lazy">
-                            <div class="project-overlay">
-                                <span data-i18n="project2_badge">مشروع جامعي</span>
-                            </div>
-                        </div>
+        <div class="projects-grid">
 
-                        <div class="project-content">
-                            <span class="project-status completed" data-i18n="project_status_completed">مكتمل</span>
-                            <h3 data-i18n="project2_title">الذكاء الاصطناعي والتكنولوجيا القابلة للارتداء</h3>
-                            <p data-i18n="project2_desc">
-                                عرض أكاديمي يستكشف الذكاء الاصطناعي المستوحى من الحيوية والتكنولوجيا القابلة للارتداء، مع تسليط الضوء على الأنظمة الذكية، ابتكارات الرعاية الصحية وتطبيقات الذكاء الاصطناعي المستقبلية.
-                            </p>
-                            <div class="project-tech">
-                                <span>AI</span>
-                                <span>PowerPoint</span>
-                                <span>Research</span>
-                            </div>
-                            <div class="project-buttons">
-                                <a href="https://docs.google.com/viewer?url=https://your-website-url.com/assets/projects/bio-inspired-ai-presentation.pdf" target="_blank" rel="noopener noreferrer" class="btn-view">
-                                    <i class="fa-solid fa-eye"></i> <span data-i18n="btn_view_pdf">عرض PDF</span>
-                                </a>
-                                <a href="assets/projects/files/bio-inspired-ai-presentation.pdf" download="bio-inspired-ai-presentation.pdf" class="btn-download">
-                                    <i class="fa-solid fa-download"></i> <span data-i18n="btn_download">تحميل</span>
-                                </a>
-                                <a href="https://github.com/budiabdallah20?tab=repositories" target="_blank" rel="noopener noreferrer" class="btn-github">
-                                    <i class="fa-brands fa-github"></i> <span data-i18n="btn_github_repo">كود المصدر</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
+            <!-- Project 1 -->
 
-        <!-- ==================== Life Journey Section ==================== -->
-        <section id="journey" class="journey section">
-            <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-subtitle" data-i18n="journey_subtitle">قصتي</span>
-                    <h2 class="section-title" data-i18n="journey_title">رحلة الحياة</h2>
-                    <p class="section-description" data-i18n="journey_desc">
-                        كل صورة تمثل فصلاً، وكل ذكرى تروي قصة.
-                    </p>
-                </div>
-                <div class="journey-timeline">
-                </div>
-            </div>
-        </section>
+            <article class="project-card">
 
-        <!-- ==================== Certificates Section ==================== -->
-        <section id="certificates" class="certificates">
-            <div class="certificates-container">
-                <div class="certificates__header">
-                    <span class="section-subtitle" data-i18n="cert_subtitle">الإنجازات</span>
-                    <h2 class="certificates__title" data-i18n="cert_title">الشهادات والتعلم</h2>
-                    <p data-i18n="cert_desc">أعمل باستمرار على تحسين مهاراتي من خلال مشاريع واقعية...</p>
-                </div>
-                <div class="certificate-card">
-                    <div class="certificate-icon">
-                        <i class="fa-solid fa-award"></i>
+                <div class="project-image">
+
+                    <img src="assets/projects/images/portfolio.png"alt="Personal Portfolio" loading="lazy">
+                        
+
+                    <div class="project-overlay">
+                        <span>Featured Project</span>
                     </div>
-                    <h3 data-i18n="cert_card_title">المزيد من الشهادات قريباً</h3>
-                    <p data-i18n="cert_card_desc">
-                        أركز حالياً على بناء مشاريع حقيقية، تقوية مهاراتي البرمجية، والاستعداد للحصول على شهادات احترافية في تطوير الويب والأمن السيبراني.
+
+                </div>
+
+                <div class="project-content">
+                    <!-- تحت قسم التقنيات project-tech للمشروع الأول -->
+                    <span class="project-status completed">
+                        Completed
+                    </span>
+
+                    <h3>Personal Portfolio</h3>
+
+                    <p>
+                        A modern responsive personal portfolio built using HTML, CSS and
+                        JavaScript. Designed with Glassmorphism UI, reusable components,
+                        responsive layouts and clean architecture.
                     </p>
-                    <div class="learning-tags">
-                        <span>HTML</span>
-                        <span>CSS</span>
+
+                    <div class="project-tech">
+
+                        <span>HTML5</span>
+                        <span>CSS3</span>
                         <span>JavaScript</span>
-                        <span>Git & GitHub</span>
-                        <span>React</span>
-                        <span>Node.js</span>
-                        <span>Cybersecurity</span>
+
                     </div>
+                    <div class="project-buttons">
+    <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" rel="noopener noreferrer" class="btn-view">
+        <i class="fa-solid fa-eye"></i> Live Demo
+    </a>
+    <a href="https://github.com/budiabdallah20/mohamedabdallah" target="_blank" rel="noopener noreferrer" class="btn-github">
+        <i class="fa-brands fa-github"></i> GitHub Repo
+    </a>
+</div>
+
                 </div>
-            </div>
-        </section>
 
-        <!-- ==================== Contact Section ==================== -->
-        <section id="contact" class="contact">
-            <div class="contact-header">
-                <span class="section-subtitle" data-i18n="contact_subtitle">ابقى على تواصل</span>
-                <h2 class="section-title" data-i18n="contact_title">تواصل معي</h2>
-                <p class="section-description" data-i18n="contact_desc">دعنا نبني شيئاً رائعاً معاً. تواصل معي عبر أي من هذه القنوات:</p>
-            </div>
+            </article>
 
-            <div class="contact-container">        
-                <!-- النصف الأيمن/الأيسر: كرت المعلومات -->
-                <div class="contact-info-card glass-card">
-                    <div class="profile-header">
-                        <div class="profile-img-container">
-                            <img src="assets/images/profile/contact.jpg" alt="Mohamed Abdallah">
-                            <span class="status-dot" title="متصل وجاهز" data-i18n="contact_status_title"></span>
-                        </div>
+            <!-- Project 2 -->
+
+            <article class="project-card">
+
+                <div class="project-image">
+
+                    <img src="assets/projects/images/ai.png"
+                    alt="Bio Inspired AI" loading="lazy">
                         
-                        <h3 class="contact-name" data-i18n="contact_name">محمد عبد الله</h3>
-                        <p class="role-text" data-i18n="contact_role">مطور واجهات أمامية وطالب رياضيات وعلوم حاسب</p>
-                        
-                        <div class="contact-badges">
-                            <a href="https://maps.app.goo.gl/VrreVCXBdgWaMZVq9" target="_blank" class="badge location-badge">
-                                <i class="fa-solid fa-location-dot"></i> <span data-i18n="contact_location">السويس، مصر</span>
-                            </a>
-                            <a href="assets/files/CV.pdf" download class="badge cv-badge">
-                                <i class="fa-solid fa-file-arrow-down"></i> <span data-i18n="contact_cv">تحميل السيرة الذاتية</span>
-                            </a>
-                        </div>
+
+                    <div class="project-overlay">
+                        <span>University Project</span>
                     </div>
 
-                    <div class="contact-links-modern">
-                        <div class="link-item">
-                            <a href="tel:+201065228072" target="_blank" class="main-link">
-                                <div class="link-icon"><i class="fa-solid fa-phone"></i></div>
-                                <span data-i18n="contact_link_call">اتصال</span>
-                            </a>
-                        </div>
-                        <div class="link-item">
-                            <a href="mailto:budiabdallah922@gmail.com" target="_blank" class="main-link">
-                                <div class="link-icon"><i class="fa-solid fa-envelope"></i></div>
-                                <span data-i18n="contact_link_email">إيميل</span>
-                            </a>
-                            <button class="copy-action-btn" onclick="copyMyEmail('budiabdallah922@gmail.com', this)" title="Copy Email">
-                                <i class="fa-regular fa-copy"></i>
-                            </button>
-                        </div>
-                        <div class="link-item">
-                            <a href="https://wa.me/201065228072" target="_blank" class="main-link">
-                                <div class="link-icon whatsapp-icon"><i class="fa-brands fa-whatsapp"></i></div>
-                                <span data-i18n="contact_link_whatsapp">واتساب</span>
-                            </a>
-                        </div>
-                        <div class="link-item">
-                            <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank" class="main-link">
-                                <div class="link-icon linkedin-icon"><i class="fa-brands fa-linkedin"></i></div>
-                                <span data-i18n="contact_link_linkedin">لينكد إن</span>
-                            </a>
-                        </div>
-                        <div class="link-item">
-                            <a href="https://github.com/budiabdallah20" target="_blank" class="main-link">
-                                <div class="link-icon"><i class="fa-brands fa-github"></i></div>
-                                <span data-i18n="contact_link_github">جيت هاب</span>
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- النصف الأيسر/الأيمن: كرت الفورم -->
-                <div class="contact-form-card glass-card">
-                    <form class="contact__form" action="https://formspree.io/f/mojgegky" method="POST">
-                        <div class="form-group">
-                            <!-- تم إضافة data-i18n للـ inputs כדי يعمل السكربت على تغيير الـ placeholder -->
-                            <input type="text" name="name" placeholder="اسمك" data-i18n="form_name" required>
-                            <input type="email" name="email" placeholder="بريدك الإلكتروني" data-i18n="form_email" required>
-                        </div>
-                        <input type="text" name="subject" placeholder="الموضوع" data-i18n="form_subject" required>
-                        <textarea rows="5" name="message" placeholder="رسالتك" data-i18n="form_message" required></textarea>
-                        <button type="submit" class="btn-primary" data-i18n="btn_send">إرسال الرسالة</button>
+                <div class="project-content">
 
-                        <p class="privacy-note">
-                            <i class="fa-solid fa-shield-halved"></i> <span data-i18n="contact_privacy">بياناتك آمنة معي. لا توجد رسائل مزعجة.</span>
-                        </p>
-                    </form>
+                    <span class="project-status completed">
+                        Completed
+                    </span>
+
+                    <h3>Bio-Inspired AI and Wearable Technology</h3>
+
+                    <p>
+                        An academic presentation exploring bio-inspired artificial
+                        intelligence and wearable technology, highlighting intelligent
+                        systems, healthcare innovations and future AI applications.
+                    </p>
+
+                    <div class="project-tech">
+
+                        <span>AI</span>
+                        <span>PowerPoint</span>
+                        <span>Research</span>
+
+                    </div>
+
+ <div class="project-buttons">
+
+    <a href="https://docs.google.com/viewer?url=https://your-website-url.com/assets/projects/bio-inspired-ai-presentation.pdf"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn-view">
+        <i class="fa-solid fa-eye"></i>  View PDF
+    </a>
+    <a href="assets/projects/files/bio-inspired-ai-presentation.pdf"
+    download="bio-inspired-ai-presentation.pdf"
+       class="btn-download">
+        <i class="fa-solid fa-download"></i> Download
+   </a>
+   <a href="https://github.com/budiabdallah20?tab=repositories" target="_blank" rel="noopener noreferrer" class="btn-github">
+        <i class="fa-brands fa-github"></i> GitHub Repo
+    </a>
+    </div>
+
+</div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+   <section id="certificates" class="certificates">
+    <div class="certificates-container">
+        <div class="certificates__header">
+            <span class="section-subtitle">Achievements</span>
+            <h2 class="certificates__title">Certificates & Learning</h2>
+            <p>I am continuously improving my skills through real-world projects...</p>
+        </div>
+        <div class="certificate-card">
+            <div class="certificate-icon">
+                <i class="fa-solid fa-award"></i>
+            </div>
+            <h3>More Certificates Coming Soon</h3>
+            <p>
+                Currently focusing on building real projects, strengthening my
+                programming skills, and preparing for professional certifications
+                in Web Development and Cybersecurity.
+            </p>
+            <div class="learning-tags">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+                <span>Git & GitHub</span>
+                <span>React</span>
+                <span>Node.js</span>
+                <span>Cybersecurity</span>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ==========================================
+     CONTACT SECTION - FINAL PREMIUM VERSION
+=========================================== -->
+<section id="contact" class="contact">
+    <!-- العنوان -->
+    <div class="contact-header">
+        <span class="section-subtitle">Get In Touch</span>
+        <h2 class="section-title">Contact Me</h2>
+        <p class="section-description">Let's build something amazing together. Reach out via any of these channels:</p>
+    </div>
+
+    <!-- الحاوية الأساسية (Grid لتقسيم الشاشة نصفين) -->
+    <div class="contact-container">        
+<!-- ================= النصف الأيسر: كرت المعلومات ================= -->
+        <div class="contact-info-card glass-card">
+            <div class="profile-header">
+                    <div class="profile-img-container">
+                        <img src="assets/images/profile/contact.jpg" alt="Mohamed Abdallah">
+                    <!-- النقطة الخضراء -->
+                    <span class="status-dot" title="Online & Ready"></span>
+                </div>
+                
+                <h3 class="contact-name">Mohamed Abdallah</h3>
+                <p class="role-text">Frontend Developer and Mathematics & Computer Science  Student</p>
+                <!-- البادجات (الموقع وتحميل الـ CV) -->
+                <div class="contact-badges">
+                    <a href="https://maps.app.goo.gl/VrreVCXBdgWaMZVq9" target="_blank" class="badge location-badge">
+                        <i class="fa-solid fa-location-dot"></i> Suez, Egypt
+                    </a>
+                    <a href="assets/files/CV.pdf" download class="badge cv-badge">
+                        <i class="fa-solid fa-file-arrow-down"></i> Download CV
+                    </a>
                 </div>
             </div>
-        </section>
+
+            <!-- أزرار التواصل المترتبة في شبكة (Grid) -->
+            <div class="contact-links-modern">
+                <div class="link-item">
+                    <a href="tel:+201065228072" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-solid fa-phone"></i></div>
+                        <span>Call</span>
+                    </a>
+                </div>
+                <!-- الإيميل مع زر النسخ -->
+                <div class="link-item">
+                    <a href="mailto:budiabdallah922@gmail.com" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <span>Email</span>
+                    </a>
+                    <button class="copy-action-btn" onclick="copyMyEmail('budiabdallah922@gmail.com', this)" title="Copy Email">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+
+                <!-- الواتساب -->
+                <div class="link-item">
+                    <a href="https://wa.me/201065228072" target="_blank" class="main-link">
+                        <div class="link-icon whatsapp-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- لينكد إن -->
+                <div class="link-item">
+                    <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank" class="main-link">
+                        <div class="link-icon linkedin-icon"><i class="fa-brands fa-linkedin"></i></div>
+                        <span>LinkedIn</span>
+                    </a>
+                </div>
+
+                <!-- جيت هاب -->
+                <div class="link-item">
+                    <a href="https://github.com/budiabdallah20" target="_blank" class="main-link">
+                        <div class="link-icon"><i class="fa-brands fa-github"></i></div>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= النصف الأيمن: كرت الفورم ================= -->
+        <div class="contact-form-card glass-card">
+            <form class="contact__form" action="https://formspree.io/f/mojgegky" method="POST">
+                <div class="form-group">
+                    <input type="text"
+                    name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                </div>
+                <input type="text" name="subject" placeholder="Subject" required>
+                <textarea rows="5" name="message" placeholder="Your Message" required></textarea>
+                <button type="submit" class="btn-primary">Send Message</button>
+                
+                <!-- رسالة الخصوصية (تأثير النيون) -->
+                <p class="privacy-note">
+                    <i class="fa-solid fa-shield-halved"></i> Your data is safe with me. No spam.
+                </p>
+            </form>
+        </div>
+
+    </div>
+</section>
+        
+
+        
+    </main>
     </main>
 
-    <!-- ==================== Footer Section ==================== -->
-    <footer id="footer">
-        <div class="footer-container">
-            <div class="footer-logo">
-                <h2 data-i18n="footer_logo_name">محمد>
-                    <span style="color: var(--primary-color);">عبد الله</span>
-                </h2>
-                <p data-i18n="footer_bio">مطور واجهات أمامية • طالب رياضيات وعلوم حاسب • أتعلم الأمن السيبراني</p>
-            </div>
-
-            <div class="footer-links">
-                <h3 data-i18n="footer_legal">قانوني</h3>
-                <ul>
-                    <li><a href="#" class="legal-btn" data-type="privacy" data-i18n="footer_privacy">سياسة الخصوصية</a></li>
-                    <li><a href="#" class="legal-btn" data-type="terms" data-i18n="footer_terms">شروط الخدمة</a></li>
-                </ul>
-                <h3 data-i18n="footer_quick_links">روابط سريعة</h3>
-                <ul>
-                    <li><a href="#home" data-i18n="nav_home">الرئيسية</a></li>
-                    <li><a href="#about" data-i18n="nav_about">عني</a></li>
-                    <li><a href="#skills" data-i18n="nav_skills">المهارات</a></li>
-                    <li><a href="#projects" data-i18n="nav_projects">المشاريع</a></li>
-                    <li><a href="#certificates" data-i18n="nav_certificates">الشهادات</a></li>
-                    <li><a href="#contact" data-i18n="nav_contact">تواصل معي</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-social">
-                <h3 data-i18n="footer_connect">تواصل</h3>
-                <div class="social-icons">
-                    <a href="tel:+201065228072"><i class="fa-solid fa-phone"></i></a>
-                    <a href="https://wa.me/201065228072" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-                    <a href="mailto:budiabdallah922@gmail.com"><i class="fa-solid fa-envelope"></i></a>
-                    <a href="https://github.com/budiabdallah20" target="_blank"><i class="fa-brands fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-                </div>
-            </div>
+    </main>
+<!-- Footer Section -->
+<footer id="footer">
+    <div class="footer-container">
+        <!-- Logo & Bio -->
+        <div class="footer-logo">
+            <h2>Mohamed <span>Abdallah</span></h2>
+            <p>Frontend Developer • Mathematics & Computer Science Student • Learning Cybersecurity</p>
         </div>
 
-        <div class="footer-bottom">
-            <div class="tech-stack">
-                <span data-i18n="footer_built">صُنع بشغف |</span>
-                <i class="fa-brands fa-html5" title="HTML5"></i>
-                <i class="fa-brands fa-css3-alt" title="CSS3"></i>
-                <i class="fa-brands fa-js" title="JavaScript"></i>
-            </div>
-            <div class="live-status">
-                <span class="status-indicator"></span> <span data-i18n="footer_status">مباشر ومؤمن</span>
-            </div>
-            <p>© <span id="year"></span> <span class="neon-name" data-i18n="contact_name">محمد عبد الله</span>. <span data-i18n="footer_rights">جميع الحقوق محفوظة.</span></p>
+        <!-- Quick Links -->
+        <div class="footer-links">
+            <h3>Legal</h3>
+    <ul>
+       <li><a href="#" class="legal-btn" data-type="privacy">Privacy Policy</a></li>
+<li><a href="#" class="legal-btn" data-type="terms">Terms of Service</a></li>
+    </ul>
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#certificates">Certificates</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
 
-        <div class="social-counters">
-            <div class="counter-card">
-                <i class="fab fa-instagram"></i>
-                <h3 data-target="587">0</h3>
-                <p data-i18n="counter_followers">متابع</p>
-            </div>
-            <div class="counter-card">
-                <i class="fab fa-facebook"></i>
-                <h3 data-target="1400">0</h3>
-                <p data-i18n="counter_friends">صديق</p>
-            </div>
-            <div class="counter-card">
-                <i class="fab fa-tiktok"></i>
-                <h3 data-target="177">0</h3>
-                <p data-i18n="counter_followers">متابع</p>
-            </div>
-
-            <!-- Legal Modal -->
-            <div id="legalModal" class="legal-modal">
-                <div class="legal-modal-content">
-                    <span class="close-modal">&times;</span>
-                    <h2 id="modal-title" data-i18n="modal_title">الشروط والخصوصية</h2>
-                    <div id="modal-text" class="modal-body-text">
-                        <!-- النص هيتعبى تلقائي بالـ JS -->
-                    </div>
-                </div>
+        <!-- Social Links -->
+        <div class="footer-social">
+            <h3>Connect</h3>
+            <div class="social-icons">
+                <a href="tel:+201065228072"><i class="fa-solid fa-phone"></i></a>
+                <a href="https://wa.me/201065228072" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="mailto:budiabdallah922@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+                <a href="https://github.com/budiabdallah20" target="_blank"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/budi-abdallah-ba61323a7/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
             </div>
         </div>
-    </footer>
+    </div>
+
+   <div class="footer-bottom">
+    <div class="tech-stack">
+        <span>Built with Passion |</span>
+        <i class="fa-brands fa-html5" title="HTML5"></i>
+        <i class="fa-brands fa-css3-alt" title="CSS3"></i>
+        <i class="fa-brands fa-js" title="JavaScript"></i>
+    </div>
+    <div class="live-status">
+        <span class="status-indicator"></span> Live & Secured
+    </div>
+    <p>© <span id="year"></span> <span class="neon-name">Mohamed Abdallah</span>. All Rights Reserved.</p>
+</div>
+<div class="social-counters">
+    <div class="counter-card">
+        <i class="fab fa-instagram"></i>
+        <h3 data-target="587">0</h3> <!-- حط هنا الرقم اللي عايزه -->
+        <p>Followers</p>
+    </div>
+    <div class="counter-card">
+        <i class="fab fa-facebook"></i>
+        <h3 data-target="1400">0</h3>
+        <p>Friends</p>
+    </div>
+    <div class="counter-card">
+        <i class="fab fa-tiktok"></i>
+        <h3 data-target="177">0</h3>
+        <p>Followers</p>
+    </div>
+    <!-- Legal Modal (نافذة الشروط والخصوصية المنبثقة) -->
+<div id="legalModal" class="legal-modal">
+    <div class="legal-modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 id="modal-title">Terms & Privacy</h2>
+        <div id="modal-text" class="modal-body-text">
+            <!-- النص هيتعبى تلقائي بالـ JS -->
+        </div>
+    </div>
+</div>
+</div>
+</footer>
     
+
     <script src="./js/typing.js"></script>
     <script src="./js/animation.js" defer></script>
     <script src="./js/theme.js"></script>
     <script src="./js/utils.js"></script>
     <script src="./js/app.js"></script>
-    <script src="./js/lang.js"></script>
-    <script src="./js/counter.js"></script>
     
-    <button id="backToTop" title="Go to top">
-        <i class="fa-solid fa-arrow-up"></i>
-    </button>
 
-    <!-- ملفات اللغات -->
-    <script src="./locales/ar.json" type="application/json" id="ar"></script>
-    <script src="./locales/en.json" type="application/json" id="en"></script>
+     <button id="backToTop" title="Go to top">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
 </body>
 </html>
+
+   

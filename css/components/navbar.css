@@ -13,8 +13,8 @@
 }
 
 .navbar {
-    width: min(1200px, 92%);
-    height: 75px;
+    width: min(1200px, 90%);
+    height: 80px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -22,7 +22,7 @@
 }
 
 .navbar__logo {
-    font-size: var(--fs-h3);
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text);
     text-decoration: none;
@@ -71,6 +71,7 @@
 }
 
 /* === الأزرار وأيقونة الـ CV === */
+/* === الأزرار === */
 .theme-toggle, .language-toggle, .navbar__toggle {
     width: 40px;
     height: 40px;
@@ -82,15 +83,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    transition: var(--transition);
-}
-
-.theme-toggle:hover, .language-toggle:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
-    color: #fff;
 }
 
 .btn-cv {
@@ -147,18 +139,21 @@
         RESPONSIVE NAVBAR (Mobile)
 ================================== */
 @media (max-width: 992px) {
+    /* إظهار زر الـ Hamburger وتوسيط محتواه */
+    /* إظهار زر الـ Hamburger وتوسيط محتواه */
     .navbar__toggle {
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
+    /* تحويل القائمة للوضع الجانبي المخفي */
     .navbar__menu {
         position: fixed;
-        top: 75px;
+        top: 80px;
         right: -100%;
         width: min(320px, 80%);
-        height: calc(100vh - 75px);
+        height: calc(100vh - 80px);
         background: rgba(9, 9, 15, 0.98);
         backdrop-filter: blur(20px);
         flex-direction: column;
@@ -171,6 +166,7 @@
         z-index: 999;
     }
 
+    /* الكلاس اللي الجافاسكريبت هيضيفه عشان تظهر */
     .navbar__menu.active {
         right: 0;
     }
@@ -190,5 +186,9 @@
     .navbar__menu {
         width: 100%;
         border-left: none;
+    }
+
+    .navbar__menu.active {
+        display: flex;
     }
 }
