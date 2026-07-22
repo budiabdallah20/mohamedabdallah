@@ -1,33 +1,45 @@
-
+/* ==================================
+       VARIABLES & DESIGN SYSTEM
+================================== */
 
 :root {
-    /* --- الألوان الأساسية --- */
-    --color-primary: #7C5CFF;
-    --color-primary-hover: #6a4fe0;
-    --color-secondary: #A78BFA;
-    --color-accent: #00E5FF;
+    /* ==========================================
+       1. الوضع المظلم (Dark Mode - الافتراضي)
+    ========================================== */
+    /* --- ألوان العلامة التجارية (ساطعة ومضيئة) --- */
+    --color-primary: #8b5cf6;         /* بنفسجي ساطع */
+    --color-primary-hover: #a78bfa; 
+    --color-secondary: #a78bfa;
+    --color-accent: #06b6d4;        /* سماوي نيون للتفاصيل */
 
-    /* --- ألوان الوضع المظلم (الافتراضي) --- */
-    --color-bg: #09090F;
-    --color-surface: #13131A;
-    --color-text: #FFFFFF;
-    --color-text-muted: #A1A1AA;
+    /* --- الخلفيات والأسطح --- */
+    --color-bg: #09090b;              /* أسود ليلي فخم */
+    --color-surface: #18181b;         /* أسطح الكروت والفوتر */
+    --card-bg: rgba(255, 255, 255, 0.03); 
+
+    /* --- ألوان النصوص --- */
+    --color-text: #f8fafc;            /* أبيض ناعم للقراءة */
+    --text-secondary: #a1a1aa;        /* رمادي مريح للنصوص الفرعية */
+    --color-text-muted: #71717a;
+
+    /* --- الحدود والظلال --- */
     --color-border: rgba(255, 255, 255, 0.08);
+    --shadow-primary: 0 8px 30px rgba(139, 92, 246, 0.2);
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
 
-    /* --- Glassmorphism --- */
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: 1px solid var(--color-border);
-    --glass-blur: blur(16px);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    --shadow-primary: 0 10px 25px rgba(124, 92, 255, 0.35);
+    /* --- التأثيرات الزجاجية (Glassmorphism) --- */
+    --glass-bg: rgba(24, 24, 27, 0.6);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-blur: blur(12px);
 
     /* --- التنبيهات --- */
-    --color-success: #22C55E;
-    --color-danger: #EF4444;
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
 
-    /* --- الخطوط --- */
-    --font-heading: "Poppins", sans-serif;
-    --font-body: "Poppins", sans-serif;
+    /* --- إعدادات الخطوط --- */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Poppins', sans-serif;
 
     /* --- أحجام الخطوط --- */
     --fs-xs: 0.75rem;
@@ -45,15 +57,53 @@
     --radius-xl: 24px;
     --radius-circle: 50%;
 
-    /* --- الانتقالات --- */
-    --transition: 0.3s ease;
+    /* --- الانيميشن والانتقالات --- */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- إعدادات الوضع الفاتح (Light Mode) --- */
+/* ==========================================
+   2. الوضع النهاري (Light Mode - ناعم وعميق)
+========================================== */
+
 [data-theme="light"] {
-    --color-bg: #FFFFFF;
-    --color-surface: #F4F4F5;
-    --color-text: #09090F;
-    --color-text-muted: #52525B;
-    --color-border: #E4E4E7;
+    /* --- ألوان العلامة التجارية (عميقة لموازنة الفاتح) --- */
+    --color-primary: #1f0207;         /* بنفسجي عميق وداكن */
+    --color-primary-hover: #090214;
+    --color-secondary: #021a16;
+    --color-accent: #182d05;        /* أزرق مريح للعين */
+
+    /* --- الخلفيات والأسطح --- */
+    --color-bg: #fff7f7;              /* رمادي فاتح مريح جداً للعين (غير مزعج) */
+    --color-surface: #0e0101;         /* أبيض نقي لإبراز الكروت والفوتر */
+    --card-bg: #000000;
+
+    /* --- ألوان النصوص --- */
+    --color-text: #17e433;            /* كحلي داكن جداً واضحة ومريح للقراءة */
+    --text-secondary: #475569;        /* رمادي متناسق للنصوص الفرعية */
+    --color-text-muted: #100214;
+
+    /* --- الحدود والظلال --- */
+    --color-border: rgba(13, 86, 255, 0.1);
+    --shadow-primary: 0 10px 25px rgba(104, 19, 241, 0.15);
+    --shadow-card: 0 10px 35px rgba(15, 23, 42, 0.05);
+
+    /* --- التأثيرات الزجاجية (Glassmorphism) --- */
+    --glass-bg: rgba(0, 0, 0, 0.85);
+    --glass-border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* ==========================================
+   3. انتقالات سلسة وموحدة لجميع العناصر
+========================================== */
+html, body, 
+.project-card, 
+.counter-item, 
+.navbar, 
+.footer,
+#footer,
+.glass-card,
+.skill__card,
+.about__card,
+h1, h2, h3, p, span, a, i, button {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }

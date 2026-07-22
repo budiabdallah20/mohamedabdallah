@@ -1,194 +1,207 @@
-/* ==================================
-    NAVBAR STYLES (Desktop)
-================================== */
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(9, 9, 15, 0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--color-border);
-    z-index: 1000;
+/* ================================================= */
+/*     Ultimate Navbar & Glassmorphism Neon Fixes      */
+/* ================================================= */
+
+.header, header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(14, 1, 21, 0.989);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(252, 2, 2, 0.08);
 }
 
-.navbar {
-    width: min(1200px, 90%);
-    height: 80px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.navbar, nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.8rem 1.5rem;
+  min-height: 75px;
 }
 
+/* الشعار */
 .navbar__logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text);
-    text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f2f3f4;
+  text-decoration:none;
 }
 
 .navbar__logo span {
-    color: var(--color-primary);
+  color: #3b82f6;
 }
 
+/* الروابط للشاشات الكبيرة */
 .navbar__menu {
-    display: flex;
-    gap: 25px;
-    list-style: none;
-    align-items: center;
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
 }
 
-/* === تظبيط الخط البنفسجي === */
 .navbar__link {
-    color: var(--color-text-muted);
-    text-decoration: none;
-    font-size: var(--fs-sm);
-    position: relative;
-    padding: 10px 0;
-    transition: var(--transition);
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  position: relative;
+  transition: color 0.3s ease;
+  padding: 0.2rem 0;
 }
 
+/* خط سفلي بلون نيون بنفسجي عند التحويم أو النشاط */
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #a855f7;
+  box-shadow: 0 0 8px #a855f7;
+  transition: width 0.3s ease-in-out;
+}
+
+.navbar__link:hover, 
 .navbar__link.active {
-    color: var(--color-primary);
+  color: #f8fafc;
 }
 
+.navbar__link:hover::after, 
 .navbar__link.active::after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: var(--color-primary);
-    border-radius: 2px;
+  width: 100%;
 }
 
-.navbar__controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+/* إطار زجاجي نيون يجمع أزرار التحكم (الثيم، اللغة، التحميل، الهمبرجر) */
+.navbar__controls, .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(30, 41, 59, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(168, 85, 247, 0.5); /* إطار نيون بنفجي واضح */
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+  backdrop-filter: blur(10px);
 }
 
-/* === الأزرار وأيقونة الـ CV === */
-/* === الأزرار === */
-.theme-toggle, .language-toggle, .navbar__toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ضبط أحجام الأيقونات والأزرار داخل الإطار الزجاجي لتكون واضحة */
+.navbar__controls button, .navbar__controls a, 
+.nav-actions button, .nav-actions a {
+  background: transparent;
+  border: none;
+  color: #e904c7;
+  cursor: pointer;
+  font-size: 1.2rem; /* تكبير حجم الأيقونات لتظهر بوضوح */
+  padding: 0.2rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
-.btn-cv {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: 0.3s;
+.navbar__controls button:hove, .navbar__controls a:hover {
+  color: #f74003;
+  text-shadow: 0 0 10px #d0f405;
 }
 
-.btn-cv:hover {
-    background: var(--color-primary-hover);
-    transform: translateY(-2px);
-}
-
+/* زر الهامبرجر (مخفي تماماً على الكمبيوتر ويظهر في الموبايل والتابلت فقط) */
 .navbar__toggle {
-    display: none;
+  display: none !important;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.3rem;
 }
 
-/* === تظبيط زر Back to Top === */
-#backToTop {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: none;
+.navbar__toggle .bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  transition: all 0.3s ease-in-out;
+  background-color: #f8fafc;
+  border-radius: 2px;
+}
+/* تنسيق زر الـ CV في الـ Navbar لمنع أي أنيميشن غريب */
+.navbar__controls .btn-cv {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
-    box-shadow: var(--shadow-primary);
-    transition: 0.3s;
+    width: 40px;
+    height: 40px;
+    background: var(--card-bg, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    color: var(--text-color, #fff);
+    font-size: 1rem;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    text-decoration: none;
+    transform: none !important; /* إلغاء أي أنيميشن حركي غريب */
 }
 
-#backToTop.show {
-    display: flex;
+.navbar__controls .btn-cv:hover {
+    background: var(--color-pirmary);
+    border-color: var(--color-pirmary);
+    color: #fff;
+    transform: none !important;
 }
 
-#backToTop:hover {
-    transform: translateY(-5px);
-}
+/* ================================================= */
+/*    Responsive for Mobile & Tablet (<= 992px)      */
+/* ================================================= */
 
-/* ==================================
-        RESPONSIVE NAVBAR (Mobile)
-================================== */
 @media (max-width: 992px) {
-    /* إظهار زر الـ Hamburger وتوسيط محتواه */
-    /* إظهار زر الـ Hamburger وتوسيط محتواه */
-    .navbar__toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+  /* إظهار زر الهمبرجر فقط على الشاشات الصغيرة */
+  .navbar__toggle {
+    display: block !important;
+  }
 
-    /* تحويل القائمة للوضع الجانبي المخفي */
-    .navbar__menu {
-        position: fixed;
-        top: 80px;
-        right: -100%;
-        width: min(320px, 80%);
-        height: calc(100vh - 80px);
-        background: rgba(9, 9, 15, 0.98);
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 30px;
-        padding: 40px 20px;
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-left: 1px solid var(--color-border);
-        z-index: 999;
-    }
+  /* تحويل القائمة لدرج جانبي متجاوب */
+  .navbar__menu {
+    position: fixed;
+    top: 75px;
+    left: -100%;
+    flex-direction: column;
+    background-color: rgba(15, 23, 42, 0.98);
+    width: 100%;
+    height: calc(100vh - 75px);
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    transition: left 0.35s ease-in-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    padding: 2rem 0;
+  }
 
-    /* الكلاس اللي الجافاسكريبت هيضيفه عشان تظهر */
-    .navbar__menu.active {
-        right: 0;
-    }
-}
+  .navbar__menu.active {
+    left: 0;
+  }
 
-@media (max-width: 768px) {
-    .navbar {
-        width: 92%;
-    }
+  /* تحويل أيقونة الهمبرجر لشكل (X) عند الفتح */
+  .navbar__toggle.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+    background-color: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+  }
 
-    .navbar__logo {
-        font-size: 1.5rem;
-    }
-}
+  .navbar__toggle.active .bar:nth-child(2) {
+    opacity: 0;
+  }
 
-@media (max-width: 480px) {
-    .navbar__menu {
-        width: 100%;
-        border-left: none;
-    }
-
-    .navbar__menu.active {
-        display: flex;
-    }
+  .navbar__toggle.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+    background-color: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+  }
 }

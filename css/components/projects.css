@@ -1,14 +1,15 @@
 /* ===================================
-   Projects Section (Cleaned & Polished)
+   Projects Section (Cleaned, Polished & i18n Ready)
 =================================== */
 
 .projects {
     padding: 100px 0;
+    position: relative;
 }
 
 .projects .section-header {
     text-align: center;
-    margin-bottom: 70px;
+    margin-bottom: 50px;
 }
 
 .projects .section-subtitle {
@@ -24,268 +25,247 @@
 .projects .section-title {
     font-size: clamp(2rem, 5vw, 3rem);
     margin-bottom: 18px;
-     color: var(--color-text);
+    color: var(--color-text, #fff);
 }
 
 .projects .section-description {
     max-width: 700px;
-    margin: auto;
-    color: var(--text-secondary);
+    margin: 0 auto;
+    color: var(--text-secondary, #9ca3af);
     line-height: 1.8;
 }
 
-/* --- Grid --- */
+/* --- Counter Box Styling --- [cite: 6] */
+.projects .counter-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 15px 25px;
+    border-radius: 14px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 0 auto 40px auto;
+}
+
+.projects .counter-item:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(140, 82, 255, 0.15);
+}
+
+.projects .counter-value {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 2px;
+}
+
+.projects .counter-item p {
+    margin: 0;
+    color: var(--color-text, #fff);
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* --- Grid System --- */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
 
-/* --- Card --- */
+/* --- Project Card (Glassmorphism & Aesthetics) --- */
 .project-card {
     position: relative;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-card);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
-    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .project-card:hover {
-    transform: translateY(-12px);
-    border-color: rgba(140, 82, 255, 0.45);
-    box-shadow: 0 25px 55px rgba(140, 82, 255, 0.22);
+    transform: translateY(-8px);
+    border-color: rgba(140, 82, 255, 0.4);
+    box-shadow: 0 20px 45px rgba(140, 82, 255, 0.2);
 }
 
-/* --- Image --- */
+/* --- Image & Overlay --- */
 .project-image {
     position: relative;
     overflow: hidden;
-    height: 240px;
+    height: 220px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .project-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s ease;
 }
 
-.project-card:hover img {
-    transform: scale(1.05); /* زووم أنعم وأكثر احترافية */
+.project-card:hover .project-image img {
+    transform: scale(1.06);
 }
 
-/* --- Overlay --- */
 .project-overlay {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(10, 10, 20, 0.6);
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s ease;
 }
 
 .project-overlay span {
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 1px;
+    padding: 6px 14px;
+    background: rgba(140, 82, 255, 0.3);
+    border-radius: 20px;
+    border: 1px solid rgba(140, 82, 255, 0.5);
 }
 
 .project-card:hover .project-overlay {
     opacity: 1;
 }
 
-/* --- Content --- */
+/* --- Card Content --- */
 .project-content {
-    padding: 28px;
-    position: relative;
-    z-index: 2;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
-.project-content h3 {
-    font-size: 1.45rem;
-    margin: 18px 0;
-    color: var(--text-color);
-}
-
-.project-content p {
-    color: var(--text-secondary);
-    line-height: 1.8;
-    margin-bottom: 22px;
-}
-
-/* --- Status --- */
 .project-status {
     display: inline-flex;
     align-items: center;
-    padding: 8px 18px;
+    padding: 5px 12px;
     border-radius: 999px;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 600;
+    width: fit-content;
+    margin-bottom: 12px;
 }
 
 .project-status.completed {
-    background: rgba(0, 255, 140, 0.15);
+    background: rgba(0, 255, 140, 0.1);
     color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.2);
 }
 
-/* --- Technologies --- */
+.project-content h3 {
+    font-size: 1.3rem;
+    margin: 0 0 10px 0;
+    color: var(--color-text, #fff);
+    font-weight: 600;
+}
+
+.project-content p {
+    color: var(--text-secondary, #9ca3af);
+    line-height: 1.6;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+/* --- Tech Tags --- */
 .project-tech {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 25px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .project-tech span {
-    padding: 6px 14px;
+    padding: 4px 10px;
     border-radius: 6px;
-    background: rgba(140, 82, 255, 0.1);
+    background: rgba(140, 82, 255, 0.08);
     color: var(--color-primary);
-    font-size: 0.8rem;
-    border: 1px solid rgba(140, 82, 255, 0.2);
-    white-space: nowrap; /* منع انقسام كلمة التقنية */
-    transition: all 0.3s ease;
+    font-size: 0.75rem;
+    border: 1px solid rgba(140, 82, 255, minmax(0, 0.15));
+    white-space: nowrap;
 }
 
-.project-tech span:hover {
-    background: var(--color-primary);
-    color: #fff;
-}
-
-/* --- Buttons --- */
+/* --- Buttons & Layout Correction (No Overlap) --- */
 .project-buttons {
-    position: relative;
-    z-index: 10; /* يضمن أن الأزرار فوق أي شيء آخر */
     display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    pointer-events: auto; /* التأكد من أن الأزرار تستقبل الضغط */
-   
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .project-buttons a {
     flex: 1;
+    min-width: 110px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 11px 18px;
+    gap: 6px;
+    padding: 10px 14px;
     border-radius: 10px;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
-    border: none; /* شيلنا أي إطار مزعج */
-    outline: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-/* زر الديمو أو العرض الرئيسي (برايمري فخم) */
+/* زر الديمو الأساسي */
 .project-buttons .btn-view {
-    background: linear-gradient(135deg, var(--color-primary), #7c3aed);
+    background: var(--color-primary);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(140, 82, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(140, 82, 255, 0.25);
 }
 
 .project-buttons .btn-view:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(140, 82, 255, 0.5);
+    opacity: 0.9;
 }
 
-/* زر جيت هب وزر التحميل (ستايل زجاجي خفيف ومتناسق) */
+/* أزرار جيت هب والتحميل */
 .project-buttons .btn-github,
 .project-buttons .btn-download {
-    background: rgba(255, 255, 255, 0.07);
-    color: #f3f4f6;
+    background: rgba(255, 255, 255, 0.06);
+    color: #e5e7eb;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
 }
 
 .project-buttons .btn-github:hover,
 .project-buttons .btn-download:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     color: #fff;
-    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
 }
 
-
-
-/* --- Hover Border Glow --- */
-.project-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-card);
-    padding: 1px; /* تم تصليح الخطأ هنا */
-    background: linear-gradient(135deg, transparent, rgba(140, 82, 255, 0.6), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude; /* هذا هو البديل القياسي لـ xor */
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.project-card:hover::before {
-    opacity: 1;
-}
-/* إطار الـ Counter */
-.counter-item {
-    background: rgba(255, 255, 255, 0.05); /* شفافية خفيفة */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* إطار نحيف وشيك */
-    padding: 20px 30px;
-    border-radius: 15px; /* حواف دائرية */
-    text-align: center;
-    backdrop-filter: blur(10px); /* تأثير الزجاج */
-    transition: transform 0.3s ease, border-color 0.3s ease;
-    display: inline-block; /* عشان ياخد حجم المحتوى بس */
-    margin: 10px;
-}
-
-/* تأثير عند المرور بالماوس (Hover) */
-.counter-item:hover {
-    transform: translateY(-5px);
-    border-color: var(--color-primary); /* الإطار يقلب لون الـ primary */
-}
-
-/* تنسيق الرقم */
-.counter-value {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    margin-bottom: 5px;
-}
-
-/* تنسيق النص اللي تحت الرقم */
-.counter-item p {
-    margin: 0;
-    color: var(--color-text);
-    font-size: 1rem;
-    opacity: 0.8;
-}
-
-/* --- Responsive --- */
-@media(max-width: 992px) {
-    .projects { padding: 80px 0; }
-}
-
-@media(max-width: 768px) {
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
+    .projects { padding: 60px 0; }
     .projects-grid { grid-template-columns: 1fr; }
-    .project-image { height: 220px; }
-    .project-content { padding: 22px; }
-    .project-content h3 { font-size: 1.3rem; }
+    .project-image { height: 200px; }
 }
 
-@media(max-width: 480px) {
-    .project-buttons { flex-direction: column; }
-    .project-tech { gap: 8px; }
-    .project-tech span { font-size: 0.78rem; }
+@media (max-width: 480px) {
+    .project-buttons {
+        flex-direction: column;
+    }
+    .project-buttons a {
+        width: 100%;
+    }
 }
