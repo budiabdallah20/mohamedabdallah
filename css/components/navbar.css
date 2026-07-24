@@ -92,52 +92,6 @@
   box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
   backdrop-filter: blur(10px);
 }
-/* إطار احترافي ومريح للعين يجمع الـ Top Controls مع بعضها */
-.top-controls-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--color-surface, rgba(255, 255, 255, 0.03));
-    border: 1px solid var(--color-border, rgba(124, 92, 255, 0.2));
-    padding: 6px 10px;
-    border-radius: 999px; /* شكل كبسولة أنيق جداً */
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-}
-
-/* تأثير خفيف عند المرور بالماوس على الإطار ككل */
-.top-controls-wrapper:hover {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 12px rgba(124, 92, 255, 0.15);
-}
-
-/* تنسيق الأزرار داخل الإطار لتكون مريحة ومتناسقة */
-.top-controls-wrapper button,
-.top-controls-wrapper .btn-cv-header {
-    background: transparent;
-    border: none;
-    color: var(--color-text);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    font-size: 0.95rem;
-}
-
-/* لون مميز ومريح للعين عند الـ Hover (استخدام اللون البنفسجي الأساسي للموقع) */
-.top-controls-wrapper button:hover,
-.top-controls-wrapper .btn-cv-header:hover {
-    background: var(--color-primary);
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 0 10px rgba(124, 92, 255, 0.4);
-}
 
 /* ضبط أحجام الأيقونات والأزرار داخل الإطار الزجاجي لتكون واضحة */
 .navbar__controls button, .navbar__controls a, 
@@ -179,7 +133,7 @@
   border-radius: 2px;
 }
 /* تنسيق زر الـ CV في الـ Navbar لمنع أي أنيميشن غريب */
-.navbar__controls {
+.navbar__controls .btn-cv {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -195,30 +149,11 @@
     transform: none !important; /* إلغاء أي أنيميشن حركي غريب */
 }
 
-.navbar__controls  {
+.navbar__controls .btn-cv:hover {
     background: var(--color-pirmary);
     border-color: var(--color-pirmary);
     color: #fff;
     transform: none !important;
-}
-.btn-cv-header {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-surface, rgba(255, 255, 255, 0.05));
-    border: 1px solid var(--color-border);
-    color: var(--color-primary);
-    transition: all 0.3s ease;
-}
-
-.btn-cv-header:hover {
-    background: var(--color-primary);
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 0 12px rgba(124, 92, 255, 0.4);
 }
 
 /* ================================================= */
