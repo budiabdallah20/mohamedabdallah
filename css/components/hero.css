@@ -91,6 +91,36 @@
 .hero__description:hover {
     color: var(--color-text);
 }
+/* تنسيق أزرار الهيرو */
+.hero__buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* تنسيق زرار الـ CV والخط والأيقونة المصغرة */
+.hero-cv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.hero-cv-btn i {
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+}
+
+.hero-cv-btn:hover i {
+    transform: translateY(2px);
+}
 
 /* Image Wrapper */
 .hero__image-wrapper {
