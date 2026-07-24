@@ -115,6 +115,45 @@
     height: 100%; 
     object-fit: cover; 
 }
+/* تنسيق أزرار الهيرو لتكون متناسقة ومتشابهة في الحجم والـ Padding */
+.hero__buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+/* تنسيق زرار تحميل السيرة الذاتية في قسم الهيرو */
+.hero-cv-btn {
+   display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* مسافة بسيطة ومناسبة بين الكلمة والأيقونة */
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem; /* ضبط حجم الخط ليناسب التصميم */
+    text-decoration: none;
+    transition: var(--transition);
+}
+/* تصغير وتظبيط حجم أيقونة التحميل داخل زرار الـ CV */
+.hero-cv-btn i {
+    font-size: 0.85rem; /* تصغير حجم الأيقونة لتكون متناسقة مع النص */
+    transition: transform 0.3s ease;
+}
+
+
+/* تكبير حجم الأيقونة وضبط مظهرها بداخل الزرار */
+.hero-cv-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* حركة تكتكة خفيفة للأيقونة عند المرور بالماوس عليها */
+.hero-cv-btn:hover svg {
+    transform: translateY(2px);
+}
 /* ==================================
    MOBILE TYPOGRAPHY ADJUSTMENTS
 ================================== */
