@@ -32,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. Footer Year
-    const yearSpan = document.getElementById("year");
-    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+   document.getElementById('year').textContent = new Date().getFullYear();
 
     // 4. Legal Modal Logic (حل مشكلة الانتقال لـ Home)
     const legalBtns = document.querySelectorAll(".legal-btn");
@@ -121,6 +119,16 @@ window.addEventListener("scroll", () => {
         }
     });
 });
+window.addEventListener('scroll', () => {
+    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    
+    const progressFill = document.querySelector('.progress-fill');
+    if (progressFill) {
+        progressFill.style.width = scrolled + '%';
+    }
+});
 
 function changeLanguage(lang) {
     localStorage.setItem("lang", lang);
@@ -141,3 +149,52 @@ function changeLanguage(lang) {
         }
     });
 }
+
+function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        let originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+        btn.style.color = 'var(--color-success)';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.color = '';
+        }, 2000);
+    });
+}
+function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        // إنشاء عنصر إشعار مؤقت
+        let toast = document.createElement('div');
+        toast.innerText = "Copied to clipboard! 📋";
+        toast.style.position = "fixed";
+        toast.style.bottom = "20px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.background = "var(--color-primary)";
+        toast.style.color = "#fff";
+        toast.style.padding = "10px 20px";
+        toast.style.borderRadius = "var(--radius-sm)";
+        toast.style.zIndex = "1000";
+        toast.style.boxShadow = "var(--shadow-card)";
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 2000);
+    });
+}
+let lastScrollTop = 0;
+const navbar = document.querySelector('.navbar');
+
+window.addEventListener('scroll', () => {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollTop > lastScrollTop) {
+        // نزلت لتحت - اخفي الهيدر
+        navbar.style.top = '-100px';
+    } else {
+        // طلعت لفوق - اظهر الهيدر
+        navbar.style.top = '0';
+    }
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+});

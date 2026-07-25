@@ -108,3 +108,8 @@ html, body,
 h1, h2, h3, p, span, a, i, button {
     transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
+/* تخصيص لون تحديد النص في الموقع */
+::selection {
+    background-color: var(--color-bg);
+    color: #06ebae;
+}

@@ -68,6 +68,15 @@
     -webkit-text-fill-color: transparent;
     transition: var(--transition);
 }
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+
+.hero__buttons .btn-primary {
+    animation: pulseGlow 1s infinite;
+}
 
 /* توحيد لون التوهج مع الـ Theme بدل اللون الأخضر القديم */
 .hero__title:hover {

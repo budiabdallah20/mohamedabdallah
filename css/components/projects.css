@@ -253,6 +253,13 @@
     color: #fff;
     transform: translateY(-2px);
 }
+.project-image img {
+    transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-image img {
+    transform: scale(1.05);
+}
 
 /* --- Responsive adjustments --- */
 @media (max-width: 768px) {
