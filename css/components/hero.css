@@ -61,7 +61,7 @@
     font-weight: 700;
     color: var(--color-text);
     margin: 0;
-    background: linear-gradient(135deg, #ffffff 50%, #a0aebc 100%);
+    background: linear-gradient(1deg, #ffffff 0%, #042d56 100%);
     -webkit-background-clip: text;
     background-clip: text;
     
@@ -71,7 +71,7 @@
 
 /* توحيد لون التوهج مع الـ Theme بدل اللون الأخضر القديم */
 .hero__title:hover {
-    text-shadow: 0 0 20px rgba(124, 92, 255, 0.4); 
+    text-shadow: 0 0 20px rgba(7, 224, 83, 0.4); 
     transition: 1s;
 }
 

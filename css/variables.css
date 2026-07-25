@@ -67,29 +67,30 @@
 
 [data-theme="light"] {
     /* --- ألوان العلامة التجارية (عميقة لموازنة الفاتح) --- */
-    --color-primary: #1f0207;         /* بنفسجي عميق وداكن */
-    --color-primary-hover: #090214;
-    --color-secondary: #021a16;
-    --color-accent: #182d05;        /* أزرق مريح للعين */
+    --color-primary:#7c3aed;         /* بنفسجي عميق وداكن */
+    --color-primary-hover:#6d28d9;
+    --color-secondary: #6d28d9;
+    --color-accent:#0284c7;        /* أزرق مريح للعين */
 
     /* --- الخلفيات والأسطح --- */
-    --color-bg: #fff7f7;              /* رمادي فاتح مريح جداً للعين (غير مزعج) */
-    --color-surface: #0e0101;         /* أبيض نقي لإبراز الكروت والفوتر */
-    --card-bg: #000000;
+    --color-bg: #f8fafc;              /* رمادي فاتح مريح جداً للعين (غير مزعج) */
+    --color-surface: #ffffff ;         /* أبيض نقي لإبراز الكروت والفوتر */
+    --card-bg:#ffffff;
 
     /* --- ألوان النصوص --- */
-    --color-text: #17e433;            /* كحلي داكن جداً واضحة ومريح للقراءة */
-    --text-secondary: #475569;        /* رمادي متناسق للنصوص الفرعية */
-    --color-text-muted: #100214;
+    --color-text: #0f172a;            /* كحلي داكن جداً واضحة ومريح للقراءة */
+    --text-secondary:#0c3165;        /* رمادي متناسق للنصوص الفرعية */
+    --color-text-muted:#12458d;
 
     /* --- الحدود والظلال --- */
-    --color-border: rgba(13, 86, 255, 0.1);
-    --shadow-primary: 0 10px 25px rgba(104, 19, 241, 0.15);
-    --shadow-card: 0 10px 35px rgba(15, 23, 42, 0.05);
+    --color-border: rgba(15, 23, 42, 0.1);
+    --shadow-primary: 0 10px 25px rgba(124, 58, 237, 15%);
+    --shadow-card: 0 10px 35px rgba(15, 23, 42, 0.06);
 
     /* --- التأثيرات الزجاجية (Glassmorphism) --- */
-    --glass-bg: rgba(0, 0, 0, 0.85);
+    --glass-bg:rgba(255, 255, 255, 0.85);
     --glass-border: 1px solid rgba(15, 23, 42, 0.08);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================
