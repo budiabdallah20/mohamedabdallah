@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tiktokElement) tiktokElement.textContent = data.tiktok;
         if (fbElement) fbElement.textContent = data.facebook;
 
-        console.log("Social stats loaded successfully from backend!");
+        console.log("Social stats loade d successfully from backend!");
     } catch (error) {
         console.error("Error loading social stats:", error);
     }
