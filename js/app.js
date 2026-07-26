@@ -294,4 +294,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
         typeWriter();
     }
+});document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.querySelector('#contactForm'); // لو الـ ID مختلف، غيره هنا لاسم الـ form عندك
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // عشان الصفحة متعملش Refresh لوحدها
+
+            // جمع البيانات اللي الزائر كتبها (تأكد أن الـ inputs ليها حقل name مظبوط)
+            const formData = {
+                name: contactForm.querySelector('[name="name"]')?.value,
+                email: contactForm.querySelector('[name="email"]')?.value,
+                subject: contactForm.querySelector('[name="subject"]')?.value,
+                message: contactForm.querySelector('[name="message"]')?.value
+            };
+
+            // استخدام دالة الـ API اللي عملناها في ملف api.js
+            const result = await sendContactMessage(formData);
+
+            if (result && result.status === 'success') {
+                alert('تم إرسال رسالتك بنجاح! شكراً لك.');
+                contactForm.reset(); // تفريغ النموذج بعد الإرسال
+            } else {
+                alert('عذراً، حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى.');
+            }
+        });
+    }
 });
