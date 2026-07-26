@@ -20,4 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         updateCount();
     });
+});document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch('http://localhost:5000/api/social-stats');
+        const data = await response.json();
+
+        // نفترض إن عندك عناصر في HTML للأرقام دي، بنحدثها هنا تلقائي:
+        const instaElement = document.querySelector('.instagram-count');
+        const tiktokElement = document.querySelector('.tiktok-count');
+        const fbElement = document.querySelector('.facebook-count');
+
+        if (instaElement) instaElement.textContent = data.instagram;
+        if (tiktokElement) tiktokElement.textContent = data.tiktok;
+        if (fbElement) fbElement.textContent = data.facebook;
+
+        console.log("Social stats loaded successfully from backend!");
+    } catch (error) {
+        console.error("Error loading social stats:", error);
+    }
 });
