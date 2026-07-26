@@ -1,32 +1,30 @@
-// عنوان السيرفر الأساسي
-const API_BASE_URL = 'http://localhost:5000/api';
+// بيانات مشروع Supabase
+const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
 
-// 1. جلب المشاريع لعرضها في الموقع
-async function fetchProjects() {
+// إرسال رسالة تواصل جديدة مباشرة إلى جدول Supabase
+async function sendContactMessage(formData) {
     try {
-        const response = await fetch(`${API_BASE_URL}/projects`);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching projects:', error);
-        return [];
-    }
-}
-
-// 2. إرسال رسالة تواصل جديدة من نموذج الاتصال في الموقع
-async function sendContactMessage(messageData) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/contact`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Prefer': 'return=representation'
             },
-            body: JSON.stringify(messageData)
+            body: JSON.stringify(formData)
         });
-        const result = await response.json();
-        return result;
+
+        if (response.ok) {
+            return { status: 'success' };
+        } else {
+            const errorData = await response.json();
+            console.error('Supabase Error:', errorData);
+            return { status: 'error' };
+        }
     } catch (error) {
-        console.error('Error sending message:', error);
-      return  { status: 'error', message: 'Failed to send' };
+        console.error('Network Error:', error);
+        return { status: 'error' };
     }
 }
