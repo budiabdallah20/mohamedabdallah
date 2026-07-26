@@ -5,7 +5,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // إرسال رسالة تواصل جديدة مباشرة إلى جدول Supabase
 async function sendContactMessage(formData) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/Messages`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
