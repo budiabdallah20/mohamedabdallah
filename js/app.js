@@ -197,4 +197,101 @@ window.addEventListener('scroll', () => {
         navbar.style.top = '0';
     }
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+});document.addEventListener("DOMContentLoaded", () => {
+    const starsContainer = document.getElementById("starsContainer");
+    if (!starsContainer) return;
+
+    const starsCount = 35; // عدد النجوم في الشاشة (ممكن تزوده أو تقلله)
+
+    for (let i = 0; i < starsCount; i++) {
+        const star = document.createElement("div");
+        star.classList.add("star");
+
+        // خصائص عشوائية لكل نجمة (الحجم، المكان، والسرعة)
+        const size = Math.random() * 3 + 1; // حجم النجمة بين 1px و 4px
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}vw`;
+        
+        // سرعات مختلفة عشان الحركة تبلغ واقعية
+        star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+        star.style.setProperty('--float-duration', `${Math.random() * 10 + 10}s`);
+        star.style.setProperty('--opacity', Math.random());
+
+        // تأخير عشوائي في بداية الحركة
+        star.style.animationDelay = `${Math.random() * 5}s`;
+
+        starsContainer.appendChild(star);
+    }
+});document.querySelectorAll('.btn, .glass-card').forEach(element => {
+    element.addEventListener('mousemove', (e) => {
+        const rect = element.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        element.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+    });
+
+    element.addEventListener('mouseleave', () => {
+        element.style.transform = 'translate(0px, 0px)';
+    });
+});const clickSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); // صوت ناعم وخفيف
+clickSound.volume = 0.2;
+
+document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('click', () => {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {}); // عشان يتخطى قيود المتصفحات للصوت
+    });
+});document.querySelectorAll('.glass-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
+    
+  
+
+    // --- 2. تأثير الكتابة التلقائية (Typing Effect) ---
+    // حط الـ ID ده (typewriter-text) على العنصر أو العنوان اللي عايزه يكتب لوحده
+    const typeElement = document.getElementById("typewriter-text");
+    if (typeElement) {
+        const words = [
+            "مرحباً بك في موقعي الشخصي",
+            "أنا مطور واجهات أمامية (Frontend Developer)",
+            "أهلاً بك في عالم الإبداع والبرمجة"
+        ];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function typeWriter() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                typeElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50;
+            } else {
+                typeElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 100;
+            }
+
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // وقت الانتظار لما الجملة تكتمل
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        typeWriter();
+    }
 });
