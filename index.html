@@ -49,7 +49,7 @@
 
 <body>
     <!-- حاوية النجوم -->
-<div class="stars-container" id="starsContainer"></div>
+    <div class="stars-container" id="starsContainer"></div>
     <div class="preloader">
         <div class="loader"></div>
     </div>
@@ -63,7 +63,7 @@
     <header class="header">
         <nav class="navbar">
             <a href="#home" class="navbar-logo navbar__logo">
-                <span data-i18n="nav_logo">Mohamed Abdallah</span>
+                <span data-i18n="nav_logo" id="dynamic-nav-logo">Mohamed Abdallah</span>
             </a>
 
             <ul class="navbar__menu">
@@ -84,8 +84,6 @@
                     <span class="bar"></span>
                     <span class="bar"></span>
                 </button>
-                
-
             </div>
         </nav>
     </header>
@@ -96,9 +94,9 @@
             <div class="hero__container">
                 <div class="hero__content">
                     <p class="hero__greeting" data-i18n="hero_greeting">👋 Hello, I'm</p>
-                    <h1 class="hero__title" data-i18n="hero_title">Mohamed Abdallah</h1>
+                    <h1 class="hero__title" id="dynamic-hero-title" data-i18n="hero_title">Mohamed Abdallah</h1>
                     <h2 class="hero__subtitle"><span id="typing" data-i18n="hero_subtitle_typing"></span></h2>
-                    <p class="hero__description" data-i18n="hero_description">
+                    <p class="hero__description" id="dynamic-hero-desc" data-i18n="hero_description">
                         Frontend Developer & Cybersecurity Enthusiast building high-performance web experiences with a security-first mindset.
                     </p>
                     <div class="hero__buttons">
@@ -107,7 +105,8 @@
                             <i class="fa-solid fa-download"></i> <span data-i18n="hero_btn_cv">Download CV</span>
                         </a>
                     </div>
-                    <div class="hero__social">
+                    <!-- Social Media Links (Dynamic Enabled) -->
+                    <div class="hero__social" id="dynamic-social-hero">
                         <a href="https://github.com/budiabdallah20" class="social social--github" target="_blank" title="GitHub">
                             <span class="svg-icon" style="-webkit-mask-image: url('./assets/icons/github.svg'); mask-image: url('./assets/icons/github.svg');"></span>
                         </a>
@@ -133,7 +132,7 @@
                 </div>
                 <div class="hero__image">
                     <div class="hero__image-wrapper">
-                        <img src="./assets/images/profile/hero.jpg" alt="Mohamed Abdallah">
+                        <img src="./assets/images/profile/hero.jpg" alt="Mohamed Abdallah" id="dynamic-hero-img">
                     </div>
                 </div>
             </div>
@@ -143,12 +142,12 @@
         <section id="about" class="about">
             <div class="about__container">
                 <div class="about__image">
-                    <img src="./assets/images/profile/about.jpg" alt="Mohamed Abdallah">
+                    <img src="./assets/images/profile/about.jpg" alt="Mohamed Abdallah" id="dynamic-about-img">
                 </div>
                 <div class="about__content">
                     <span class="section-subtitle" data-i18n="about_subtitle">About Me</span>
                     <h2 class="section-title" data-i18n="about_title">Know More About Me</h2>
-                    <p class="about__text" data-i18n="about_text">
+                    <p class="about__text" id="dynamic-about-text" data-i18n="about_text">
                         I am Mohamed Abdallah, a Mathematics and Computer Science student at the Faculty of Science, Suez University. I am passionate about Frontend Development, Cybersecurity, and building modern web applications. I enjoy solving problems, learning new technologies, and continuously improving my skills through real-world projects.
                     </p>
                     <div class="about__info">
@@ -170,61 +169,64 @@
                     Here are the technologies, tools, and professional skills I have learned and continue improving through continuous practice and real-world projects.
                 </p>
                 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_web">💻 Web Development</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>HTML5</h4><span>Intermediate</span></div>
-                        <div class="skill__card"><h4>CSS3</h4><span>Intermediate</span></div>
-                        <div class="skill__card"><h4>JavaScript</h4><span>Learning</span></div>
+                <!-- Dynamic Skills Wrapper Container -->
+                <div id="dynamic-skills-wrapper">
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_web">💻 Web Development</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>HTML5</h4><span>Intermediate</span></div>
+                            <div class="skill__card"><h4>CSS3</h4><span>Intermediate</span></div>
+                            <div class="skill__card"><h4>JavaScript</h4><span>Learning</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_prog">💻 Programming</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>C++</h4><span>Beginner</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_prog">💻 Programming</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>C++</h4><span>Beginner</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_office">📊 Microsoft Office</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>Microsoft Excel</h4><span>Advanced</span></div>
-                        <div class="skill__card"><h4>PowerPoint</h4><span>Advanced</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_office">📊 Microsoft Office</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>Microsoft Excel</h4><span>Advanced</span></div>
+                            <div class="skill__card"><h4>PowerPoint</h4><span>Advanced</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_creative">🎨 Creative Skills</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>Graphic Design</h4><span>Intermediate</span></div>
-                        <div class="skill__card"><h4>Video Editing</h4><span>Intermediate</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_creative">🎨 Creative Skills</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>Graphic Design</h4><span>Intermediate</span></div>
+                            <div class="skill__card"><h4>Video Editing</h4><span>Intermediate</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_tools">⚙️ Tools</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>Git</h4><span>Intermediate</span></div>
-                        <div class="skill__card"><h4>GitHub</h4><span>Intermediate</span></div>
-                        <div class="skill__card"><h4>VS Code</h4><span>Daily Use</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_tools">⚙️ Tools</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>Git</h4><span>Intermediate</span></div>
+                            <div class="skill__card"><h4>GitHub</h4><span>Intermediate</span></div>
+                            <div class="skill__card"><h4>VS Code</h4><span>Daily Use</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_learning">🚀 Currently Learning</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>Linux</h4><span>Learning</span></div>
-                        <div class="skill__card"><h4>Networking</h4><span>Learning</span></div>
-                        <div class="skill__card"><h4>Cybersecurity</h4><span>Learning</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_learning">🚀 Currently Learning</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>Linux</h4><span>Learning</span></div>
+                            <div class="skill__card"><h4>Networking</h4><span>Learning</span></div>
+                            <div class="skill__card"><h4>Cybersecurity</h4><span>Learning</span></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="skills__category">
-                    <h3 class="skills__heading" data-i18n="cat_langs">🌍 Languages</h3>
-                    <div class="skills__grid">
-                        <div class="skill__card"><h4>Arabic</h4><span>Native</span></div>
-                        <div class="skill__card"><h4>English</h4><span>Intermediate</span></div>
+                    <div class="skills__category">
+                        <h3 class="skills__heading" data-i18n="cat_langs">🌍 Languages</h3>
+                        <div class="skills__grid">
+                            <div class="skill__card"><h4>Arabic</h4><span>Native</span></div>
+                            <div class="skill__card"><h4>English</h4><span>Intermediate</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -248,7 +250,8 @@
                     </p>
                 </div>
 
-                <div class="projects-grid">
+                <!-- Dynamic Projects Grid Container -->
+                <div class="projects-grid" id="dynamic-projects-grid">
                     <!-- Project 1 -->
                     <article class="project-card">
                         <div class="project-image">
@@ -321,7 +324,7 @@
 
         <!-- Certificates Section -->
         <section id="certificates" class="certificates">
-            <div class="certificates-container">
+            <div class="certificates-container" id="dynamic-certificates-container">
                 <div class="certificates__header">
                     <span class="section-subtitle" data-i18n="cert_subtitle">Achievements</span>
                     <h2 class="certificates__title" data-i18n="cert_title">Certificates & Learning</h2>
@@ -363,7 +366,7 @@
                 <div class="contact-info-card glass-card">
                     <div class="profile-header">
                         <div class="profile-img-container">
-                            <img src="assets/images/profile/contact.jpg" alt="Mohamed Abdallah">
+                            <img src="assets/images/profile/contact.jpg" alt="Mohamed Abdallah" id="dynamic-contact-img">
                             <span class="status-dot" title="Online & Ready"></span>
                         </div>
                         
@@ -419,7 +422,7 @@
 
                 <!-- Right Form Card -->
                 <div class="contact-form-card glass-card">
-                    <form class="contact__form" id="contactForm" >
+                    <form class="contact__form" id="contactForm">
                         <div class="form-group">
                             <input type="text" name="name" placeholder="Your Name" data-i18n-placeholder="form_name" required>
                             <input type="email" name="email" placeholder="Your Email" data-i18n-placeholder="form_email" required>
@@ -433,58 +436,49 @@
                         </p>
                     </form>
                 </div>
-       <!-- Donation Section -->
-<div class="donation-card glass-card" style="grid-column: 1 / -1; margin-top: 2rem; text-align: center; padding: 2rem;">
-    <h3 style="margin-bottom: 1rem; color: var(--color-primary);">
-        <i class="fa-solid fa-mug-hot"></i> <span data-i18n="support_title">Support Me</span>
-    </h3>
-    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-i18n="support_desc">
-        If you like my projects and want to support me, you can donate via Vodafone Cash or InstaPay:
-    </p>
-    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        
-        <!-- Vodafone Cash Card -->
-        <div style="background: var(--color-bg); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); min-width: 250px;">
-            <img src="./assets/icons/Vodafone_Pay.png" alt="Vodafone Cash" style="width: 150px; height: 150px; margin-bottom: 0.5rem; object-fit: contain; display: block; margin-left: auto; margin-right: auto;">
-            <h4 style="color: var(--color-text); margin-bottom: 0.3rem;" data-i18n="vf_title">Vodafone Cash</h4>
-            <p id="vf-number" style="color: var(--color-primary); font-weight: bold; direction: ltr; margin-bottom: 2rem;">+20 106 522 8072</p>
-            
-            <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                <!-- زرار تبرع بلون فودافون المميز -->
-                <a href="tel:*9*7*201065228072*Amount#" class="btn-donate" style="background: #e60000; color: #fff; padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; border-radius: var(--radius-sm);" data-i18n="btn_donate">
-                    <i class="fa-solid fa-mobile-screen"></i> Donate
-                </a>
-                <!-- زرار النسخ -->
-                <button onclick="copyText('+201065228072', this)" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--radius-sm); cursor: pointer;" data-i18n="btn_copy">
-                    <i class="fa-regular fa-copy"></i> Copy
-                </button>
+                
+                <!-- Donation Section -->
+                <div class="donation-card glass-card" style="grid-column: 1 / -1; margin-top: 2rem; text-align: center; padding: 2rem;">
+                    <h3 style="margin-bottom: 1rem; color: var(--color-primary);">
+                        <i class="fa-solid fa-mug-hot"></i> <span data-i18n="support_title">Support Me</span>
+                    </h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" data-i18n="support_desc">
+                        If you like my projects and want to support me, you can donate via Vodafone Cash or InstaPay:
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                        
+                        <!-- Vodafone Cash Card -->
+                        <div style="background: var(--color-bg); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); min-width: 250px;">
+                            <img src="./assets/icons/Vodafone_Pay.png" alt="Vodafone Cash" style="width: 150px; height: 150px; margin-bottom: 0.5rem; object-fit: contain; display: block; margin-left: auto; margin-right: auto;">
+                            <h4 style="color: var(--color-text); margin-bottom: 0.3rem;" data-i18n="vf_title">Vodafone Cash</h4>
+                            <p id="vf-number" style="color: var(--color-primary); font-weight: bold; direction: ltr; margin-bottom: 2rem;">+20 106 522 8072</p>
+                            
+                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                <a href="tel:*9*7*201065228072*Amount#" class="btn-donate" style="background: #e60000; color: #fff; padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; border-radius: var(--radius-sm);" data-i18n="btn_donate">
+                                    <i class="fa-solid fa-mobile-screen"></i> Donate
+                                </a>
+                                <button onclick="copyText('+201065228072', this)" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--radius-sm); cursor: pointer;" data-i18n="btn_copy">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- InstaPay Card -->
+                        <div style="background: var(--color-bg); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); min-width: 250px; opacity: 0.9;">
+                            <img src="./assets/icons/InstaPay.png" alt="InstaPay" style="width: 55px; height: 55px; margin-bottom: 0.5rem; object-fit: contain; display: block; margin-left: auto; margin-right: auto;">
+                            <h4 style="color: var(--color-text); margin-bottom: 0.3rem;" data-i18n="instapay_title">InstaPay</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;" data-i18n="instapay_status">Coming Soon 🚀</p>
+                            
+                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                <a href="https://www.instapay.com.eg" target="_blank" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; border-radius: var(--radius-sm);" data-i18n="btn_visit">
+                                    <i class="fa-solid fa-globe"></i> Visit Site
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- InstaPay Card (Soon) -->
-        <div style="background: var(--color-bg); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); min-width: 250px; opacity: 0.9;">
-            <img src="./assets/icons/InstaPay.png" alt="InstaPay" style="width: 55px; height: 55px; margin-bottom: 0.5rem; object-fit: contain; display: block; margin-left: auto; margin-right: auto;">
-            <h4 style="color: var(--color-text); margin-bottom: 0.3rem;" data-i18n="instapay_title">InstaPay</h4>
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;" data-i18n="instapay_status">Coming Soon 🚀</p>
-            
-            <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                <a href="https://www.instapay.com.eg" target="_blank" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; border-radius: var(--radius-sm);" data-i18n="btn_visit">
-                    <i class="fa-solid fa-globe"></i> Visit Site
-                </a>
-            </div>
-        </div>
-
-    </div>
-</div>     </div>
-       
-            
-          
-
-    </div>
-</div>
-
-    </div>
-</div>
         </section>
     </main>
 
@@ -515,7 +509,7 @@
 
             <div class="footer-social">
                 <h3 data-i18n="footer_connect">Connect</h3>
-                <div class="social-icons">
+                <div class="social-icons" id="dynamic-social-footer">
                     <a href="tel:+201065228072"><i class="fa-solid fa-phone"></i></a>
                     <a href="https://wa.me/201065228072" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
                     <a href="mailto:budiabdallah922@gmail.com"><i class="fa-solid fa-envelope"></i></a>
@@ -538,7 +532,7 @@
             <p>© <span id="year"></span> <span class="neon-name" data-i18n="nav_logo">Mohamed Abdallah</span>. <span data-i18n="footer_rights">All Rights Reserved.</span></p>
         </div>
 
-        <div class="social-counters">
+        <div class="social-counters" id="dynamic-social-counters">
             <div class="counter-card">
                 <i class="fab fa-instagram"></i>
                 <h3 data-target="587">0</h3>
