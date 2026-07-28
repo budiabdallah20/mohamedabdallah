@@ -11,7 +11,7 @@ const supabaseHeaders = {
 // 1. إرسال رسالة تواصل جديدة
 async function sendContactMessage(formData) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/Messages`, {
             method: 'POST',
             headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
             body: JSON.stringify(formData)
@@ -23,7 +23,7 @@ async function sendContactMessage(formData) {
     }
 }
 
-// 2. دوال تحميل وجلب البيانات ديناميكياً من Supabase
+// 2. تحميل المشاريع
 async function loadProjects() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*`, { headers: supabaseHeaders });
@@ -31,7 +31,7 @@ async function loadProjects() {
         const projects = await res.json();
         
         const grid = document.getElementById("dynamic-projects-grid");
-        if (!grid) return;
+        if (!grid || !projects.length) return;
 
         grid.innerHTML = projects.map(proj => `
             <article class="project-card">
@@ -58,6 +58,7 @@ async function loadProjects() {
     }
 }
 
+// 3. تحميل المهارات
 async function loadSkills() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/skills?select=*`, { headers: supabaseHeaders });
@@ -65,46 +66,104 @@ async function loadSkills() {
         const skills = await res.json();
         
         const wrapper = document.getElementById("dynamic-skills-wrapper");
-        if (!wrapper) return;
+        if (!wrapper || !skills.length) return;
 
-        // تجميع المهارات حسب الفئة أو عرضها مباشرة حسب الهيكلة
-        // (يمكنك تخصيص قالب العرض هنا بناءً على تصميمك الحالي)
+        // تجميع المهارات حسب الفئة واعادة رسمها ديناميكياً
+        const categories = {};
+        skills.forEach(skill => {
+            const cat = skill.category || 'Other Skills';
+            if (!categories[cat]) categories[cat] = [];
+            categories[cat].push(skill);
+        });
+
+        wrapper.innerHTML = Object.keys(categories).map(catName => `
+            <div class="skills__category">
+                <h3 class="skills__heading">${catName}</h3>
+                <div class="skills__grid">
+                    ${categories[catName].map(s => `
+                        <div class="skill__card">
+                            <h4>${s.name}</h4>
+                            <span>${s.level || ''}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
     } catch (err) {
         console.error("Error loading skills:", err);
     }
 }
 
+// 4. تحميل الشهادات
 async function loadCertificates() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/certificates?select=*`, { headers: supabaseHeaders });
         if (!res.ok) return;
         const certs = await res.json();
-        // تحديث قسم الشهادات ديناميكياً
+        
+        const container = document.getElementById("dynamic-certificates-container");
+        if (!container || !certs.length) return;
+
+        container.innerHTML = `
+            <div class="certificates__header">
+                <span class="section-subtitle">Achievements</span>
+                <h2 class="certificates__title">Certificates & Learning</h2>
+            </div>
+            ${certs.map(cert => `
+                <div class="certificate-card" style="margin-bottom: 1.5rem;">
+                    <div class="certificate-icon"><i class="fa-solid fa-award"></i></div>
+                    <h3>${cert.title}</h3>
+                    <p>${cert.description || ''}</p>
+                </div>
+            `).join('')}
+        `;
     } catch (err) {
         console.error("Error loading certificates:", err);
     }
 }
 
+// 5. تحميل الإعدادات (الهيرو، البايو، الصور)
 async function loadSettings() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`, { headers: supabaseHeaders });
         if (!res.ok) return;
         const settings = await res.json();
         
-        // تحديث إعدادات الموقع والنصوص (مثل عنوان الهيرو والبايو والصور)
         if (settings.length > 0) {
             const data = settings[0];
+            
+            // الهيرو
             if (data.hero_title) {
-                const titleEl = document.getElementById("dynamic-hero-title");
-                if (titleEl) titleEl.innerText = data.hero_title;
+                const el = document.getElementById("dynamic-hero-title");
+                if (el) el.innerText = data.hero_title;
             }
             if (data.hero_description) {
-                const descEl = document.getElementById("dynamic-hero-desc");
-                if (descEl) descEl.innerText = data.hero_description;
+                const el = document.getElementById("dynamic-hero-desc");
+                if (el) el.innerText = data.hero_description;
             }
             if (data.hero_image) {
-                const imgEl = document.getElementById("dynamic-hero-img");
-                if (imgEl) imgEl.src = data.hero_image;
+                const el = document.getElementById("dynamic-hero-img");
+                if (el) el.src = data.hero_image;
+            }
+
+            // عني (About)
+            if (data.about_text) {
+                const el = document.getElementById("dynamic-about-text");
+                if (el) el.innerText = data.about_text;
+            }
+            if (data.about_image) {
+                const el = document.getElementById("dynamic-about-img");
+                if (el) el.src = data.about_image;
+            }
+
+            // الشعار وصورة التواصل
+            if (data.site_logo) {
+                const el = document.getElementById("dynamic-nav-logo");
+                if (el) el.innerText = data.site_logo;
+            }
+            if (data.contact_image) {
+                const el = document.getElementById("dynamic-contact-img");
+                if (el) el.src = data.contact_image;
             }
         }
     } catch (err) {
@@ -112,23 +171,20 @@ async function loadSettings() {
     }
 }
 
-// 3. تفعيل Supabase Realtime الاستماع للتعديلات لحظياً
+// 6. تفعيل الـ Realtime لتحديث الأقسام فورياً دون تحديث الصفحة
 function initRealtimeListeners() {
-    // استخدام WebSockets المدمجة في Supabase للإنصات للتغييرات
     const wsUrl = `${SUPABASE_URL.replace('https://', 'wss://')}/realtime/v1/websocket?apikey=${SUPABASE_ANON_KEY}&vsn=1.0.0`;
     
     try {
         const socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
-            // الانضمام لقنوات الجداول لتتبع الأحداث (INSERT, UPDATE, DELETE)
-            const joinPayload = {
+            socket.send(JSON.stringify({
                 topic: "realtime:public",
                 event: "phx_join",
                 payload: {},
                 ref: "1"
-            };
-            socket.send(JSON.stringify(joinPayload));
+            }));
         };
 
         socket.onmessage = (event) => {
@@ -136,7 +192,6 @@ function initRealtimeListeners() {
             if (message.event === "postgres_changes") {
                 const table = message.payload.table;
                 
-                // تحديث القسم المتأثر فقط دون إعادة تحميل الصفحة بالكامل
                 if (table === 'projects') loadProjects();
                 if (table === 'skills') loadSkills();
                 if (table === 'certificates') loadCertificates();
@@ -148,7 +203,7 @@ function initRealtimeListeners() {
     }
 }
 
-// تشغيل الدوال عند تحميل الصفحة
+// تشغيل الكل عند تحميل الصفحة
 document.addEventListener("DOMContentLoaded", () => {
     loadProjects();
     loadSkills();
