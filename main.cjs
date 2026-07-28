@@ -5,15 +5,16 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
-    icon: path.join(__dirname, 'icon.ico'), // يمكنك وضع أيقونة للبرنامج بصيغة ico هنا لاحقاً
+    icon: path.join(__dirname, 'icon.ico'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
     }
   });
 
-  win.loadFile('index.html');
-  win.setMenuBarVisibility(false); // لإخفاء شريط القوائم العلوي العلوي وجعل البرنامج يبدو كبرنامج رسمي
+  // تم تعديل المسار ليكون صحيحاً في بيئة سطح المكتب بدون شرطة مائلة أولية
+  win.loadFile(path.join(__dirname, 'dashboard', 'dashboard.html'));
+  win.setMenuBarVisibility(false);
 }
 
 app.whenReady().then(() => {
@@ -28,7 +29,6 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.stop();
-    app.quit();
+    app.quit(); // تم تصحيح دالة الإغلاق وحذف app.stop الخاطئة
   }
 });
