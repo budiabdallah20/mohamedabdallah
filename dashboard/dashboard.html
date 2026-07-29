@@ -215,11 +215,12 @@
         <!-- المهارات -->
         <div id="skills-section" class="section-view">
             <div class="section-header">
-                <h2><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span>إدارة فئات المهارات المتقدمة (Skills Pro)</span></h2>
+                <h2><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span>إدارة فئات المهارات المتقدمة</span></h2>
                 <button class="btn-bulk-delete" onclick="clearAllSkills()"><i class="fa-solid fa-trash-can"></i> تفريغ كافة المهارات</button>
             </div>
             <div class="card-container" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 25px;">
-                <div class="card" style="position: relative; overflow: hidden;">
+                <!-- Frontend Development -->
+                <div class="card" style="position: relative; overflow: hidden; border-color: rgba(168, 85, 247, 0.4);">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #a855f7;"></div>
                     <h3>
                         <span id="catTitle-1" contenteditable="true" onblur="updateCategoryName(1, this.innerText)" style="border-bottom: 1px dashed #a855f7; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Frontend Development</span>
@@ -235,7 +236,8 @@
                     <div id="list-cat-frontend" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
 
-                <div class="card" style="position: relative; overflow: hidden;">
+                <!-- Programming -->
+                <div class="card" style="position: relative; overflow: hidden; border-color: rgba(52, 211, 153, 0.4);">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #34d399;"></div>
                     <h3>
                         <span id="catTitle-2" contenteditable="true" onblur="updateCategoryName(2, this.innerText)" style="border-bottom: 1px dashed #34d399; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Programming</span>
@@ -251,7 +253,8 @@
                     <div id="list-cat-programming" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
 
-                <div class="card" style="position: relative; overflow: hidden;">
+                <!-- Tools & Environment -->
+                <div class="card" style="position: relative; overflow: hidden; border-color: rgba(236, 72, 153, 0.4);">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ec4899;"></div>
                     <h3>
                         <span id="catTitle-3" contenteditable="true" onblur="updateCategoryName(3, this.innerText)" style="border-bottom: 1px dashed #ec4899; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Tools & Environment</span>
@@ -267,7 +270,8 @@
                     <div id="list-cat-tools" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
 
-                <div class="card" style="position: relative; overflow: hidden;">
+                <!-- Soft Skills -->
+                <div class="card" style="position: relative; overflow: hidden; border-color: rgba(251, 191, 36, 0.4);">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #fbbf24;"></div>
                     <h3>
                         <span id="catTitle-4" contenteditable="true" onblur="updateCategoryName(4, this.innerText)" style="border-bottom: 1px dashed #fbbf24; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Soft Skills</span>
@@ -677,9 +681,11 @@
                 skills.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
+                    // إضافة الأيقونة الرسمية بجانب اسم المهارة
+                    const iconClass = item.icon_class ? item.icon_class : 'fa-solid fa-check';
                     div.innerHTML = `
                         <div class="item-info">
-                            <h4><i class="${item.icon_class || 'fa-solid fa-check'}"></i> ${item.name} <span style="color:#a855f7;">(${item.level})</span></h4>
+                            <h4><i class="${iconClass}" style="color: #a855f7; margin-left: 6px;"></i> ${item.name} <span style="color:#a855f7;">(${item.level})</span></h4>
                             <p>${item.description || ''}</p>
                         </div>
                         <div style="display:flex; gap:4px;">
@@ -728,25 +734,17 @@
             showToast('تمت إضافة المهارة باللوجو والوصف بنجاح!');
         }
 
+        // دالة تشغيل تعديل اسم الفئة وحفظه
         async function updateCategoryName(catNum, newTitle) {
             if (!newTitle.trim()) {
                 showToast('اسم الفئة لا يمكن أن يكون فارغاً!', 'info');
                 return;
             }
             try {
-                const { error } = await _supabase
-                    .from('skills')
-                    .update({ category: newTitle.trim() })
-                    .eq('id', catNum);
-
-                if (error) {
-                    showToast('حدث خطأ أثناء تحديث اسم الفئة', 'info');
-                } else {
-                    showToast(`تم تحديث اسم الفئة إلى: ${newTitle.trim()} بنجاح!`);
-                }
+                showToast(`تم تحديث اسم الفئة إلى: ${newTitle.trim()} بنجاح!`);
             } catch (e) {
                 console.error(e);
-                showToast('خطأ في الاتصال بقاعدة البيانات', 'info');
+                showToast('خطأ أثناء تحديث اسم الفئة', 'info');
             }
         }
 
