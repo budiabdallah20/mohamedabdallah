@@ -558,10 +558,8 @@
                 <div id="modal-text" class="modal-body-text"></div>
             </div>
         </div>
-    </footer>
-    
-    <!-- Scripts -->
-    <script src="./js/typing.js"></script>
+        
+            <script src="./js/typing.js"></script>
     <script src="./js/animation.js" defer></script>
     <script src="./js/theme.js"></script>
     <script src="./js/utils.js"></script>
@@ -569,10 +567,124 @@
     <script src="./js/lang.js"></script>
     <script src="./js/counter.js"></script>
     <script src="js/api.js"></script>
+<!-- شريط التحكم السريع (خدمة العملاء + الرجوع لأعلى) -->
+<div id="quickControlBar">
+    <!-- زر خدمة العملاء -->
+    <button id="openSupportModalBtn" title="تواصل معنا / خدمة العملاء">
+        <i class="fa-solid fa-headset"></i>
+    </button>
 
-    <button id="backToTop" title="Go to top">
+    <!-- زر الرجوع لأعلى الصفحة -->
+    <button id="backToTopBtn" title="الرجوع لأعلى">
         <i class="fa-solid fa-arrow-up"></i>
     </button>
+</div>
+
+<!-- نافذة الكارت المنبثقة لخدمة العملاء -->
+<div id="supportModalOverlay" class="support-modal-overlay">
+    <div class="support-modal-card">
+        <div class="support-modal-header">
+            <h3><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> خدمة العملاء والدعم</h3>
+            <button id="closeSupportModalBtn">&times;</button>
+        </div>
+        <form id="floatingSupportForm">
+            <div class="form-group">
+                <input type="text" id="floatingSupName" placeholder="اسمك الكريم" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="floatingSupEmail" placeholder="بريدك الإلكتروني" required>
+            </div>
+            <div class="form-group">
+                <textarea id="floatingSupMessage" rows="4" placeholder="اكتب شكواك أو رسالتك هنا..." required></textarea>
+            </div>
+            <button type="submit" id="floatingSupSubmitBtn">إرسال الرسالة</button>
+            <p id="floatingSupResponseMsg" style="margin-top: 10px; font-size: 11px; text-align: center;"></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    const openBtn = document.getElementById('openSupportModalBtn');
+    const closeBtn = document.getElementById('closeSupportModalBtn');
+    const overlay = document.getElementById('supportModalOverlay');
+    const form = document.getElementById('floatingSupportForm');
+    const quickControlBar = document.getElementById('quickControlBar');
+    const backToTopBtn = document.getElementById('backToTopBtn');
+
+    // التحكم في نافذة خدمة العملاء
+    openBtn.onclick = () => overlay.classList.add('active');
+    closeBtn.onclick = () => overlay.classList.remove('active');
+    overlay.onclick = (e) => { if(e.target === overlay) overlay.classList.remove('active'); };
+
+    // ظهور وإخفاء زر الرجوع لأعلى حسب التمرير (Scroll)
+    window.addEventListener('scroll', () => {
+     if (window.scrollY > 500) {
+            quickControlBar.classList.add('show');
+        } else {
+            quickControlBar.classList.remove('show');
+        }
+    });
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+
+    // تنفيذ عملية الصعود لأعلى الصفحة بسلاسة
+    backToTopBtn.onclick = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // كود إرسال الرسالة لـ Supabase
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('floatingSupSubmitBtn');
+        const msgBox = document.getElementById('floatingSupResponseMsg');
+        btn.disabled = true;
+        btn.innerText = 'جاري الإرسال...';
+
+        const name = document.getElementById('floatingSupName').value;
+        const email = document.getElementById('floatingSupEmail').value;
+        const message = document.getElementById('floatingSupMessage').value;
+
+        const deviceInfo = navigator.userAgent;
+        let locationStr = "غير معروف";
+        try {
+            const ipRes = await fetch('https://ipapi.co/json/');
+            const ipData = await ipRes.json();
+            locationStr = `${ipData.country_name || ''} - ${ipData.city || ''} (IP: ${ipData.ip || ''})`;
+        } catch (err) { console.log('Location error', err); }
+
+        const { error } = await supabaseClient
+            .from('support_tickets')
+            .insert([{ 
+                full_name: name, 
+                email: email, 
+                message: message,
+                device_info: deviceInfo,
+                location: locationStr,
+                platform: 'Website Widget'
+            }]);
+
+        if (error) {
+            msgBox.style.color = '#f87171';
+            msgBox.innerText = 'حدث خطأ أثناء الإرسال، حاول مرة أخرى.';
+            btn.disabled = false;
+            btn.innerText = 'إرسال الرسالة';
+        } else {
+            msgBox.style.color = '#34d399';
+            msgBox.innerText = 'تم إرسال شكواك بنجاح وسيتم الرد قريباً!';
+            form.reset();
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                msgBox.innerText = '';
+                btn.disabled = false;
+                btn.innerText = 'إرسال الرسالة';
+            }, 2000);
+        }
+    });
+</script>
+  
     
 </body>
 </html>

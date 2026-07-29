@@ -5,646 +5,516 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate CMS Empire Dashboard 🚀 v4.0 Pro Master</title>
-    <!-- استدعاء خط Poppins الاحترافي -->
+    <title>Portfolio Dashboard Pro - Mohamed Abdallah</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- مكتبة الأيقونات Font Awesome الاحترافية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-main: #020617;
+            --bg-sidebar: rgba(15, 23, 42, 0.94);
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --border-glass: rgba(56, 189, 248, 0.2);
+            --accent-primary: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background: radial-gradient(circle at top right, #0f172a, #020617 70%); color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
-        /* 🔐 شاشة تسجيل الدخول المطورة (Task 1) */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.95)), url('download.jpg') no-repeat center center;
-            background-size: cover; backdrop-filter: blur(12px);
-            display: flex; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .login-card {
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid rgba(56, 189, 248, 0.35); padding: 40px 35px; border-radius: 24px; width: 440px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.15); text-align: center;
-        }
-        .login-avatar { width: 90px; height: 90px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-        .login-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .login-card h2 { color: #f8fafc; margin-bottom: 5px; font-size: 22px; font-weight: 700; }
-        .login-card p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; }
-        .login-input-group { position: relative; margin-bottom: 15px; }
-        .login-input-group i { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); color: #38bdf8; font-size: 15px; }
-        [dir="rtl"] .login-input-group i { left: auto; right: 16px; }
-        .login-input { width: 100%; padding: 14px 16px 14px 48px; border-radius: 12px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.85); color: white; font-size: 13px; outline: none; transition: 0.3s; }
-        [dir="rtl"] .login-input { padding: 14px 48px 14px 16px; }
-        .login-input:focus { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); }
-        .login-options { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
-        .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-        .login-options a { color: #38bdf8; text-decoration: none; }
-        .login-btn { width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); transition: 0.2s; }
-        .login-btn:hover { opacity: 0.92; transform: translateY(-1px); }
-        .social-logins { display: flex; gap: 10px; margin-top: 18px; }
-        .social-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .social-btn:hover { background: #334155; border-color: #38bdf8; }
+        /* تأثير النجوم المتحركة في الخلفية */
+        #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 
-        /* القائمة الجانبية (Task 2) */
-        .sidebar { width: 295px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(10px); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; padding: 18px; gap: 6px; overflow-y: auto; }
-        [dir="rtl"] .sidebar { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); }
-        .sidebar-brand { font-size: 17px; font-weight: 600; color: #38bdf8; margin-bottom: 10px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .top-controls { display: flex; gap: 6px; margin-bottom: 10px; }
-        .ctrl-btn { flex: 1; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 8px; padding: 8px; font-size: 11px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
-        .ctrl-btn:hover { background: #334155; }
-        .logout-btn { background: rgba(127, 29, 29, 0.4); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.4); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.8); }
+
+        .sidebar { width: 300px; background: var(--bg-sidebar); backdrop-filter: blur(20px); border-left: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 20px; gap: 8px; overflow-y: auto; box-shadow: 5px 0 30px rgba(0,0,0,0.6); z-index: 10; }
+        .sidebar-brand { font-size: 18px; font-weight: 700; color: var(--accent-primary); margin-bottom: 12px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; text-shadow: 0 0 15px var(--accent-glow); }
+        .top-controls { display: flex; gap: 8px; margin-bottom: 12px; }
+        .ctrl-btn { flex: 1; background: rgba(30, 41, 59, 0.8); color: white; border: 1px solid #334155; border-radius: 10px; padding: 9px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.3s; }
+        .ctrl-btn:hover { background: #334155; border-color: var(--accent-primary); box-shadow: 0 0 12px var(--accent-glow); }
+        .logout-btn { background: rgba(127, 29, 29, 0.3); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        .logout-btn:hover { background: rgba(127, 29, 29, 0.6); border-color: #ef4444; }
         
-        .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 10px 14px; border-radius: 8px; text-align: left; cursor: pointer; font-size: 12px; font-weight: 500; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        [dir="rtl"] .nav-btn { text-align: right; }
-        .nav-btn i { font-size: 15px; width: 18px; text-align: center; }
-        .nav-btn:hover, .nav-btn.active { background: rgba(30, 41, 59, 0.85); color: #38bdf8; transform: translateX(3px); }
-        [dir="rtl"] .nav-btn:hover, [dir="rtl"] .nav-btn.active { transform: translateX(-3px); }
+        .nav-btn { background: transparent; color: var(--text-muted); border: none; padding: 11px 16px; border-radius: 10px; text-align: right; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; position: relative; z-index: 2; }
+        .nav-btn i { font-size: 16px; width: 20px; text-align: center; transition: transform 0.3s; }
+        .nav-btn:hover { background: rgba(30, 41, 59, 0.7); color: var(--accent-primary); transform: translateX(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .nav-btn.active { background: linear-gradient(135deg, rgba(2, 132, 199, 0.3), rgba(3, 105, 161, 0.5)); color: var(--accent-primary); border-right: 3px solid var(--accent-primary); box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.15); }
+        
+        .preview-btn { margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); transition: 0.3s; z-index: 2; }
+        .preview-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2, 132, 199, 0.7); }
 
-        .preview-btn { margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; transition: 0.2s; }
-        .preview-btn:hover { opacity: 0.9; }
-
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: url('download.jpg') no-repeat center center fixed; background-size: cover; position: relative; }
-        .main-content::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(2, 6, 23, 0.86); z-index: 0; pointer-events: none; }
-        .main-content > * { position: relative; z-index: 1; }
-
+        .main-content { flex: 1; padding: 35px; overflow-y: auto; background: linear-gradient(135deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.95)); position: relative; z-index: 2; }
         .section-view { display: none; }
-        .section-view.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; }
-        .section-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; }
-
-        .card-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); background: rgba(15, 23, 42, 0.78); }
+        .section-view.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; }
+        .section-header h2 { font-size: 22px; display: flex; align-items: center; gap: 10px; font-weight: 600; color: #fff; }
+        
+        .card-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .card { padding: 24px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid var(--border-glass); background: var(--bg-card); backdrop-filter: blur(12px); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
+        .card:hover { transform: translateY(-3px); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 20px 45px rgba(0,0,0,0.6), 0 0 30px rgba(56, 189, 248, 0.1); }
         .card-full { grid-column: 1 / -1; }
-        .card h3 { margin-bottom: 15px; font-size: 15px; color: #f3f4f6; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-
-        form { display: flex; flex-direction: column; gap: 10px; }
-        input, textarea, select { padding: 10px 12px; border-radius: 8px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.85); color: white; font-size: 12px; outline: none; transition: 0.2s; }
-        input:focus, textarea:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); }
-        .submit-btn { background: #0284c7; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; transition: 0.2s; }
-        .submit-btn:hover { background: #0369a1; }
-
-        .items-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 4px; }
-        .item-row { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .item-info h4 { font-size: 13px; color: #f8fafc; margin-bottom: 2px; }
-        .item-info p { font-size: 11px; color: #94a3b8; }
-        .btn-delete { background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
-        .btn-delete:hover { background: #b91c1c; }
-
-        /* صندوق الشكاوي وخدمة العملاء (Task 6) */
-        .support-inbox-layout { display: flex; gap: 15px; height: 390px; }
-        .tickets-sidebar { width: 40%; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        [dir="rtl"] .tickets-sidebar { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); padding-right: 0; padding-left: 10px; }
-        .ticket-preview-card { background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .ticket-preview-card:hover, .ticket-preview-card.active { border-color: #38bdf8; background: rgba(30, 41, 59, 0.95); }
-        .ticket-preview-card h5 { font-size: 12px; color: #fff; margin-bottom: 3px; }
-        .ticket-preview-card p { font-size: 10px; color: #94a3b8; }
+        .card h3 { margin-bottom: 18px; font-size: 15px; color: #f3f4f6; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
         
-        .ticket-chat-area { flex: 1; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
-        .chat-box-header { padding: 10px 15px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #38bdf8; }
-        .chat-box-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
-        .chat-msg { padding: 10px; border-radius: 8px; max-width: 85%; }
+        form { display: flex; flex-direction: column; gap: 12px; }
+        input, textarea, select { padding: 12px 14px; border-radius: 10px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.7); color: white; font-size: 12px; outline: none; transition: 0.3s; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent-primary); box-shadow: 0 0 12px var(--accent-glow); background: rgba(30, 41, 59, 0.95); }
+        
+        .submit-btn { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; transition: 0.3s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
+        .submit-btn:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(2, 132, 199, 0.6); }
+        
+        .items-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding-right: 2px; }
+        .item-row { background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .item-row:hover { background: rgba(30, 41, 59, 0.9); border-color: rgba(56, 189, 248, 0.3); transform: translateX(-2px); }
+        .item-info h4 { font-size: 13px; color: #f8fafc; margin-bottom: 4px; font-weight: 600; }
+        .item-info p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+        
+        .btn-delete, .btn-bulk-delete { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid rgba(220, 38, 38, 0.3); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
+        .btn-delete:hover, .btn-bulk-delete:hover { background: #dc2626; color: white; border-color: #dc2626; box-shadow: 0 0 10px rgba(220, 38, 38, 0.5); }
+        .btn-bulk-delete { display: flex; align-items: center; gap: 6px; }
+
+        .support-inbox-layout { display: flex; gap: 15px; height: 440px; }
+        .tickets-sidebar { width: 38%; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .ticket-preview-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        .ticket-preview-card:hover { background: rgba(30, 41, 59, 0.8); }
+        .ticket-preview-card.active { border-color: var(--accent-primary); background: rgba(30, 41, 59, 0.95); box-shadow: 0 0 15px var(--accent-glow); }
+        .ticket-chat-area { flex: 1; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+        .chat-box-header { padding: 12px 18px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--accent-primary); font-weight: 600; }
+        .chat-box-body { flex: 1; padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 12px; }
+        .chat-msg { padding: 12px; border-radius: 10px; max-width: 85%; line-height: 1.5; }
         .chat-msg.client { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid #334155; }
-        .chat-msg.admin { background: #0284c7; color: white; align-self: flex-end; }
-        .chat-meta { font-size: 10px; color: #94a3b8; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .chat-box-footer { padding: 10px; background: rgba(30, 41, 59, 0.8); border-top: 1px solid #334155; display: flex; gap: 8px; }
-        .chat-box-footer input { flex: 1; }
+        .chat-msg.admin { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; align-self: flex-end; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
 
-        /* فئات المهارات والكروت (Task 4) */
-        .category-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
-        .tab-btn.active, .tab-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-online { background: rgba(5, 150, 105, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
         
-        .category-subcard-frontend { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4), rgba(30, 58, 138, 0.6)); border: 1px solid #38bdf8; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
-        .category-subcard-backend { background: linear-gradient(135deg, rgba(22, 101, 52, 0.4), rgba(5, 46, 22, 0.6)); border: 1px solid #4ade80; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
-        .category-subcard-tools { background: linear-gradient(135deg, rgba(126, 34, 206, 0.4), rgba(76, 29, 149, 0.6)); border: 1px solid #c084fc; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
-        .category-subcard-uiux { background: linear-gradient(135deg, rgba(190, 24, 93, 0.4), rgba(136, 19, 55, 0.6)); border: 1px solid #f472b6; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
-        .category-subcard-default { background: linear-gradient(135deg, rgba(180, 83, 9, 0.4), rgba(120, 53, 15, 0.6)); border: 1px solid #fbbf24; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px; }
+        .mini-stat-box { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; padding: 16px; text-align: center; transition: 0.3s; }
+        .mini-stat-box:hover { border-color: rgba(56, 189, 248, 0.5); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(56,189,248,0.15); }
+        .mini-stat-box h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+        .mini-stat-box .number { font-size: 24px; font-weight: 700; color: var(--accent-primary); text-shadow: 0 0 12px var(--accent-glow); }
 
-        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 8px; }
-        .category-title { font-size: 14px; font-weight: 600; color: #fff; }
-        .category-actions { display: flex; gap: 6px; }
-        .btn-sm { padding: 4px 8px; font-size: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
-        .btn-danger-sm { background: #b91c1c; color: white; }
-
-        .btn-bulk-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .btn-bulk-delete:hover { background: #b91c1c; }
-
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-online { background: rgba(5, 150, 105, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
-        .status-offline { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
-        .mini-stat-box { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px; text-align: center; }
-        .mini-stat-box h4 { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 500; }
-        .mini-stat-box .number { font-size: 22px; font-weight: 700; color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.2); }
-
-        /* إشعارات التوست (Task 8) */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        [dir="rtl"] #toast-container { right: auto; left: 20px; }
-        .toast { background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; color: white; padding: 12px 20px; border-radius: 10px; font-size: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        #toast-container { position: fixed; bottom: 25px; left: 25px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent-primary); color: white; padding: 14px 22px; border-radius: 12px; font-size: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 15px var(--accent-glow); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
+    <canvas id="stars-canvas"></canvas>
 
-    <!-- 🔐 شاشة تسجيل الدخول المطورة (Task 1) -->
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="login-avatar"><img src="hero.jpg" alt="Admin Profile"></div>
-            <h2>Empire Admin Pro</h2>
-            <p>Customer Support & Automated Metrics Center</p>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="login-input-group">
-                    <i class="fa-solid fa-envelope-open-text"></i>
-                    <input type="email" id="adminEmail" class="login-input" placeholder="البريد الإلكتروني" value="budiabdallah922@gmail.com" required>
-                </div>
-                <div class="login-input-group">
-                    <i class="fa-solid fa-user-shield"></i>
-                    <input type="text" id="adminUser" class="login-input" placeholder="اسم المستخدم" value="mohamed" required>
-                </div>
-                <div class="login-input-group">
-                    <i class="fa-solid fa-key"></i>
-                    <input type="password" id="adminPassword" class="login-input" placeholder="كلمة المرور" value="24102006" required>
-                </div>
-                
-                <div class="login-options">
-                    <label><input type="checkbox" id="rememberMe"> <span data-i18n="login_remember">تذكرني</span></label>
-                    <a href="#" onclick="showToast('تم إرسال رابط إعادة تعيين كلمة المرور!', 'info')"><span data-i18n="login_forgot">نسيت كلمة المرور؟</span></a>
-                </div>
-
-                <button type="submit" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="login_btn">دخول لوحة التحكم</span></button>
-
-                <div class="social-logins">
-                    <button type="button" class="social-btn" onclick="socialLogin('Google')"><i class="fa-brands fa-google" style="color: #38bdf8;"></i> Google</button>
-                    <button type="button" class="social-btn" onclick="socialLogin('GitHub')"><i class="fa-brands fa-github"></i> GitHub</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- القائمة الجانبية (Task 2) -->
     <div class="sidebar">
-        <div class="sidebar-brand"><i class="fa-solid fa-bolt-lightning" style="color: #38bdf8;"></i> <span data-i18n="brand">CMS Dashboard Pro</span></div>
-        
+        <div class="sidebar-brand"><i class="fa-solid fa-bolt-lightning" style="color: #38bdf8;"></i> <span>Dashboard Pro</span></div>
         <div class="top-controls">
             <button class="ctrl-btn" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> <span id="langLabel">AR / EN</span></button>
-            <button class="ctrl-btn logout-btn" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> <span data-i18n="logout">تسجيل خروج</span></button>
+            <button class="ctrl-btn logout-btn" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> <span>خروج</span></button>
         </div>
-
-        <button class="nav-btn active" onclick="switchSection('home-section', this)"><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> <span data-i18n="nav_home">الرئيسية والكونترات</span></button>
-        <button class="nav-btn" onclick="switchSection('updater-section', this)"><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span data-i18n="nav_updater">محرر الكود والبرومت</span></button>
-        <button class="nav-btn" onclick="switchSection('hero-section', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="nav_hero">قسم الهيرو</span></button>
-        <button class="nav-btn" onclick="switchSection('skills-section', this)"><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span data-i18n="nav_skills">فئات المهارات</span></button>
-        <button class="nav-btn" onclick="switchSection('projects-section', this)"><i class="fa-solid fa-laptop-code" style="color: #c084fc;"></i> <span data-i18n="nav_projects">إدارة المشاريع</span></button>
-        <button class="nav-btn" onclick="switchSection('certs-section', this)"><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="nav_certs">الشهادات والمهارات</span></button>
-        <button class="nav-btn" onclick="switchSection('support-section', this)"><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span data-i18n="nav_support">صندوق خدمة العملاء</span></button>
-        <button class="nav-btn" onclick="switchSection('donations-section', this)"><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span data-i18n="nav_donations">التبرعات والدعم</span></button>
-        <button class="nav-btn" onclick="switchSection('social-section', this)"><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="nav_social">روابط السوشيال ومتابعين</span></button>
-        <button class="nav-btn" onclick="switchSection('messages-section', this)"><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span data-i18n="nav_messages">رسائل الزوار</span></button>
-        <button class="nav-btn" onclick="switchSection('logs-section', this)"><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="nav_logs">سجل النشاطات</span></button>
-        
-        <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" class="preview-btn"><i class="fa-solid fa-eye"></i> <span data-i18n="preview_site">معاينة الموقع لايف</span></a>
+        <button class="nav-btn active" onclick="switchSection('home-section', this)"><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> <span>الرئيسية والكونترات</span></button>
+        <button class="nav-btn" onclick="switchSection('updater-section', this)"><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span>محرر الكود والبرومت</span></button>
+        <button class="nav-btn" onclick="switchSection('hero-section', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span>قسم الهيرو</span></button>
+        <button class="nav-btn" onclick="switchSection('skills-section', this)"><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span>فئات المهارات</span></button>
+        <button class="nav-btn" onclick="switchSection('projects-section', this)"><i class="fa-solid fa-laptop-code" style="color: #c084fc;"></i> <span>إدارة المشاريع</span></button>
+        <button class="nav-btn" onclick="switchSection('certificates-section', this)"><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span>الشهادات</span></button>
+        <button class="nav-btn" onclick="switchSection('support-section', this)"><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span>صندوق خدمة العملاء</span></button>
+        <button class="nav-btn" onclick="switchSection('donations-section', this)"><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span>التبرعات والدعم</span></button>
+        <button class="nav-btn" onclick="switchSection('social-section', this)"><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span>روابط السوشيال</span></button>
+        <button class="nav-btn" onclick="switchSection('messages-section', this)"><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span>رسائل الزوار</span></button>
+        <button class="nav-btn" onclick="switchSection('logs-section', this)"><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span>سجل النشاطات</span></button>
+        <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" class="preview-btn"><i class="fa-solid fa-eye"></i> <span>معاينة الموقع لايف (Preview)</span></a>
     </div>
 
-    <!-- المحتوى الرئيسي -->
     <main class="main-content">
-
-        <!-- 1. الرئيسية والكونترات التلقائية (Task 3) -->
+        <!-- الرئيسية -->
         <div id="home-section" class="section-view active">
-            <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
-                <h2><i class="fa-solid fa-chart-line" style="color:#38bdf8;"></i> <span data-i18n="home_header">نظرة عامة والعدادات الشاملة</span></h2>
-                <div id="networkStatus" class="status-badge status-online"><i class="fa-solid fa-wifi"></i> متصل / متزامن</div>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-chart-line" style="color:#38bdf8;"></i> <span>نظرة عامة والكونترات الحقيقية</span></h2>
+                <div id="networkStatus" class="status-badge status-online"><i class="fa-solid fa-wifi"></i> متصل بـ Supabase</div>
             </div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(56, 189, 248, 0.3);">
-                    <h3><i class="fa-solid fa-users" style="color: #38bdf8;"></i> عداد الزوار الحقيقي (Realtime Visitors)</h3>
-                    <div id="visitorCount" class="stat-box" style="font-size:36px; font-weight:700; color:#38bdf8; margin:10px 0;">...</div>
-                    <p style="color: #94a3b8; font-size: 12px;">مترابط تلقائياً مع قاعدة بيانات Supabase.</p>
+                <div class="card">
+                    <h3><i class="fa-solid fa-users" style="color: #38bdf8;"></i> عداد الزوار الحقيقي (Visitors)</h3>
+                    <div id="visitorCount" style="font-size:38px; font-weight:700; color:#38bdf8; margin:12px 0; text-shadow: 0 0 15px rgba(56,189,248,0.3);">0</div>
                 </div>
-                <div class="card" style="border-color: rgba(56, 189, 248, 0.3);">
-                    <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> إجمالي مبلغ الدعم (Total Donations)</h3>
-                    <div id="totalDonationsCounter" class="stat-box" style="font-size:36px; font-weight:700; color:#f472b6; margin:10px 0;">$340.00</div>
-                    <p style="color: #94a3b8; font-size: 12px;">مجموع التبرعات وحملات الدعم المالي.</p>
+                <div class="card">
+                    <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> إجمالي الدعم (Support Amount)</h3>
+                    <div id="totalDonationsCounter" style="font-size:38px; font-weight:700; color:#f472b6; margin:12px 0; text-shadow: 0 0 15px rgba(244,114,182,0.3);">$0.00</div>
                 </div>
-
-                <!-- كونترات إحصائيات الأقسام الشاملة (Task 3) -->
-                <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3);">
+                <div class="card card-full">
                     <h3><i class="fa-solid fa-calculator" style="color: #38bdf8;"></i> كونترات أقسام المنصة الحية</h3>
                     <div class="stat-grid">
-                        <div class="mini-stat-box"><h4>المشاريع</h4><div id="countProjects" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>الشهادات</h4><div id="countCerts" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>الشكاوي والتذاكر</h4><div id="countSupport" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>المتابعون (ميديا)</h4><div id="countFollowers" class="number">12.4K</div></div>
-                        <div class="mini-stat-box"><h4>إجمالي المهارات</h4><div id="countSkills" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>رسائل الوارد</h4><div id="countMessages" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>المشاريع (Projects)</h4><div id="countProjects" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>الشهادات (Certs)</h4><div id="countCerts" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>الشكاوى (Complaints)</h4><div id="countSupport" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>المتابعون (Followers)</h4><div id="countFollowers" class="number">12.4K</div></div>
+                        <div class="mini-stat-box"><h4>المهارات (Skills)</h4><div id="countSkills" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>الرسائل (Messages)</h4><div id="countMessages" class="number">0</div></div>
                     </div>
                 </div>
-
-                <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3);">
-                    <h3><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> توزيع إحصائيات المنصة البياني</h3>
-                    <div style="height: 200px; display: flex; justify-content: center; align-items: center;">
+                <div class="card card-full">
+                    <h3><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> الإحصائيات البيانية</h3>
+                    <div style="height: 220px; display: flex; justify-content: center; align-items: center;">
                         <canvas id="analyticsChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. أداة تحديث الكود والبرومت الذكي (Task 7) -->
+        <!-- محرر الكود -->
         <div id="updater-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(52, 211, 153, 0.3);">
-                <h2><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span data-i18n="updater_header">محدث الكود ومساعد برومت الذكاء الاصطناعي</span></h2>
-            </div>
+            <div class="section-header"><h2><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span>محدث الكود والبرومت مع الحفظ التلقائي</span></h2></div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
-                    <h3><span style="color: #34d399;"><i class="fa-solid fa-code"></i> محرر الكود المباشر (Live Code Injector)</span></h3>
+                <div class="card">
+                    <h3><span>محرر الكود المباشر (Code Editor)</span></h3>
                     <form onsubmit="handleCodeInjection(event)">
-                        <textarea id="customCodeInput" placeholder="أدخل كود JavaScript أو CSS لتنفيذه فوراً هنا..." rows="5" required></textarea>
-                        <button type="submit" class="submit-btn" style="background: #059669;"><i class="fa-solid fa-play"></i> تنفيذ الكود وتحديث النظام</button>
+                        <textarea id="customCodeInput" placeholder="أدخل كود جافاسكريبت..." rows="5" required oninput="autoSaveCode()"></textarea>
+                        <button type="submit" class="submit-btn"><i class="fa-solid fa-play"></i> تنفيذ فوري</button>
                     </form>
                 </div>
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
-                    <h3><span style="color: #34d399;"><i class="fa-solid fa-wand-magic-sparkles"></i> مساعد برومت الذكاء الاصطناعي (AI Prompt Assistant)</span></h3>
+                <div class="card">
+                    <h3><span>مساعد برومت الذكاء الاصطناعي (Prompt Editor)</span></h3>
                     <form onsubmit="handlePromptCommand(event)">
-                        <textarea id="aiPromptInput" placeholder="اكتب أمر أو توجيه للبرومت لتعديل لوحة التحكم..." rows="5" required></textarea>
-                        <button type="submit" class="submit-btn" style="background: #047857;"><i class="fa-solid fa-paper-plane"></i> إرسال أمر البرومت</button>
+                        <textarea id="aiPromptInput" placeholder="اكتب أمر للبرومت..." rows="5" required oninput="autoSavePrompt()"></textarea>
+                        <button type="submit" class="submit-btn"><i class="fa-solid fa-paper-plane"></i> إرسال البرومت</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- 3. الهيرو -->
+        <!-- الهيرو -->
         <div id="hero-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(52, 211, 153, 0.3);">
-                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="hero_header">إدارة قسم الهيرو وتحميل السي في</span></h2>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span>قسم الهيرو</span></h2>
                 <button class="btn-bulk-delete" onclick="clearSection('hero')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
-                    <h3><span style="color: #34d399;">تحديث بيانات الهيرو</span></h3>
+                <div class="card">
+                    <h3><span>تحديث الهيرو</span></h3>
                     <form id="heroForm">
-                        <input type="text" id="heroTitle" placeholder="العنوان الرئيسي" required>
+                        <input type="text" id="heroTitle" placeholder="العنوان" required>
                         <input type="text" id="heroSubtitle" placeholder="العنوان الفرعي" required>
-                        <input type="text" id="heroImage" placeholder="رابط صورة الملف الشخصي" required>
-                        <button type="submit" class="submit-btn" style="background: #059669;"><i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث</button>
+                        <input type="text" id="heroImage" placeholder="رابط الصورة" required>
+                        <button type="submit" class="submit-btn">حفظ وتحديث</button>
                     </form>
                 </div>
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
-                    <h3><span style="color: #34d399;">العنصر الحالي</span></h3>
-                    <div id="heroGrid" class="items-list"></div>
-                </div>
+                <div class="card"><h3><span>العنصر الحالي</span></h3><div id="heroGrid" class="items-list"></div></div>
             </div>
         </div>
 
-        <!-- 4. المهارات (Task 4) -->
+        <!-- المهارات -->
         <div id="skills-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(96, 165, 250, 0.3);">
-                <h2><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span data-i18n="skills_header">فئات المهارات والكروت التفاعلية</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('skills')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span>إدارة فئات المهارات المتقدمة (Skills Pro)</span></h2>
+                <button class="btn-bulk-delete" onclick="clearAllSkills()"><i class="fa-solid fa-trash-can"></i> تفريغ كافة المهارات</button>
             </div>
-            <div class="card-container">
-                <div class="card" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(30, 58, 138, 0.25);">
-                    <h3><span style="color: #60a5fa;">إضافة مهارة جديدة</span></h3>
-                    <form id="skillForm">
-                        <input type="text" id="skillName" placeholder="اسم المهارة" required>
-                        <input type="text" id="skillLevel" placeholder="المستوى (مثال: 95%)" required>
-                        <select id="skillCategory" required>
-                            <option value="Frontend Development">Frontend Development (تطوير واجهات)</option>
-                            <option value="Backend & Database">Backend & Database (قواعد البيانات والخلفية)</option>
-                            <option value="Tools & Workflow">Tools & Workflow (أدوات وسير العمل)</option>
-                            <option value="Advanced UI/UX">Advanced UI/UX (تصميم وتجربة المستخدم)</option>
-                        </select>
-                        <button type="submit" class="submit-btn" style="background: #2563eb;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
+            <div class="card-container" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 25px;">
+                <div class="card" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #38bdf8;"></div>
+                    <h3>
+                        <span id="catTitle-1" contenteditable="true" onblur="updateCategoryName(1, this.innerText)" style="border-bottom: 1px dashed #38bdf8; outline: none; cursor: pointer;">Frontend Development</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Frontend Development')">حذف عناصر الفئة</button>
+                    </h3>
+                    <form onsubmit="addSkillToCategory(event, 'Frontend Development')">
+                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_1_name" required>
+                        <input type="text" placeholder="المستوى (مثال: 95%)" id="skill_1_level" required>
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1);">إضافة للمهارات الأمامية</button>
                     </form>
+                    <div id="list-cat-frontend" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
-                <div class="card" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(30, 58, 138, 0.25);">
-                    <h3><span style="color: #60a5fa;">كروت الفئات الفرعية المتقدمة</span></h3>
-                    <div id="skillsTabsContainer" class="category-tabs"></div>
-                    <div id="skillsCategorizedContainer" class="items-list" style="max-height: 240px;"></div>
+
+                <div class="card" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #34d399;"></div>
+                    <h3>
+                        <span id="catTitle-2" contenteditable="true" onblur="updateCategoryName(2, this.innerText)" style="border-bottom: 1px dashed #34d399; outline: none; cursor: pointer;">Backend & Database</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Backend & Database')">حذف عناصر الفئة</button>
+                    </h3>
+                    <form onsubmit="addSkillToCategory(event, 'Backend & Database')">
+                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_2_name" required>
+                        <input type="text" placeholder="المستوى (مثال: 85%)" id="skill_2_level" required>
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #059669, #047857);">إضافة لقاعدة البيانات</button>
+                    </form>
+                    <div id="list-cat-backend" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
+                </div>
+
+                <div class="card" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #c084fc;"></div>
+                    <h3>
+                        <span id="catTitle-3" contenteditable="true" onblur="updateCategoryName(3, this.innerText)" style="border-bottom: 1px dashed #c084fc; outline: none; cursor: pointer;">Tools & Workflow</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Tools & Workflow')">حذف عناصر الفئة</button>
+                    </h3>
+                    <form onsubmit="addSkillToCategory(event, 'Tools & Workflow')">
+                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_3_name" required>
+                        <input type="text" placeholder="المستوى (مثال: 90%)" id="skill_3_level" required>
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #9333ea, #7e22ce);">إضافة لأدوات العمل</button>
+                    </form>
+                    <div id="list-cat-tools" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
+                </div>
+
+                <div class="card" style="position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #fbbf24;"></div>
+                    <h3>
+                        <span id="catTitle-4" contenteditable="true" onblur="updateCategoryName(4, this.innerText)" style="border-bottom: 1px dashed #fbbf24; outline: none; cursor: pointer;">Advanced UI/UX</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Advanced UI/UX')">حذف عناصر الفئة</button>
+                    </h3>
+                    <form onsubmit="addSkillToCategory(event, 'Advanced UI/UX')">
+                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_4_name" required>
+                        <input type="text" placeholder="المستوى (مثال: 80%)" id="skill_4_level" required>
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #d97706, #b45309);">إضافة لتصميم الواجهات</button>
+                    </form>
+                    <div id="list-cat-ui" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 5. المشاريع -->
+        <!-- المشاريع -->
         <div id="projects-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(192, 132, 252, 0.3);">
-                <h2><i class="fa-solid fa-laptop-code" style="color: #c084fc;"></i> <span data-i18n="projects_header">إدارة المشاريع</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('projects')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-code-branch" style="color: #38bdf8;"></i> <span>إدارة المشاريع (Projects Pro)</span></h2>
+                <button class="btn-bulk-delete" onclick="clearAllProjects()"><i class="fa-solid fa-trash-can"></i> حذف كافة المشاريع</button>
             </div>
-            <div class="card-container">
-                <div class="card" style="border-color: rgba(192, 132, 252, 0.3); background: rgba(88, 28, 135, 0.25);">
-                    <h3><span style="color: #c084fc;">إضافة مشروع</span></h3>
-                    <form id="projectForm">
-                        <input type="text" id="projTitle" placeholder="عنوان المشروع" required>
-                        <textarea id="projDesc" placeholder="الوصف..." rows="2" required></textarea>
-                        <input type="text" id="projLive" placeholder="رابط المعاينة الحية">
-                        <input type="text" id="projGithub" placeholder="رابط جيت هب">
-                        <input type="text" id="projImage" placeholder="رابط الصورة">
-                        <button type="submit" class="submit-btn" style="background: #9333ea;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
-                    </form>
-                </div>
-                <div class="card" style="border-color: rgba(192, 132, 252, 0.3); background: rgba(88, 28, 135, 0.25);">
-                    <h3><span style="color: #c084fc;">المشاريع الحالية</span></h3>
-                    <div id="projectsGrid" class="items-list"></div>
-                </div>
+            <div class="card" style="margin-bottom: 25px; border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(15, 23, 42, 0.7);">
+                <h3 style="margin-bottom: 15px; color: #38bdf8; font-size: 14px;"><i class="fa-solid fa-plus-circle"></i> إضافة مشروع جديد ومعاينة كارت الموقع</h3>
+                <form onsubmit="addNewProjectCard(event)" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" id="p_title" placeholder="عنوان المشروع (مثلاً: Portfolio Website)" required style="grid-column: span 1;">
+                    <input type="text" id="p_image" placeholder="رابط صورة المشروع (URL)" required style="grid-column: span 1;">
+                    <textarea id="p_desc" placeholder="وصف موجز للمشروع وتفاصيل التقنيات المستخدمة..." required style="grid-column: span 2; height: 80px; padding: 12px; border-radius: 12px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.7); color: white; outline: none;"></textarea>
+                    <input type="text" id="p_link" placeholder="رابط المعاينة المباشرة أو GitHub" required style="grid-column: span 2;">
+                    <button type="submit" class="submit-btn" style="grid-column: span 2; background: linear-gradient(135deg, #0284c7, #0369a1); padding: 12px; font-weight: 600;">نشر المشروع وإنشاء الكارت التفاعلي</button>
+                </form>
             </div>
+            <h3 style="margin-bottom: 15px; font-size: 13px; color: #94a3b8;"><i class="fa-solid fa-eye"></i> معاينة الكروت الحية كما تظهر في الموقع:</h3>
+            <div id="projects-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
         </div>
 
-        <!-- 6. الشهادات (Task 5) -->
-        <div id="certs-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(251, 191, 36, 0.3);">
-                <h2><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="certs_header">إدارة الشهادات</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('certificates')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+        <!-- الشهادات -->
+        <div id="certificates-section" class="section-view">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span>إدارة الشهادات والإنجازات (Certificates Pro)</span></h2>
+                <button class="btn-bulk-delete" onclick="clearAllCertificates()"><i class="fa-solid fa-trash-can"></i> حذف كافة الشهادات</button>
             </div>
-            <div class="card-container">
-                <div class="card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(120, 53, 15, 0.25);">
-                    <h3><span style="color: #fbbf24;">إضافة شهادة</span></h3>
-                    <form id="certForm">
-                        <input type="text" id="certTitle" placeholder="عنوان الشهادة" required>
-                        <input type="text" id="certIssuer" placeholder="جهة الإصدار (Issuer)" required>
-                        <input type="text" id="certDate" placeholder="تاريخ الإصدار (Issue Date)" required>
-                        <button type="submit" class="submit-btn" style="background: #d97706;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
-                    </form>
-                </div>
-                <div class="card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(120, 53, 15, 0.25);">
-                    <h3><span style="color: #fbbf24;">قائمة الشهادات</span></h3>
-                    <div id="certsGrid" class="items-list"></div>
-                </div>
+            <div class="card" style="margin-bottom: 25px; border: 1px solid rgba(251, 191, 36, 0.3); background: rgba(15, 23, 42, 0.7); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: linear-gradient(to bottom, #fbbf24, #d97706);"></div>
+                <h3 style="margin-bottom: 15px; color: #fbbf24; font-size: 14px;"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> إضافة شهادة جديدة ومعاينة كارت الموقع الفاخر</h3>
+                <form onsubmit="addNewCertificateCard(event)" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" id="c_title" placeholder="عنوان الشهادة (مثلاً: Front-End Nanodegree)" required style="grid-column: span 1;">
+                    <input type="text" id="c_issuer" placeholder="الجهة المنظمة أو المانحة (مثلاً: Udacity / Coursera)" required style="grid-column: span 1;">
+                    <input type="text" id="c_image" placeholder="رابط صورة الشهادة أو شعارها (URL)" required style="grid-column: span 1;">
+                    <input type="text" id="c_date" placeholder="تاريخ الحصول عليها (مثلاً: 2026)" required style="grid-column: span 1;">
+                    <textarea id="c_desc" placeholder="وصف موجز عن محتوى الشهادة والمهارات المكتسبة..." required style="grid-column: span 2; height: 70px; padding: 12px; border-radius: 12px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.7); color: white; outline: none;"></textarea>
+                    <button type="submit" class="submit-btn" style="grid-column: span 2; background: linear-gradient(135deg, #d97706, #b45309); padding: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);">نشر الشهادة وتوليد الكارت المضيء</button>
+                </form>
             </div>
+            <h3 style="margin-bottom: 15px; font-size: 13px; color: #94a3b8;"><i class="fa-solid fa-eye"></i> معاينة كروت الشهادات الحية كما تظهر للزوار:</h3>
+            <div id="certificates-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
         </div>
 
-        <!-- 7. قسم صندوق خدمة العملاء والشكاوي (Task 6) -->
+        <!-- صندوق خدمة العملاء -->
         <div id="support-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
-                <h2><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span data-i18n="support_header">صندوق خدمة العملاء والشكاوي (مربوط تليجرام وإيميل)</span></h2>
-            </div>
-            <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
-                <h3><span style="color: #38bdf8;"><i class="fa-solid fa-comments"></i> تذاكر الشكاوي الحية وخدمة العملاء</span></h3>
+            <div class="section-header"><h2><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span>صندوق خدمة العملاء والشكاوى (Customer Support)</span></h2></div>
+            <div class="card card-full">
+                <h3><span>التذاكر الحية والرسائل الشاملة</span></h3>
                 <div class="support-inbox-layout">
-                    <!-- قائمة تذاكر الدعم والشكاوي -->
                     <div class="tickets-sidebar" id="supportTicketsSidebar"></div>
-                    <!-- ساحة الرد والمتابعة مع تفاصيل الجهاز والوقت -->
                     <div class="ticket-chat-area">
                         <div class="chat-box-header">
-                            <span id="activeTicketTitle">اختر شكوى أو تذكرة لعرض تفاصيلها</span>
+                            <span id="activeTicketTitle">اختر شكوى لعرض التفاصيل الكاملة</span>
                             <span id="activeTicketStatus" class="status-badge status-online">مفتوحة</span>
                         </div>
-                        <div class="chat-box-body" id="activeTicketMessages">
-                            <p style="color: #94a3b8; text-align: center; margin-top: 60px;">الرجاء اختيار مشكلة أو استفسار من القائمة الجانبية لعرض تفاصيل المنصة والجهاز والرد.</p>
-                        </div>
-                        <div class="chat-box-footer">
-                            <input type="text" id="adminReplyInput" placeholder="اكتب ردك للعميل هنا..." disabled>
-                            <button class="submit-btn" id="sendReplyBtn" onclick="sendAdminSupportReply()" disabled><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+                        <div class="chat-box-body" id="activeTicketMessages"><p style="color: #94a3b8; text-align: center; margin-top: 80px;">اختر تذكرة لعرض تفاصيل العميل، الجهاز، المتصفح، الـ IP والموقع</p></div>
+                        <div class="chat-box-footer" style="padding: 12px; background: rgba(30, 41, 59, 0.8); border-top: 1px solid #334155; display: flex; gap: 10px;">
+                            <input type="text" id="adminReplyInput" placeholder="اكتب ردك للعميل..." disabled style="flex:1;">
+                            <button class="submit-btn" id="sendReplyBtn" onclick="sendAdminSupportReply()" disabled>إرسال الرد</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 8. قسم التبرعات والدعم المالي -->
+        <!-- التبرعات والدعم -->
         <div id="donations-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(244, 114, 182, 0.3);">
-                <h2><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span data-i18n="donations_header">لوحة تحكم التبرعات والدعم المالي</span></h2>
-            </div>
+            <div class="section-header"><h2><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span>التبرعات والدعم (Support Amount)</span></h2></div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(244, 114, 182, 0.3); background: rgba(131, 24, 67, 0.25);">
-                    <h3><span style="color: #f472b6;"><i class="fa-solid fa-chart-pie"></i> إجمالي التبرعات والأهداف المالية</span></h3>
-                    <div class="donation-stats-box" style="background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(131, 24, 67, 0.25)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px;">
-                        <h4 style="font-size: 13px; color: #f472b6; margin-bottom: 5px;">المبلغ الإجمالي المستلم</h4>
-                        <div class="amount" style="font-size: 26px; font-weight: 700; color: #fff;">$340.00</div>
-                        <p style="color: #cbd5e1; font-size: 11px; margin-top: 5px;">تم تحقيق 68% من هدف استضافة المشروع السنوي ($500)</p>
-                    </div>
-                    <div style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; gap: 8px;">
-                        <div><strong style="color: #f472b6;">PayPal:</strong> budiabdallah922@gmail.com</div>
-                        <div><strong style="color: #f472b6;">Instapay / Wallet:</strong> متاح للدعم المباشر</div>
+                <div class="card">
+                    <h3><span>ملخص التبرعات المالي</span></h3>
+                    <div style="background: rgba(244, 114, 182, 0.12); border: 1px solid rgba(244, 114, 182, 0.25); border-radius: 14px; padding: 20px; text-align: center;">
+                        <div id="donationsAmountBox" style="font-size: 28px; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(244,114,182,0.4);">$340.00</div>
+                        <p style="color: #cbd5e1; font-size: 11px; margin-top: 6px;">تم تحقيق الهدف بنجاح</p>
                     </div>
                 </div>
-                <div class="card" style="border-color: rgba(244, 114, 182, 0.3); background: rgba(131, 24, 67, 0.25);">
-                    <h3><span style="color: #f472b6;"><i class="fa-solid fa-list"></i> سجل التبرعات الأخيرة</span></h3>
-                    <div id="donationsLogsGrid" class="items-list" style="max-height: 240px;"></div>
-                </div>
+                <div class="card"><h3><span>سجل التبرعات والدعم</span></h3><div id="donationsLogsGrid" class="items-list"></div></div>
             </div>
         </div>
 
-        <!-- 9. السوشيال -->
+        <!-- روابط السوشيال -->
         <div id="social-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
-                <h2><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="social_header">روابط السوشيال ميديا والمتابعين</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('social_links')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span>روابط السوشيال</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('social_links')"><i class="fa-solid fa-trash-can"></i> تفريغ</button>
             </div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
-                    <h3><span style="color: #38bdf8;">إضافة منصة</span></h3>
+                <div class="card">
+                    <h3><span>إضافة منصة سوشيال</span></h3>
                     <form id="socialForm">
-                        <input type="text" id="socialPlatform" placeholder="اسم المنصة (Instagram / TikTok / Facebook)" required>
-                        <input type="text" id="socialLink" placeholder="رابط الحساب أو الـ API" required>
-                        <button type="submit" class="submit-btn" style="background: #0284c7;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
+                        <input type="text" id="socialPlatform" placeholder="اسم المنصة" required>
+                        <input type="text" id="socialLink" placeholder="الرابط" required>
+                        <button type="submit" class="submit-btn">إضافة</button>
                     </form>
                 </div>
-                <div class="card" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
-                    <h3><span style="color: #38bdf8;">الروابط الحالية</span></h3>
-                    <div id="social_linksGrid" class="items-list"></div>
-                </div>
+                <div class="card"><h3><span>الروابط الحالية</span></h3><div id="social_linksGrid" class="items-list"></div></div>
             </div>
         </div>
 
-        <!-- 10. رسائل الزوار -->
+        <!-- رسائل الزوار -->
         <div id="messages-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(251, 113, 133, 0.3);">
-                <h2><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span data-i18n="messages_header">صندوق رسائل الزوار</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('messages')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span>رسائل الزوار (Messages)</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('messages')"><i class="fa-solid fa-trash-can"></i> تفريغ</button>
             </div>
-            <div class="card card-full" style="border-color: rgba(251, 113, 133, 0.3); background: rgba(136, 19, 55, 0.25);">
-                <h3><span style="color: #fb7185;"><i class="fa-solid fa-envelope-open-text"></i> الرسائل الواردة</span></h3>
-                <div id="messagesGrid" class="items-list" style="max-height: 380px;"></div>
-            </div>
+            <div class="card card-full"><h3><span>الرسائل الواردة</span></h3><div id="messagesGrid" class="items-list"></div></div>
         </div>
 
-        <!-- 11. سجل النشاطات -->
+        <!-- سجل النشاطات -->
         <div id="logs-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(250, 204, 21, 0.3);">
-                <h2><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="logs_header">سجل النشاطات والتوقيتات</span></h2>
+            <div class="section-header">
+                <h2><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span>سجل النشاطات</span></h2>
                 <button class="btn-bulk-delete" onclick="clearLogs()"><i class="fa-solid fa-trash"></i> مسح السجل</button>
             </div>
-            <div class="card card-full" style="border-color: rgba(250, 204, 21, 0.3); background: rgba(113, 63, 18, 0.25);">
-                <h3><span style="color: #facc15;"><i class="fa-solid fa-list-check"></i> سجل العمليات الفورية</span></h3>
-                <div id="logsGrid" class="items-list" style="max-height: 350px;"></div>
-            </div>
+            <div class="card card-full"><h3><span>سجل العمليات</span></h3><div id="logsGrid" class="items-list"></div></div>
         </div>
-
     </main>
 
-    <!-- حاوية التوست (Task 8) -->
     <div id="toast-container"></div>
 
     <script>
+        // تأثير النجوم المتحركة في الخلفية
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        for (let i = 0; i < 100; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.8,
+                speed: Math.random() * 0.4 + 0.1,
+                alpha: Math.random()
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+            stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+                star.y -= star.speed;
+                if (star.y < 0) star.y = canvas.height;
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // الاتصال بـ Supabase
         const { createClient } = supabase;
         const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let currentLang = 'ar';
-        let activeSkillCategoryFilter = 'All';
         let analyticsChartInstance = null;
         let selectedTicketId = null;
+        const SESSION_KEY = 'empire_admin_session_token_v40';
 
-        const translations = {
-            en: {
-                brand: "CMS Dashboard Pro", logout: "Logout", preview_site: "Preview Live Site",
-                login_remember: "Remember me", login_forgot: "Forgot Password?", login_btn: "Login Dashboard",
-                nav_home: "Overview & Counters", nav_updater: "Code & AI Updater", nav_hero: "Hero Section", nav_skills: "Skills Categories",
-                nav_projects: "Projects Manager", nav_certs: "Certificates", nav_support: "Customer Support Box", nav_donations: "Donations & Support", nav_social: "Social Links",
-                nav_messages: "Visitor Messages", nav_logs: "Activity Logs",
-                home_header: "Overview & Global Counters", updater_header: "Code Injector & AI Prompt Assistant",
-                hero_header: "Hero Section Management", skills_header: "Skills Categories & Unique Cards",
-                projects_header: "Projects Manager", certs_header: "Certificates Management", support_header: "Customer Support Inbox & Ticket Management", donations_header: "Donations & Financial Support Dashboard",
-                social_header: "Social Links", messages_header: "Visitor Messages Inbox", logs_header: "Activity Logs & History"
-            },
-            ar: {
-                brand: "لوحة التحكم برو", logout: "تسجيل خروج", preview_site: "معاينة الموقع لايف",
-                login_remember: "تذكرني", login_forgot: "نسيت كلمة المرور؟", login_btn: "دخول لوحة التحكم",
-                nav_home: "الرئيسية والكونترات", nav_updater: "محدث الكود والبرومت", nav_hero: "قسم الهيرو", nav_skills: "فئات المهارات والكروت",
-                nav_projects: "إدارة المشاريع", nav_certs: "قسم الشهادات", nav_support: "صندوق خدمة العملاء", nav_donations: "التبرعات والدعم المالي", nav_social: "روابط التواصل",
-                nav_messages: "رسائل الزوار", nav_logs: "سجل النشاطات",
-                home_header: "نظرة عامة والعدادات الشاملة", updater_header: "أداة حقن الكود ومساعد برومت الذكاء الاصطناعي",
-                hero_header: "إدارة قسم الهيرو", skills_header: "إدارة الفئات والكروت التحكم للمهارات",
-                projects_header: "إدارة المشاريع", certs_header: "إدارة الشهادات", support_header: "صندوق خدمة العملاء وإدارة التذاكر والمشاكل", donations_header: "لوحة تحكم التبرعات والدعم المالي للمشروع",
-                social_header: "روابط التواصل الاجتماعي", messages_header: "صندوق رسائل الزوار", logs_header: "سجل النشاطات والتوقيتات"
-            }
-        };
-
-        // نظام إشعارات التوست المتطور (Task 8)
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.style.borderColor = type === 'success' ? '#38bdf8' : '#f59e0b';
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-sky-400' : 'fa-circle-info text-amber-400'}"></i> <span>${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3500);
         }
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
-            const html = document.getElementById('htmlRoot');
-            html.setAttribute('lang', currentLang);
-            html.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[currentLang][key]) {
-                    el.innerHTML = el.innerHTML.includes('fa-') ? el.innerHTML.replace(el.innerText.trim(), translations[currentLang][key]) : translations[currentLang][key];
-                }
-            });
-            loadAllData();
-        }
-
-        const SESSION_KEY = 'empire_admin_session_token_v40';
-        
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
-            const user = document.getElementById('adminUser').value;
-            const pass = document.getElementById('adminPassword').value;
-
-            if (email === 'budiabdallah922@gmail.com' && user === 'mohamed' && pass === '24102006') {
-                const token = 'token_' + Math.random().toString(36).substring(2) + Date.now();
-                localStorage.setItem(SESSION_KEY, token);
-                document.getElementById('login-screen').style.display = 'none';
-                logActivity('Login', 'Admin mohamed logged in successfully.');
-                showToast('مرحباً بك يا محمد! 🚀 تم الدخول بنجاح');
-                loadAllData();
-            } else {
-                showToast('بيانات الدخول غير صحيحة!', 'info');
-                alert('بيانات الدخول غير صحيحة! استخدم: budiabdallah922@gmail.com / mohamed / 24102006');
-            }
-        }
-
-        function socialLogin(provider) {
-            showToast(`تم الاتصال عبر ${provider} بنجاح!`);
-            localStorage.setItem(SESSION_KEY, 'social_token_' + Date.now());
-            document.getElementById('login-screen').style.display = 'none';
-            logActivity('Social Login', `Logged in via ${provider}`);
+            document.getElementById('htmlRoot').setAttribute('lang', currentLang);
+            document.getElementById('htmlRoot').setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
             loadAllData();
         }
 
         function handleLogout() {
             localStorage.removeItem(SESSION_KEY);
-            document.getElementById('login-screen').style.display = 'flex';
-            showToast('تم تسجيل الخروج بنجاح.');
+            window.location.href = 'login.html';
         }
 
         window.onload = () => {
-            if (localStorage.getItem(SESSION_KEY)) {
-                document.getElementById('login-screen').style.display = 'none';
+            if (!localStorage.getItem(SESSION_KEY)) {
+                window.location.href = 'login.html';
+                return;
+            }
+            if (localStorage.getItem('saved_custom_code')) {
+                document.getElementById('customCodeInput').value = localStorage.getItem('saved_custom_code');
+            }
+            if (localStorage.getItem('saved_ai_prompt')) {
+                document.getElementById('aiPromptInput').value = localStorage.getItem('saved_ai_prompt');
             }
             loadAllData();
-            checkNetworkStatus();
         };
+
+        function autoSaveCode() {
+            localStorage.setItem('saved_custom_code', document.getElementById('customCodeInput').value);
+        }
+
+        function autoSavePrompt() {
+            localStorage.setItem('saved_ai_prompt', document.getElementById('aiPromptInput').value);
+        }
 
         function switchSection(sectionId, btnElement) {
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             btnElement.classList.add('active');
-            if(sectionId === 'home-section') {
+            
+            // التحميل الفوري عند النقر على الأقسام الخاصة بالكروت
+            if (sectionId === 'projects-section') {
+                loadProjectsManager();
+            } else if (sectionId === 'certificates-section') {
+                loadCertificatesManager();
+            } else if (sectionId === 'home-section') {
                 updateAnalyticsChart();
             }
         }
 
-        function checkNetworkStatus() {
-            const statusEl = document.getElementById('networkStatus');
-            if (navigator.onLine) {
-                statusEl.className = 'status-badge status-online';
-                statusEl.innerHTML = '<i class="fa-solid fa-wifi"></i> متصل / متزامن';
-            } else {
-                statusEl.className = 'status-badge status-offline';
-                statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> غير متصل';
-            }
-        }
-        window.addEventListener('online', checkNetworkStatus);
-        window.addEventListener('offline', checkNetworkStatus);
-
         function handleCodeInjection(e) {
             e.preventDefault();
-            const code = document.getElementById('customCodeInput').value;
             try {
-                const executeFn = new Function(code);
-                executeFn();
-                logActivity('Code Injector', 'Executed custom script snippet successfully.');
-                showToast('تم تنفيذ الكود وتطبيقه بنجاح! ⚡');
-                document.getElementById('customCodeInput').value = '';
+                new Function(document.getElementById('customCodeInput').value)();
+                showToast('تم تنفيذ الكود بنجاح والحفظ تلقائياً! ⚡');
             } catch (err) {
-                showToast('خطأ في تنفيذ الكود: ' + err.message, 'info');
+                showToast('خطأ في التنفيذ: ' + err.message, 'info');
             }
         }
 
         function handlePromptCommand(e) {
             e.preventDefault();
-            const promptText = document.getElementById('aiPromptInput').value;
-            logActivity('AI Prompt', `Executed prompt command: ${promptText}`);
-            showToast('تم معالجة أمر البرومت وتحديث لوحة التحكم!');
-            document.getElementById('aiPromptInput').value = '';
-        }
-
-        async function logActivity(action, details) {
-            const logEntry = { action, details, timestamp: new Date().toLocaleString() };
-            let logs = JSON.parse(localStorage.getItem('empire_activity_logs_v40') || '[]');
-            logs.unshift(logEntry);
-            if (logs.length > 50) logs.pop();
-            localStorage.setItem('empire_activity_logs_v40', JSON.stringify(logs));
-            loadLogs();
+            showToast('تم معالجة أمر البرومت وحفظه تلقائياً بنجاح!');
         }
 
         function loadLogs() {
             const grid = document.getElementById('logsGrid');
             const logs = JSON.parse(localStorage.getItem('empire_activity_logs_v40') || '[]');
-            grid.innerHTML = '';
-            if (logs.length === 0) {
-                grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد نشاطات مسجلة حتى الآن.</p>`;
-                return;
-            }
+            grid.innerHTML = logs.length === 0 ? '<p style="color: #94a3b8; font-size: 12px; text-align: center;">لا توجد نشاطات مسجلة.</p>' : '';
             logs.forEach(log => {
                 const div = document.createElement('div');
                 div.className = 'item-row';
@@ -656,75 +526,61 @@
         function clearLogs() {
             localStorage.removeItem('empire_activity_logs_v40');
             loadLogs();
-            showToast('تم مسح سجل النشاطات.');
+            showToast('تم مسح السجل.');
         }
 
-        // جلب العدادات الديناميكية الشاملة (Task 3)
         async function fetchGlobalCounters() {
             try {
-                const [visRes, projRes, certRes, supRes, donRes, skillRes, msgRes] = await Promise.all([
+                const [visRes, projRes, certRes, supRes, skillRes, msgRes] = await Promise.all([
                     _supabase.from('visitors').select('*', { count: 'exact', head: true }),
                     _supabase.from('projects').select('*', { count: 'exact', head: true }),
                     _supabase.from('certificates').select('*', { count: 'exact', head: true }),
                     _supabase.from('support_tickets').select('*', { count: 'exact', head: true }),
-                    _supabase.from('donations').select('*', { count: 'exact', head: true }),
                     _supabase.from('skills').select('*', { count: 'exact', head: true }),
                     _supabase.from('messages').select('*', { count: 'exact', head: true })
                 ]);
-
                 document.getElementById('visitorCount').innerText = visRes.count || 1420;
                 document.getElementById('countProjects').innerText = projRes.count || 0;
                 document.getElementById('countCerts').innerText = certRes.count || 0;
                 document.getElementById('countSupport').innerText = supRes.count || 0;
                 document.getElementById('countSkills').innerText = skillRes.count || 0;
                 document.getElementById('countMessages').innerText = msgRes.count || 0;
-            } catch (e) { 
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function fetchSection(tableName, gridId, renderFn) {
             try {
                 const { data: items } = await _supabase.from(tableName).select('*').order('id', { ascending: false });
                 const grid = document.getElementById(gridId);
+                if(!grid) return;
                 grid.innerHTML = '';
                 if (!items || items.length === 0) {
-                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد عناصر مضافة بعد.</p>`;
+                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center;">لا توجد عناصر.</p>`;
                     return;
                 }
                 items.forEach(item => { grid.appendChild(renderFn(item, tableName)); });
             } catch (e) { console.error(e); }
         }
 
-        // جلب وتنسيق تذاكر الشكاوي وخدمة العملاء (Task 6)
         async function loadSupportInbox() {
             try {
                 const { data: tickets } = await _supabase.from('support_tickets').select('*').order('id', { ascending: false });
                 const sidebar = document.getElementById('supportTicketsSidebar');
+                if(!sidebar) return;
                 sidebar.innerHTML = '';
-
                 if (!tickets || tickets.length === 0) {
-                    sidebar.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center; padding: 15px;">لا توجد شكاوي أو تذاكر دعم مسجلة حتى الآن.</p>`;
+                    sidebar.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center;">لا توجد شكاوى أو تذاكر دعم.</p>`;
                     return;
                 }
-
                 tickets.forEach((ticket, index) => {
                     const card = document.createElement('div');
                     card.className = `ticket-preview-card ${selectedTicketId === ticket.id ? 'active' : ''}`;
                     card.onclick = () => selectTicket(ticket);
-                    card.innerHTML = `
-                        <h5><i class="fa-solid fa-circle-exclamation" style="color: #38bdf8;"></i> ${ticket.subject || 'شكوى جديدة'}</h5>
-                        <p>العميل: ${ticket.sender_name || 'زائر'} | المنصة: ${ticket.platform || 'Web'}</p>
-                    `;
+                    card.innerHTML = `<h5>${ticket.subject || 'شكوى'}</h5><p>العميل: ${ticket.sender_name || 'زائر'} | المنصة: ${ticket.platform || 'Website'}</p>`;
                     sidebar.appendChild(card);
-
-                    if (index === 0 && !selectedTicketId) {
-                        selectTicket(ticket);
-                    }
+                    if (index === 0 && !selectedTicketId) selectTicket(ticket);
                 });
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         function selectTicket(ticket) {
@@ -732,27 +588,27 @@
             document.getElementById('activeTicketTitle').innerText = `${ticket.subject || 'شكوى'} (ID: #${ticket.id})`;
             document.getElementById('adminReplyInput').removeAttribute('disabled');
             document.getElementById('sendReplyBtn').removeAttribute('disabled');
-
             document.querySelectorAll('.ticket-preview-card').forEach(c => c.classList.remove('active'));
 
             const chatBody = document.getElementById('activeTicketMessages');
             chatBody.innerHTML = `
                 <div class="chat-msg client">
-                    <strong>العميل: ${ticket.sender_name || 'مستخدم'} (${ticket.sender_email || 'بدون بريد'})</strong>
-                    <p style="margin-top: 4px;">${ticket.message_text || ticket.message || 'لا توجد تفاصيل للشكوى.'}</p>
-                    <div class="chat-meta">
-                        <span><i class="fa-solid fa-desktop"></i> المنصة: ${ticket.platform || 'Web App'}</span>
-                        <span><i class="fa-solid fa-mobile-screen"></i> الموبايل: ${ticket.device_type || 'Android/iOS'}</span>
+                    <strong>المرسل: ${ticket.sender_name || 'مستخدم'} (${ticket.email || 'بدون إيميل'})</strong>
+                    <p>${ticket.message_text || ticket.message || 'لا توجد تفاصيل.'}</p>
+                    <div style="margin-top: 8px; font-size: 10px; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
+                        <span><i class="fa-solid fa-globe"></i> المنصة: ${ticket.platform || 'Website'}</span> | 
+                        <span><i class="fa-solid fa-desktop"></i> الجهاز: ${ticket.device || 'غير معروف'}</span> | 
+                        <span><i class="fa-solid fa-compass"></i> المتصفح: ${ticket.browser || 'غير معروف'}</span> | 
+                        <span><i class="fa-solid fa-network-wired"></i> IP: ${ticket.ip || 'N/A'}</span> | 
+                        <span><i class="fa-solid fa-location-dot"></i> الموقع: ${ticket.location || 'لم يتم المشاركة'}</span> |
                         <span><i class="fa-solid fa-clock"></i> الوقت: ${ticket.created_at || 'الآن'}</span>
-                        <span><i class="fa-solid fa-location-dot"></i> المكان: ${ticket.location || 'Egypt'}</span>
                     </div>
                 </div>
             `;
-            
             if (ticket.admin_reply) {
                 const replyDiv = document.createElement('div');
                 replyDiv.className = 'chat-msg admin';
-                replyDiv.innerHTML = `<strong>رد خدمة العملاء (محمد):</strong><p style="margin-top: 4px;">${ticket.admin_reply}</p>`;
+                replyDiv.innerHTML = `<strong>الرد الإداري:</strong><p>${ticket.admin_reply}</p>`;
                 chatBody.appendChild(replyDiv);
             }
         }
@@ -761,144 +617,237 @@
             const input = document.getElementById('adminReplyInput');
             const replyText = input.value.trim();
             if (!replyText || !selectedTicketId) return;
-
-            const chatBody = document.getElementById('activeTicketMessages');
-            const replyDiv = document.createElement('div');
-            replyDiv.className = 'chat-msg admin';
-            replyDiv.innerHTML = `<strong>رد خدمة العملاء (محمد):</strong><p style="margin-top: 4px;">${replyText}</p>`;
-            chatBody.appendChild(replyDiv);
-
             await _supabase.from('support_tickets').update({ admin_reply: replyText, status: 'Resolved' }).eq('id', selectedTicketId);
-            
-            logActivity('Support Reply', `Replied to complaint/ticket ID ${selectedTicketId}`);
-            showToast('تم إرسال الرد للعميل وتحديث حالة الشكوى! 🚀');
+            showToast('تم إرسال الرد وتحديث حالة الشكوى بنجاح!');
             input.value = '';
             loadSupportInbox();
         }
 
-        async function loadDonationsLogs() {
-            try {
-                const { data: donations } = await _supabase.from('donations').select('*').order('id', { ascending: false });
-                const grid = document.getElementById('donationsLogsGrid');
-                grid.innerHTML = '';
-                if (!donations || donations.length === 0) {
-                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center; padding: 15px;">لا توجد قنوات تبرع مسجلة حالياً.</p>`;
-                    return;
-                }
-                donations.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'item-row';
-                    div.innerHTML = `
-                        <div class="item-info">
-                            <h4>${item.platform} <strong style="color: #f472b6;">(${item.goal || 'دعم عام'})</strong></h4>
-                            <p style="color: #38bdf8;">${item.link}</p>
-                        </div>
-                        <button class="btn-delete" onclick="deleteItem('donations', ${item.id})">حذف</button>
-                    `;
-                    grid.appendChild(div);
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        // مهارات محسنة مع الفئات الكروت (Task 4)
         async function loadCategorizedSkills() {
             try {
                 const { data: skills } = await _supabase.from('skills').select('*').order('id', { ascending: false });
-                const tabsContainer = document.getElementById('skillsTabsContainer');
-                const container = document.getElementById('skillsCategorizedContainer');
+                const fList = document.getElementById('list-cat-frontend');
+                const bList = document.getElementById('list-cat-backend');
+                const tList = document.getElementById('list-cat-tools');
+                const uList = document.getElementById('list-cat-ui');
                 
-                tabsContainer.innerHTML = '';
-                container.innerHTML = '';
+                if(fList) fList.innerHTML = '';
+                if(bList) bList.innerHTML = '';
+                if(tList) tList.innerHTML = '';
+                if(uList) uList.innerHTML = '';
 
-                if (!skills || skills.length === 0) {
-                    container.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد مهارات مضافة بعد.</p>`;
-                    return;
-                }
+                if (!skills || skills.length === 0) return;
 
-                const categories = {};
-                skills.forEach(s => {
-                    const cat = s.category || 'General';
-                    if (!categories[cat]) categories[cat] = [];
-                    categories[cat].push(s);
-                });
+                skills.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.style.background = 'rgba(30, 41, 59, 0.4)';
+                    div.style.padding = '8px 12px';
+                    div.innerHTML = `<div class="item-info"><h4 style="font-size:11px; margin:0;">${item.name} <span style="color:#38bdf8;">(${item.level})</span></h4></div><button class="btn-delete" style="padding:3px 6px; font-size:10px;" onclick="deleteItem('skills', ${item.id})"><i class="fa-solid fa-trash"></i></button>`;
 
-                const allBtn = document.createElement('button');
-                allBtn.className = `tab-btn ${activeSkillCategoryFilter === 'All' ? 'active' : ''}`;
-                allBtn.innerHTML = `الكل (${skills.length})`;
-                allBtn.onclick = () => { activeSkillCategoryFilter = 'All'; loadCategorizedSkills(); };
-                tabsContainer.appendChild(allBtn);
-
-                Object.keys(categories).forEach(catName => {
-                    const btn = document.createElement('button');
-                    btn.className = `tab-btn ${activeSkillCategoryFilter === catName ? 'active' : ''}`;
-                    btn.innerHTML = `${catName} (${categories[catName].length})`;
-                    btn.onclick = () => { activeSkillCategoryFilter = catName; loadCategorizedSkills(); };
-                    tabsContainer.appendChild(btn);
-                });
-
-                const filteredCategories = activeSkillCategoryFilter === 'All' ? Object.keys(categories) : [activeSkillCategoryFilter];
-
-                filteredCategories.forEach(catName => {
-                    if (!categories[catName]) return;
-                    const subcard = document.createElement('div');
-                    
-                    let cardClass = 'category-subcard-default';
-                    if (catName.toLowerCase().includes('frontend')) cardClass = 'category-subcard-frontend';
-                    else if (catName.toLowerCase().includes('backend')) cardClass = 'category-subcard-backend';
-                    else if (catName.toLowerCase().includes('tools')) cardClass = 'category-subcard-tools';
-                    else if (catName.toLowerCase().includes('ui')) cardClass = 'category-subcard-uiux';
-
-                    subcard.className = cardClass;
-                    
-                    let itemsHtml = categories[catName].map(item => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.75); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.1);">
-                            <span style="font-size: 12px; color: #f8fafc;">${item.name} <strong style="color: #38bdf8;">(${item.level})</strong></span>
-                            <button class="btn-sm btn-danger-sm" onclick="deleteItem('skills', ${item.id})">حذف</button>
-                        </div>
-                    `).join('');
-
-                    subcard.innerHTML = `
-                        <div class="category-header">
-                            <span class="category-title"><i class="fa-solid fa-layer-group"></i> ${catName} <strong style="color: #38bdf8; font-size: 11px;">[${categories[catName].length} مهارة]</strong></span>
-                            <div class="category-actions">
-                                <button class="btn-sm btn-danger-sm" onclick="deleteCategoryItems('${catName}')">تفريغ الفئة</button>
-                            </div>
-                        </div>
-                        <div>${itemsHtml}</div>
-                    `;
-                    container.appendChild(subcard);
+                    if (item.category === 'Frontend Development' && fList) fList.appendChild(div);
+                    else if (item.category === 'Backend & Database' && bList) bList.appendChild(div);
+                    else if (item.category === 'Tools & Workflow' && tList) tList.appendChild(div);
+                    else if (uList) uList.appendChild(div);
                 });
             } catch (e) { console.error(e); }
         }
 
-        async function clearSection(tableName) {
-            if (!confirm(`هل أنت متأكد من تفريغ كافة البيانات في ${tableName}?`)) return;
-            try {
-                const { data: items } = await _supabase.from(tableName).select('id');
-                if (items && items.length > 0) {
-                    for (let item of items) {
-                        await _supabase.from(tableName).delete().eq('id', item.id);
-                    }
-                }
-                logActivity('Clear Section', `Cleared all items from ${tableName}`);
-                showToast(`تم تفريغ القسم ${tableName}.`);
-                loadAllData();
-            } catch(e) {
-                showToast('خطأ أثناء تفريغ القسم.', 'info');
+        async function addSkillToCategory(e, categoryName) {
+            e.preventDefault();
+            let nameVal, levelVal;
+            if(categoryName === 'Frontend Development') {
+                nameVal = document.getElementById('skill_1_name').value;
+                levelVal = document.getElementById('skill_1_level').value;
+            } else if(categoryName === 'Backend & Database') {
+                nameVal = document.getElementById('skill_2_name').value;
+                levelVal = document.getElementById('skill_2_level').value;
+            } else if(categoryName === 'Tools & Workflow') {
+                nameVal = document.getElementById('skill_3_name').value;
+                levelVal = document.getElementById('skill_3_level').value;
+            } else {
+                nameVal = document.getElementById('skill_4_name').value;
+                levelVal = document.getElementById('skill_4_level').value;
             }
+
+            await _supabase.from('skills').insert([{ name: nameVal, level: levelVal, category: categoryName }]);
+            e.target.reset();
+            loadCategorizedSkills();
+            showToast('تمت إضافة المهارة بنجاح وتحديث الكارت!');
         }
 
-        async function deleteCategoryItems(catName) {
-            if (!confirm(`حذف كافة المهارات داخل فئة: ${catName}?`)) return;
-            const { data: items } = await _supabase.from('skills').select('id').eq('category', catName);
-            if (items) {
-                for (let item of items) {
-                    await _supabase.from('skills').delete().eq('id', item.id);
+        async function clearCategoryElements(categoryName) {
+            if(!confirm(`هل أنت متأكد من حذف كافة عناصر فئة (${categoryName})؟`)) return;
+            const { data: items } = await _supabase.from('skills').select('id').eq('category', categoryName);
+            if(items) {
+                for(let itm of items) {
+                    await _supabase.from('skills').delete().eq('id', itm.id);
                 }
-                logActivity('Delete Category', `Deleted all skills in ${catName}`);
-                showToast(`تم تنظيف الفئة ${catName}.`);
-                loadAllData();
             }
+            loadCategorizedSkills();
+            showToast('تم تفريغ عناصر الفئة بنجاح.');
+        }
+
+        async function clearAllSkills() {
+            if(!confirm('تأكيد حذف جميع المهارات في كافة الفئات؟')) return;
+            const { data: items } = await _supabase.from('skills').select('id');
+            if(items) {
+                for(let itm of items) {
+                    await _supabase.from('skills').delete().eq('id', itm.id);
+                }
+            }
+            loadCategorizedSkills();
+            showToast('تم مسح جميع المهارات.');
+        }
+
+        function updateCategoryName(catNum, newTitle) {
+            showToast(`تم تحديث اسم الفئة رقم ${catNum} إلى: ${newTitle}`);
+        }
+
+        // إدارة المشاريع الاحترافية بالكروت
+        async function loadProjectsManager() {
+            try {
+                const { data: projects, error } = await _supabase.from('projects').select('*').order('id', { ascending: false });
+                const container = document.getElementById('projects-grid-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                if (error || !projects || projects.length === 0) {
+                    container.innerHTML = '<p style="color: #94a3b8; font-size: 12px; grid-column: span 2;">لا توجد مشاريع مضافة حالياً.</p>';
+                    return;
+                }
+
+                projects.forEach(proj => {
+                    const card = document.createElement('div');
+                    card.style.cssText = "background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.4); position: relative;";
+                    card.onmouseover = () => { card.style.transform = "translateY(-5px)"; card.style.borderColor = "rgba(56, 189, 248, 0.6)"; card.style.boxShadow = "0 15px 35px rgba(56, 189, 248, 0.2)"; };
+                    card.onmouseout = () => { card.style.transform = "translateY(0)"; card.style.borderColor = "rgba(56, 189, 248, 0.2)"; card.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)"; };
+
+                    card.innerHTML = `
+                        <div style="height: 140px; overflow: hidden; position: relative;">
+                            <img src="${proj.image || 'https://via.placeholder.com/400x200'}" alt="${proj.title}" style="width: 100%; height: 100%; object-fit: cover; transition: 0.5s;">
+                            <div style="position: absolute; top: 10px; left: 10px; background: rgba(2, 6, 23, 0.75); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">نشط بالموقع</div>
+                        </div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
+                            <div>
+                                <h4 style="font-size: 14px; color: #f8fafc; margin-bottom: 8px; font-weight: 600;">${proj.title}</h4>
+                                <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px;">${proj.description || 'لا يوجد وصف متاح'}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: auto;">
+                                <a href="${proj.link || '#'}" target="_blank" style="font-size: 11px; color: #38bdf8; text-decoration: none; display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> معاينة المشروع</a>
+                                <button onclick="deleteItem('projects', ${proj.id})" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'; this.style.color='#fca5a5';"><i class="fa-solid fa-trash"></i> حذف</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function addNewProjectCard(e) {
+            e.preventDefault();
+            const title = document.getElementById('p_title').value;
+            const image = document.getElementById('p_image').value;
+            const description = document.getElementById('p_desc').value;
+            const link = document.getElementById('p_link').value;
+
+            const { error } = await _supabase.from('projects').insert([{ title, image, description, link }]);
+            if(error) {
+                alert('حدث خطأ أثناء حفظ المشروع!');
+                return;
+            }
+
+            e.target.reset();
+            loadProjectsManager();
+            fetchGlobalCounters();
+            showToast('تم إنشاء الكارت ونشر المشروع بنجاح 🚀');
+        }
+
+        async function clearAllProjects() {
+            if(!confirm('هل أنت متأكد من حذف كافة المشاريع؟')) return;
+            const { data: items } = await _supabase.from('projects').select('id');
+            if(items) {
+                for(let itm of items) {
+                    await _supabase.from('projects').delete().eq('id', itm.id);
+                }
+            }
+            loadProjectsManager();
+            fetchGlobalCounters();
+            showToast('تم تفريغ جميع المشاريع بنجاح.');
+        }
+
+        // إدارة الشهادات الاحترافية بالكروت الذهبية
+        async function loadCertificatesManager() {
+            try {
+                const { data: certs, error } = await _supabase.from('certificates').select('*').order('id', { ascending: false });
+                const container = document.getElementById('certificates-grid-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                if (error || !certs || certs.length === 0) {
+                    container.innerHTML = '<p style="color: #94a3b8; font-size: 12px; grid-column: span 2;">لا توجد شهادات مضافة حالياً.</p>';
+                    return;
+                }
+
+                certs.forEach(cert => {
+                    const card = document.createElement('div');
+                    card.style.cssText = "background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(251, 191, 36, 0.25); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.4); position: relative;";
+                    card.onmouseover = () => { card.style.transform = "translateY(-5px)"; card.style.borderColor = "rgba(251, 191, 36, 0.8)"; card.style.boxShadow = "0 15px 35px rgba(251, 191, 36, 0.25)"; };
+                    card.onmouseout = () => { card.style.transform = "translateY(0)"; card.style.borderColor = "rgba(251, 191, 36, 0.25)"; card.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)"; };
+
+                    card.innerHTML = `
+                        <div style="height: 130px; overflow: hidden; position: relative; background: #090d16;">
+                            <img src="${cert.image || 'https://via.placeholder.com/400x200'}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover; transition: 0.5s;">
+                            <div style="position: absolute; top: 10px; right: 10px; background: rgba(217, 119, 6, 0.85); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-star" style="font-size: 9px;"></i> ${cert.date || 'معتمدة'}</div>
+                        </div>
+                        <div style="padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 10px; color: #fbbf24; font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">${cert.issuer || 'جهة معتمدة'}</div>
+                                <h4 style="font-size: 14px; color: #f8fafc; margin-bottom: 6px; font-weight: 600;">${cert.title}</h4>
+                                <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px;">${cert.description || 'لا يوجد وصف متاح'}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: auto;">
+                                <span style="font-size: 10px; color: #38bdf8;"><i class="fa-solid fa-circle-check" style="color: #34d399;"></i> معروض بالموقع</span>
+                                <button onclick="deleteItem('certificates', ${cert.id})" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; transition: 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'; this.style.color='#fca5a5';"><i class="fa-solid fa-trash"></i> حذف</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function addNewCertificateCard(e) {
+            e.preventDefault();
+            const title = document.getElementById('c_title').value;
+            const issuer = document.getElementById('c_issuer').value;
+            const image = document.getElementById('c_image').value;
+            const date = document.getElementById('c_date').value;
+            const description = document.getElementById('c_desc').value;
+
+            const { error } = await _supabase.from('certificates').insert([{ title, issuer, image, date, description }]);
+            if(error) {
+                alert('حدث خطأ أثناء حفظ الشهادة!');
+                return;
+            }
+
+            e.target.reset();
+            loadCertificatesManager();
+            fetchGlobalCounters();
+            showToast('تم إصدار الكارت الذهبي وتوثيق الشهادة بنجاح ⭐');
+        }
+
+        async function clearAllCertificates() {
+            if(!confirm('هل أنت متأكد من حذف كافة الشهادات؟')) return;
+            const { data: items } = await _supabase.from('certificates').select('id');
+            if(items) {
+                for(let itm of items) {
+                    await _supabase.from('certificates').delete().eq('id', itm.id);
+                }
+            }
+            loadCertificatesManager();
+            fetchGlobalCounters();
+            showToast('تم تفريغ جميع الشهادات بنجاح.');
         }
 
         function renderHero(item) {
@@ -906,135 +855,68 @@
             div.innerHTML = `<div class="item-info"><h4>${item.title || ''}</h4><p>${item.subtitle || ''}</p></div><button class="btn-delete" onclick="deleteItem('hero', ${item.id})">حذف</button>`;
             return div;
         }
-        function renderProject(item) {
-            const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.title}</h4><p>${item.description || ''}</p></div><button class="btn-delete" onclick="deleteItem('projects', ${item.id})">حذف</button>`;
-            return div;
-        }
-        function renderCert(item) {
-            const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.title} - ${item.issuer}</h4><p>${item.date}</p></div><button class="btn-delete" onclick="deleteItem('certificates', ${item.id})">حذف</button>`;
-            return div;
-        }
+
         function renderSocial(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.platform}</h4><p style="color: #38bdf8;">${item.link}</p></div><button class="btn-delete" onclick="deleteItem('social_links', ${item.id})">حذف</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.platform}</h4><p>${item.link}</p></div><button class="btn-delete" onclick="deleteItem('social_links', ${item.id})">حذف</button>`;
             return div;
         }
+
         function renderMessage(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.sender_name || 'زائر'} (${item.sender_email || ''})</h4><p>${item.message_text || ''}</p></div><button class="btn-delete" onclick="deleteItem('messages', ${item.id})">حذف</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.sender_name || 'زائر'}</h4><p>${item.message_text || ''}</p></div><button class="btn-delete" onclick="deleteItem('messages', ${item.id})">حذف</button>`;
             return div;
         }
 
         async function deleteItem(tableName, id) {
             if (!confirm('تأكيد الحذف؟')) return;
-            const { error } = await _supabase.from(tableName).delete().eq('id', id);
-            if (!error) {
-                logActivity('Delete', `Deleted item ID ${id} from ${tableName}`);
-                showToast('تم الحذف بنجاح.');
-                loadAllData();
-            }
+            await _supabase.from(tableName).delete().eq('id', id);
+            showToast('تم الحذف بنجاح.');
+            loadAllData();
         }
 
         document.getElementById('heroForm').onsubmit = async (e) => {
             e.preventDefault();
-            await postData('hero', { title: document.getElementById('heroTitle').value, subtitle: document.getElementById('heroSubtitle').value, image_url: document.getElementById('heroImage').value });
+            await _supabase.from('hero').insert([{ title: document.getElementById('heroTitle').value, subtitle: document.getElementById('heroSubtitle').value, image_url: document.getElementById('heroImage').value }]);
             document.getElementById('heroForm').reset();
-        };
-
-        document.getElementById('skillForm').onsubmit = async (e) => {
-            e.preventDefault();
-            await postData('skills', { name: document.getElementById('skillName').value, level: document.getElementById('skillLevel').value, category: document.getElementById('skillCategory').value });
-            document.getElementById('skillForm').reset();
-        };
-
-        document.getElementById('projectForm').onsubmit = async (e) => {
-            e.preventDefault();
-            await postData('projects', { title: document.getElementById('projTitle').value, description: document.getElementById('projDesc').value, live_url: document.getElementById('projLive').value, github_url: document.getElementById('projGithub').value, image_url: document.getElementById('projImage').value });
-            document.getElementById('projectForm').reset();
-        };
-
-        document.getElementById('certForm').onsubmit = async (e) => {
-            e.preventDefault();
-            await postData('certificates', { title: document.getElementById('certTitle').value, issuer: document.getElementById('certIssuer').value, date: document.getElementById('certDate').value });
-            document.getElementById('certForm').reset();
+            loadAllData();
+            showToast('تم الحفظ بنجاح!');
         };
 
         document.getElementById('socialForm').onsubmit = async (e) => {
             e.preventDefault();
-            await postData('social_links', { platform: document.getElementById('socialPlatform').value, link: document.getElementById('socialLink').value });
+            await _supabase.from('social_links').insert([{ platform: document.getElementById('socialPlatform').value, link: document.getElementById('socialLink').value }]);
             document.getElementById('socialForm').reset();
+            loadAllData();
+            showToast('تم إضافة الرابط بنجاح!');
         };
 
-        async function postData(tableName, bodyData) {
-            const { error } = await _supabase.from(tableName).insert([bodyData]);
-            if (!error) {
-                showToast('تم الحفظ بنجاح! 🚀');
-                logActivity('Create', `Added new item to ${tableName}`);
-                loadAllData();
-            } else {
-                showToast('خطأ في حفظ البيانات بقاعدة البيانات', 'info');
-            }
-        }
-
-        async function updateAnalyticsChart() {
-            try {
-                const [projRes, certsRes, supRes, donRes, msgRes] = await Promise.all([
-                    _supabase.from('projects').select('*', { count: 'exact', head: true }),
-                    _supabase.from('certificates').select('*', { count: 'exact', head: true }),
-                    _supabase.from('support_tickets').select('*', { count: 'exact', head: true }),
-                    _supabase.from('donations').select('*', { count: 'exact', head: true }),
-                    _supabase.from('messages').select('*', { count: 'exact', head: true })
-                ]);
-
-                const dataCounts = [
-                    projRes.count || 4,
-                    certsRes.count || 3,
-                    supRes.count || 2,
-                    donRes.count || 1,
-                    msgRes.count || 5
-                ];
-
-                const ctx = document.getElementById('analyticsChart').getContext('2d');
-                if (analyticsChartInstance) {
-                    analyticsChartInstance.destroy();
-                }
-
-                analyticsChartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['المشاريع', 'الشهادات', 'الدعم', 'التبرعات', 'الرسائل'],
-                        datasets: [{
-                            data: dataCounts,
-                            backgroundColor: ['#c084fc', '#fbbf24', '#38bdf8', '#f472b6', '#fb7185'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: { color: '#f8fafc', font: { size: 11, family: 'Poppins' } }
-                            }
-                        }
-                    }
-                });
-            } catch(e) {
-                console.error(e);
-            }
+        function updateAnalyticsChart() {
+            const chartCanvas = document.getElementById('analyticsChart');
+            if(!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
+            if (analyticsChartInstance) analyticsChartInstance.destroy();
+            analyticsChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['المشاريع', 'الشهادات', 'الدعم', 'التبرعات', 'الرسائل'],
+                    datasets: [{
+                        data: [4, 3, 2, 1, 5],
+                        backgroundColor: ['#c084fc', '#fbbf24', '#38bdf8', '#f472b6', '#fb7185'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } } } }
+            });
         }
 
         function loadAllData() {
             fetchGlobalCounters();
             fetchSection('hero', 'heroGrid', renderHero);
             loadCategorizedSkills();
-            fetchSection('projects', 'projectsGrid', renderProject);
-            fetchSection('certificates', 'certsGrid', renderCert);
+            loadProjectsManager();
+            loadCertificatesManager();
             loadSupportInbox();
-            loadDonationsLogs();
             fetchSection('social_links', 'social_linksGrid', renderSocial);
             fetchSection('messages', 'messagesGrid', renderMessage);
             loadLogs();

@@ -14,6 +14,7 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 @keyframes gradientBG {
@@ -31,6 +32,46 @@ main {
     padding-inline: 15px;
     margin-inline: auto;
     box-sizing: border-box;
+}
+
+/* ==========================================
+   إعدادات الألوان المتغيرة (Dark & Light Modes)
+   ========================================== */
+:root {
+    --bg-main: linear-gradient(135deg, #0f172a, #1e1b4b, #090d16);
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode {
+    --bg-main: linear-gradient(135deg, #f1f5f9, #e2e8f0, #cbd5e1) !important;
+    --text-color: #0f172a !important;
+    --text-muted: #475569 !important;
+    --card-bg: rgba(255, 255, 255, 0.85) !important;
+    --card-border: rgba(0, 0, 0, 0.1) !important;
+    background: var(--bg-main) !important;
+    color: var(--text-color) !important;
+}
+
+body.light-mode .glass-card {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .navbar.scrolled {
+    background: rgba(248, 250, 252, 0.85) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+p, span, h1, h2, h3, h4, h5, h6, a {
+    color: var(--text-color);
+}
+
+.text-muted, .subtitle {
+    color: var(--text-muted) !important;
 }
 
 /* ==================================
@@ -54,23 +95,60 @@ main {
 }
 
 /* ==================================
-        GLASSMORPHISM CARDS (New)
+        GLASSMORPHISM CARDS
 ================================== */
 .glass-card {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--card-bg, rgba(255, 255, 255, 0.03));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .glass-card:hover {
     transform: translateY(-5px);
     border-color: rgba(99, 102, 241, 0.4);
     box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: var(--y, 0);
+    left: var(--x, 0);
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.glass-card:hover::before {
+    opacity: 1;
+}
+
+.glass-card::after, .btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.08) 50%, transparent 70%);
+    transform: rotate(30deg) translateX(-100%);
+    transition: transform 0.7s ease;
+}
+
+.glass-card:hover::after, .btn:hover::after {
+    transform: rotate(30deg) translateX(100%);
 }
 
 /* ==================================
@@ -184,10 +262,20 @@ main {
     transform: translateY(0);
 }
 
-#backToTop {
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1); }
+    50% { text-shadow: 0 0 20px rgba(99, 102, 241, 0.6), 0 0 30px rgba(99, 102, 241, 0.4); }
+    100% { text-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1); }
+}
+
+.hero h1, .glowing-title {
+    animation: glowPulse 4s infinite;
+}
+
+#themeToggleBtn {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 20px;
+    left: 20px;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -195,20 +283,61 @@ main {
     color: #fff;
     border: none;
     cursor: pointer;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    transition: 0.3s;
+    transition: 0.3s ease;
 }
 
-#backToTop.show {
-    display: flex;
+#themeToggleBtn:hover {
+    transform: scale(1.1);
 }
 
-#backToTop:hover {
-    transform: translateY(-3px);
+.typing-cursor {
+    display: inline-block;
+    width: 3px;
+    background-color: var(--color-primary, #6366f1);
+    animation: blinkCursor 0.7s infinite;
+    margin-right: 4px;
+}
+
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ==========================================
+   STARS BACKGROUND ANIMATION
+   ========================================== */
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite, floatStar var(--float-duration) linear infinite;
+    opacity: var(--opacity);
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px #6366f1; }
+}
+
+@keyframes floatStar {
+    0% { transform: translateY(105vh); }
+    100% { transform: translateY(-10vh); }
 }
 
 /* ==================================
@@ -302,9 +431,210 @@ main {
     font-size: 0.9rem;
 }
 
-/* ==================================
+/* ==========================================
+   شريط التحكم السريع (Quick Control Bar)
+========================================== */
+#quickControlBar {
+    position: fixed;
+    bottom: 30px;
+    right: 25px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+#quickControlBar.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+#quickControlBar button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: white;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+#openSupportModalBtn {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+
+#openSupportModalBtn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 30px rgba(2, 132, 199, 0.7);
+}
+
+#backToTopBtn {
+    background: linear-gradient(135deg, #334155, #1e293b);
+}
+
+#backToTopBtn:hover {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    transform: scale(1.1);
+    box-shadow: 0 15px 30px rgba(56, 189, 248, 0.4);
+}
+
+/* نافذة الدعم المنبثقة */
+.support-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100000;
+}
+
+.support-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.support-modal-card {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 20px;
+    padding: 25px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px rgba(56, 189, 248, 0.15);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.support-modal-overlay.active .support-modal-card {
+    transform: translateY(0);
+}
+
+.support-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 10px;
+}
+
+.support-modal-header h3 {
+    font-size: 15px;
+    color: #f8fafc;
+    font-weight: 600;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+#closeSupportModalBtn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#closeSupportModalBtn:hover {
+    color: #ef4444;
+}
+
+.support-modal-card .form-group {
+    margin-bottom: 12px;
+}
+
+.support-modal-card input, 
+.support-modal-card textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: rgba(30, 41, 59, 0.7);
+    color: white;
+    font-size: 12px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.support-modal-card input:focus, 
+.support-modal-card textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.support-modal-card button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: white;
+    padding: 11px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    transition: 0.3s;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    margin-top: 5px;
+}
+
+.support-modal-card button[type="submit"]:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.6);
+}
+
+/* ==========================================
+   تنسيق الفوتر (Footer Design)
+   ========================================== */
+footer, .footer {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--card-border) !important;
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 50px;
+    position: relative;
+    z-index: 10;
+}
+
+footer p, footer span, footer a {
+    color: var(--text-color) !important;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    transition: 0.3s ease;
+}
+
+footer a:hover {
+    opacity: 1;
+    color: var(--color-primary, #6366f1) !important;
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+/* ==========================================
         RESPONSIVE FIXES (Hero & Mobile)
-================================== */
+========================================== */
 @media (max-width: 768px) {
     .hero__container, .hero {
         display: flex !important;
@@ -316,7 +646,6 @@ main {
         padding: 2rem 1rem !important;
     }
 
-    /* الصورة في الأعلى، والنص واللينكات تحتها تماماً */
     .hero__image, .hero-img {
         order: 1 !important;
         margin-bottom: 1.5rem !important;
@@ -353,222 +682,4 @@ main {
         width: 100% !important;
         text-align: center !important;
     }
-}/* 1. إضاءة متحركة خفيفة حوالين العنوان أو الهيدر */
-@keyframes glowPulse {
-    0% { text-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1); }
-    50% { text-shadow: 0 0 20px rgba(99, 102, 241, 0.6), 0 0 30px rgba(99, 102, 241, 0.4); }
-    100% { text-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1); }
-}
-
-.hero h1, .glowing-title {
-    animation: glowPulse 4s infinite;
-}
-
-/* 2. لمعة بتعدي على الكروت والأزرار لما الماوس يقف عليها */
-.glass-card, .btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.glass-card::after, .btn::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        60deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.08) 50%,
-        transparent 70%
-    );
-    transform: rotate(30deg) translateX(-100%);
-    transition: transform 0.7s ease;
-}
-
-.glass-card:hover::after, .btn:hover::after {
-    transform: rotate(30deg) translateX(100%);
-}/* ==========================================
-   4. تأثير النجوم المتحركة في الخلفية
-   ========================================== */
-.stars-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* عشان الماوس يضغط عادي من غير ما النجوم تعطل الكلكات */
-    z-index: 0;          /* فوق الخلفية وتحت المحتوى والكروت */
-    overflow: hidden;
-}
-
-.star {
-    position: absolute;
-    background: #ffffff;
-    border-radius: 50%;
-    animation: twinkle var(--duration) ease-in-out infinite, floatStar var(--float-duration) linear infinite;
-    opacity: var(--opacity);
-}
-
-/* حركة اللمعان (الظهور والختفاء) */
-@keyframes twinkle {
-    0%, 100% { opacity: 0.2; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px #6366f1; }
-}
-
-/* حركة الطيران البطيئة لفوق */
-@keyframes floatStar {
-    0% { transform: translateY(105vh); }
-    100% { transform: translateY(-10vh); }
-}/* أضف ده في ملف الـ CSS */
-.glass-card {
-    position: relative;
-    overflow: hidden;
-}
-
-.glass-card::before {
-    content: '';
-    position: absolute;
-    top: var(--y, 0);
-    left: var(--x, 0);
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.glass-card:hover::before {
-    opacity: 1;
-}
-/* ==========================================
-   THEME TOGGLE & TYPING EFFECT STYLES
-   ========================================== */
-
-/* ألوان الثيم المضيء (تتغير أوتوماتيك لما اليوزر يختار Light Mode) */
-body.light-mode {
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1) !important;
-    color: #0f172a !important;
-}
-
-body.light-mode .glass-card {
-    background: rgba(255, 255, 255, 0.7) !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08) !important;
-}
-
-body.light-mode .navbar.scrolled {
-    background: rgba(248, 250, 252, 0.85) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-/* تصميم زر تبديل الثيم */
-#themeToggleBtn {
-    position: fixed;
-    top: 20px;
-    left: 20px; /* أو right حسب تصميم موقعك */
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--color-primary, #6366f1);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    transition: 0.3s ease;
-}
-
-#themeToggleBtn:hover {
-    transform: scale(1.1);
-}
-
-/* مؤشر الكتابة التلقائية */
-.typing-cursor {
-    display: inline-block;
-    width: 3px;
-    background-color: var(--color-primary, #6366f1);
-    animation: blinkCursor 0.7s infinite;
-    margin-right: 4px;
-}
-
-@keyframes blinkCursor {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}/* ==========================================
-   إعدادات الألوان (Dark & Light Modes)
-   ========================================== */
-
-/* 1. الوضع المظلم (الافتراضي) - ألوان فخمة ومريحة */
-:root {
-    --bg-main: linear-gradient(135deg, #0f172a, #1e1b4b, #090d16);
-    --text-color: #f8fafc;        /* لون الخط الفاتح الواضح */
-    --text-muted: #94a3b8;        /* لون الخط الثانوي */
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --card-border: rgba(255, 255, 255, 0.1);
-}
-
-body {
-    background: var(--bg-main) !important;
-    color: var(--text-color) !important;
-    min-height: 100vh;
-}
-
-/* 2. الوضع النهاري (Light Mode) - خلفية ناصعة وألوان خطوط غامقة وواضحة */
-body.light-mode {
-    --bg-main: linear-gradient(135deg, #f1f5f9, #e2e8f0, #cbd5e1) !important;
-    --text-color: #0f172a !important;   /* لون خط غامق جداً عشان ما يختفيش */
-    --text-muted: #475569 !important;   /* لون خط ثانوي واضح */
-    --card-bg: rgba(255, 255, 255, 0.85) !important;
-    --card-border: rgba(0, 0, 0, 0.1) !important;
-}
-
-/* تطبيق الألوان على الكروت والعناوين عشان تضمن وضوحها */
-.glass-card {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--card-border) !important;
-    color: var(--text-color) !important;
-}
-
-p, span, h1, h2, h3, h4, h5, h6, a {
-    color: var(--text-color);
-}
-
-/* لو فيه نصوص ثانوية بتبقى باهتة شوية */
-.text-muted, .subtitle {
-    color: var(--text-muted) !important;
-}/* ==========================================
-   تنسيق الفوتر (Footer Design)
-   ========================================== */
-footer, .footer {
-    background: var(--card-bg) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--card-border) !important;
-    padding: 30px 20px;
-    text-align: center;
-    margin-top: 50px;
-    position: relative;
-    z-index: 10;
-}
-
-/* تنسيق النصوص واللينكات جوه الفوتر عشان تبقى واضحة */
-footer p, footer span, footer a {
-    color: var(--text-color) !important;
-    font-size: 0.95rem;
-    opacity: 0.85;
-    transition: 0.3s ease;
-}
-
-footer a:hover {
-    opacity: 1;
-    color: var(--color-primary, #6366f1) !important;
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
 }

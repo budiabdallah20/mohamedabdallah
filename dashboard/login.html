@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.9)), url('./bg.gif') no-repeat center center;
+            background-size: cover; backdrop-filter: blur(-12px);
+            display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
+            color: #f8fafc;
+        }
+        .login-card {
+            background: rgba(11, 18, 1, 0.95);
+            border: 1px solid rgba(68, 4, 13, 0.35); 
+            padding: 40px 35px; 
+            border-radius: 24px; 
+            width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(65, 42, 3, 0.9), 0 0 40px rgba(56, 189, 248, 0.15); 
+            text-align: center;
+            position: relative;
+            animation: fadeInCard 0.6s ease;
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-avatar { 
+            width: 90px; height: 90px; margin: 0 auto 15px auto; 
+            border-radius: 50%; overflow: hidden; 
+            border: 2px solid #38bdf8; 
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); 
+            transition: transform 0.3s ease;
+        }
+        .login-avatar:hover { transform: scale(1.05); }
+        .login-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .login-card h2 { color: #f8fafc; margin-bottom: 5px; font-size: 24px; font-weight: 700; }
+        .login-card p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; }
+        .login-input-group { position: relative; margin-bottom: 18px; }
+        
+        /* تعديل أيقونات الحقول لتناسب اللغة العربية */
+        .login-input-group i.input-icon { position: absolute; top: 50%; transform: translateY(-50%); color: #38bdf8; font-size: 15px; }
+        [dir="rtl"] .login-input-group i.input-icon { right: 16px; }
+        [dir="ltr"] .login-input-group i.input-icon { left: 16px; }
+
+        .login-input { 
+            width: 100%; padding: 14px 48px; 
+            border-radius: 12px; border: 1px solid #334155; 
+            background: rgba(30, 41, 59, 0.85); color: white; 
+            font-size: 13px; outline: none; transition: all 0.3s ease; 
+        }
+        .login-input:focus { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); background: rgba(30, 41, 59, 1); }
+
+        /* ضبط زر إظهار/إخفاء الباسورد ليصبح داخل الحقل تماماً ومضبوط تماماً */
+        .password-toggle {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: #38bdf8; cursor: pointer; font-size: 14px;
+            padding: 5px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        [dir="rtl"] .password-toggle { left: 14px; }
+        [dir="ltr"] .password-toggle { right: 14px; }
+
+        .login-options { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; margin-bottom: 22px; }
+        .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .login-options input[type="checkbox"] { accent-color: #38bdf8; cursor: pointer; width: 15px; height: 15px; }
+        .login-options a { color: #38bdf8; text-decoration: none; }
+        .login-btn { 
+            width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); 
+            color: white; padding: 14px; border: none; border-radius: 12px; 
+            cursor: pointer; font-weight: 600; font-size: 15px; 
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); 
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
+        .login-btn:hover { opacity: 0.92; transform: translateY(-2px); }
+        .social-logins { display: flex; gap: 10px; margin-top: 18px; }
+        .social-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .social-btn:hover { background: #334155; border-color: #38bdf8; }
+        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { 
+            background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; 
+            color: white; padding: 12px 20px; border-radius: 10px; font-size: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <!-- صورة البروفايل المطلوبة hero.jpg -->
+        <div class="login-avatar">
+            <img src="./hero.jpg" alt="Mohamed Abdallah" onerror="this.src='https://via.placeholder.com/90'">
+        </div>
+        <h2>Mohamed Abdallah</h2>
+        <p>Portfolio Login</p>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="login-input-group">
+                <i class="fa-solid fa-envelope-open-text input-icon"></i>
+                <input type="email" id="adminEmail" class="login-input" placeholder="البريد الإلكتروني" value="budiabdallah922@gmail.com" required>
+            </div>
+            <div class="login-input-group">
+                <i class="fa-solid fa-user-shield input-icon"></i>
+                <input type="text" id="adminUser" class="login-input" placeholder="اسم المستخدم" value="mohamed" required>
+            </div>
+            <div class="login-input-group">
+                <i class="fa-solid fa-key input-icon"></i>
+                <input type="password" id="adminPassword" class="login-input" placeholder="كلمة المرور" value="24102006" required>
+                <!-- زر إظهار وإخفاء الباسورد داخل الحقل تماماً -->
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility()" title="إظهار/إخفاء كلمة المرور">
+                    <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                </button>
+            </div>
+            <div class="login-options">
+                <label><input type="checkbox" id="rememberMe"> تذكرني</label>
+                <a href="#" onclick="showToast('تم إرسال رابط الأمان لبريدك!', 'info')">نسيت كلمة المرور؟</a>
+            </div>
+            <button type="submit" class="login-btn" id="loginSubmitBtn">
+                <i class="fa-solid fa-right-to-bracket"></i> <span>دخول لوحة التحكم</span>
+            </button>
+            <div class="social-logins">
+                <button type="button" class="social-btn" onclick="socialLogin('Google')"><i class="fa-brands fa-google" style="color: #38bdf8;"></i> Google</button>
+                <button type="button" class="social-btn" onclick="socialLogin('GitHub')"><i class="fa-brands fa-github"></i> GitHub</button>
+            </div>
+        </form>
+    </div>
+    <div id="toast-container"></div>
+    <script>
+        const SESSION_KEY = 'empire_admin_session_token_v40';
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderColor = type === 'success' ? '#38bdf8' : '#f59e0b';
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('adminPassword');
+            const toggleIcon = document.getElementById('toggleIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPassword').value;
+            const btn = document.getElementById('loginSubmitBtn');
+            
+            btn.style.opacity = '0.7';
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>جاري التحقق...</span>`;
+            
+            setTimeout(() => {
+                if (email === 'budiabdallah922@gmail.com' && user === 'mohamed' && pass === '24102006') {
+                    const token = 'token_' + Math.random().toString(36).substring(2) + Date.now();
+                    localStorage.setItem(SESSION_KEY, token);
+                    showToast('مرحباً بك يا محمد! 🚀 تم تسجيل الدخول بنجاح');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+                } else {
+                    btn.style.opacity = '1';
+                    btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span>دخول لوحة التحكم</span>`;
+                    showToast('بيانات الدخول غير صحيحة!', 'info');
+                }
+            }, 700);
+        }
+
+        function socialLogin(provider) {
+            showToast(`جارِ الاتصال عبر ${provider}...`);
+            localStorage.setItem(SESSION_KEY, 'social_token_' + Date.now());
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+        }
+
+        window.onload = () => {
+            if (localStorage.getItem(SESSION_KEY)) {
+                window.location.href = 'dashboard.html';
+            }
+        };
+    </script>
+</body>
+</html>
