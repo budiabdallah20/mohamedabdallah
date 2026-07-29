@@ -477,7 +477,7 @@ p, span, h1, h2, h3, h4, h5, h6, a {
 
 #openSupportModalBtn:hover {
     transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 15px 30px rgba(2, 132, 199, 0.7);
+   box-shadow: 0 15px 30px rgba(2, 132, 199, 0.7);
 }
 
 #backToTopBtn {
