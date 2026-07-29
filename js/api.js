@@ -8,10 +8,10 @@ const supabaseHeaders = {
     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
 };
 
-// 1. إرسال رسالة تواصل جديدة
+// 1. إرسال رسالة تواصل جديدة وتخزينها في جدول messages
 async function sendContactMessage(formData) {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/Messages`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
             method: 'POST',
             headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
             body: JSON.stringify(formData)
@@ -23,7 +23,7 @@ async function sendContactMessage(formData) {
     }
 }
 
-// 2. تحميل المشاريع
+// 2. تحميل المشاريع (مقسّمة لفئتين: Featured أو Mini)
 async function loadProjects() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*`, { headers: supabaseHeaders });
@@ -37,7 +37,7 @@ async function loadProjects() {
             <article class="project-card">
                 <div class="project-image">
                     <img src="${proj.image || 'assets/projects/images/portfolio.png'}" alt="${proj.title}" loading="lazy">
-                    <div class="project-overlay"><span>Featured Project</span></div>
+                    <div class="project-overlay"><span>${proj.category || 'Featured'} Project</span></div>
                 </div>
                 <div class="project-content">
                     <span class="project-status completed">${proj.status || 'Completed'}</span>
@@ -58,7 +58,7 @@ async function loadProjects() {
     }
 }
 
-// 3. تحميل المهارات
+// 3. تحميل المهارات (مقسّمة إلى 4 فئات ثابتة: Frontend, Backend, Tools & Methods, Soft Skills)
 async function loadSkills() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/skills?select=*`, { headers: supabaseHeaders });
@@ -68,10 +68,9 @@ async function loadSkills() {
         const wrapper = document.getElementById("dynamic-skills-wrapper");
         if (!wrapper || !skills.length) return;
 
-        // تجميع المهارات حسب الفئة واعادة رسمها ديناميكياً
         const categories = {};
         skills.forEach(skill => {
-            const cat = skill.category || 'Other Skills';
+            const cat = skill.category || 'Frontend';
             if (!categories[cat]) categories[cat] = [];
             categories[cat].push(skill);
         });
@@ -122,7 +121,7 @@ async function loadCertificates() {
     }
 }
 
-// 5. تحميل الإعدادات (الهيرو، البايو، الصور)
+// 5. تحميل إعدادات الموقع والهيرو وقسم "من أنا" بالأسماء الثابتة
 async function loadSettings() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`, { headers: supabaseHeaders });
@@ -132,7 +131,7 @@ async function loadSettings() {
         if (settings.length > 0) {
             const data = settings[0];
             
-            // الهيرو
+            // الهيرو (Hero Section)
             if (data.hero_title) {
                 const el = document.getElementById("dynamic-hero-title");
                 if (el) el.innerText = data.hero_title;
@@ -146,7 +145,7 @@ async function loadSettings() {
                 if (el) el.src = data.hero_image;
             }
 
-            // عني (About)
+            // قسم "من أنا" (About Section + 4 معلومات أساسية)
             if (data.about_text) {
                 const el = document.getElementById("dynamic-about-text");
                 if (el) el.innerText = data.about_text;
@@ -155,15 +154,21 @@ async function loadSettings() {
                 const el = document.getElementById("dynamic-about-img");
                 if (el) el.src = data.about_image;
             }
-
-            // الشعار وصورة التواصل
-            if (data.site_logo) {
-                const el = document.getElementById("dynamic-nav-logo");
-                if (el) el.innerText = data.site_logo;
+            if (data.location) {
+                const el = document.getElementById("dynamic-about-location");
+                if (el) el.innerText = data.location;
             }
-            if (data.contact_image) {
-                const el = document.getElementById("dynamic-contact-img");
-                if (el) el.src = data.contact_image;
+            if (data.education) {
+                const el = document.getElementById("dynamic-about-education");
+                if (el) el.innerText = data.education;
+            }
+            if (data.career_objective) {
+                const el = document.getElementById("dynamic-about-career");
+                if (el) el.innerText = data.career_objective;
+            }
+            if (data.extra_info) {
+                const el = document.getElementById("dynamic-about-extra");
+                if (el) el.innerText = data.extra_info;
             }
         }
     } catch (err) {
@@ -171,45 +176,100 @@ async function loadSettings() {
     }
 }
 
-// 6. تفعيل الـ Realtime لتحديث الأقسام فورياً دون تحديث الصفحة
-function initRealtimeListeners() {
-    const wsUrl = `${SUPABASE_URL.replace('https://', 'wss://')}/realtime/v1/websocket?apikey=${SUPABASE_ANON_KEY}&vsn=1.0.0`;
-    
+// 6. تحميل قسم الدعم والتبرعات (Vodafone Cash, Instapay, Phone)
+async function loadDonations() {
     try {
-        const socket = new WebSocket(wsUrl);
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=*`, { headers: supabaseHeaders });
+        if (!res.ok) return;
+        const donations = await res.json();
+        
+        if (donations.length > 0) {
+            const data = donations[0];
+            const vodafoneEl = document.getElementById("dynamic-vodafone-cash");
+            if (vodafoneEl) vodafoneEl.innerText = data.vodafone_cash;
 
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                topic: "realtime:public",
-                event: "phx_join",
-                payload: {},
-                ref: "1"
-            }));
-        };
+            const instapayEl = document.getElementById("dynamic-instapay");
+            if (instapayEl) instapayEl.innerText = data.instapay_account;
 
-        socket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message.event === "postgres_changes") {
-                const table = message.payload.table;
-                
-                if (table === 'projects') loadProjects();
-                if (table === 'skills') loadSkills();
-                if (table === 'certificates') loadCertificates();
-                if (table === 'site_settings') loadSettings();
-            }
-        };
-    } catch (e) {
-        console.error("Realtime connection error:", e);
+            const phoneEl = document.getElementById("dynamic-phone");
+            if (phoneEl) phoneEl.innerText = data.personal_phone;
+
+            const noteEl = document.getElementById("dynamic-support-note");
+            if (noteEl) noteEl.innerText = data.support_note;
+        }
+    } catch (err) {
+        console.error("Error loading donations:", err);
     }
 }
 
-// تشغيل الكل عند تحميل الصفحة
+// 7. تحميل حسابات السوشيال ميديا مع الكونتر التلقائي عند الضغط
+async function loadSocialMedia() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/social_media?select=*`, { headers: supabaseHeaders });
+        if (!res.ok) return;
+        const socials = await res.json();
+        
+        const container = document.getElementById("dynamic-social-container");
+        if (!container || !socials.length) return;
+
+        container.innerHTML = socials.map(s => `
+            <a href="${s.profile_url}" target="_blank" class="social-link-item" onclick="incrementSocialClick(${s.id})">
+                <i class="${s.icon_class || 'fa-solid fa-share'}"></i>
+                <span>${s.platform_name}</span>
+                <span class="click-counter">(${s.click_count || 0})</span>
+            </a>
+        `).join('');
+    } catch (err) {
+        console.error("Error loading social media:", err);
+    }
+}
+
+// دالة لتحديث الكونتر تلقائياً عند النقر على أي أكونت سوشيال ميديا
+async function incrementSocialClick(id) {
+    try {
+        // جلب العدد الحالي أولاً
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/social_media?id=eq.${id}&select=click_count`, { headers: supabaseHeaders });
+        const data = await res.json();
+        if(data && data.length > 0) {
+            const newCount = (data[0].click_count || 0) + 1;
+            await fetch(`${SUPABASE_URL}/rest/v1/social_media?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: supabaseHeaders,
+                body: JSON.stringify({ click_count: newCount })
+            });
+        }
+    } catch(e) {
+        console.error("Error updating click counter:", e);
+    }
+}
+
+// 8. تسجيل زيارة جديدة لـ عداد الزوار
+async function trackVisitor() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/visitors_counter?select=count&id=eq.1`, { headers: supabaseHeaders });
+        const data = await res.json();
+        if (data && data.length > 0) {
+            const currentCount = data[0].count || 0;
+            await fetch(`${SUPABASE_URL}/rest/v1/visitors_counter?id=eq.1`, {
+                method: 'PATCH',
+                headers: supabaseHeaders,
+                body: JSON.stringify({ count: currentCount + 1 })
+            });
+        }
+    } catch(e) {
+        console.error("Error tracking visitor:", e);
+    }
+}
+
+// التشغيل التلقائي عند تحميل الصفحة والربط الكامل
 document.addEventListener("DOMContentLoaded", () => {
     loadProjects();
     loadSkills();
     loadCertificates();
     loadSettings();
-    initRealtimeListeners();
+    loadDonations();
+    loadSocialMedia();
+    trackVisitor();
 
     // ربط نموذج التواصل
     const contactForm = document.getElementById("contactForm");

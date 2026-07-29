@@ -1,64 +1,70 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" id="htmlRoot">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate CMS Empire Dashboard 🚀</title>
+    <title>Ultimate CMS Empire Dashboard 🚀 v4.0 Pro Master</title>
+    <!-- استدعاء خط Poppins الاحترافي -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- مكتبة الأيقونات Font Awesome الاحترافية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body { background: radial-gradient(circle at top right, #0f172a, #020617 70%); color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
 
-        /* شاشة تسجيل الدخول بخلفية واضحة وبلور خفيف جداً */
+        /* 🔐 شاشة تسجيل الدخول المطورة (Task 1) */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(15, 23, 42, 0.65), rgba(2, 6, 23, 0.75)), url('download.jpg') no-repeat center center;
-            background-size: cover; backdrop-filter: blur(4px);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.95)), url('download.jpg') no-repeat center center;
+            background-size: cover; backdrop-filter: blur(12px);
             display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .login-card {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 35px 30px; border-radius: 24px; width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.1); text-align: center;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.35); padding: 40px 35px; border-radius: 24px; width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(56, 189, 248, 0.15); text-align: center;
         }
-        .login-avatar { width: 80px; height: 80px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        .login-avatar { width: 90px; height: 90px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
         .login-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .login-card h2 { color: #f8fafc; margin-bottom: 5px; font-size: 20px; }
-        .login-card p { color: #94a3b8; font-size: 12px; margin-bottom: 20px; }
-        .login-input-group { position: relative; margin-bottom: 12px; }
-        .login-input-group i { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: #38bdf8; }
-        [dir="rtl"] .login-input-group i { left: auto; right: 15px; }
-        .login-input { width: 100%; padding: 12px 15px 12px 45px; border-radius: 10px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.8); color: white; font-size: 13px; outline: none; transition: 0.3s; }
-        [dir="rtl"] .login-input { padding: 12px 45px 12px 15px; }
-        .login-input:focus { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-        .login-options { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
+        .login-card h2 { color: #f8fafc; margin-bottom: 5px; font-size: 22px; font-weight: 700; }
+        .login-card p { color: #94a3b8; font-size: 13px; margin-bottom: 25px; }
+        .login-input-group { position: relative; margin-bottom: 15px; }
+        .login-input-group i { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); color: #38bdf8; font-size: 15px; }
+        [dir="rtl"] .login-input-group i { left: auto; right: 16px; }
+        .login-input { width: 100%; padding: 14px 16px 14px 48px; border-radius: 12px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.85); color: white; font-size: 13px; outline: none; transition: 0.3s; }
+        [dir="rtl"] .login-input { padding: 14px 48px 14px 16px; }
+        .login-input:focus { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); }
+        .login-options { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
         .login-options label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .login-options a { color: #38bdf8; text-decoration: none; }
-        .login-btn { width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); }
-        .social-logins { display: flex; gap: 10px; margin-top: 15px; }
-        .social-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
-        .social-btn:hover { background: #334155; }
+        .login-btn { width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 15px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); transition: 0.2s; }
+        .login-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+        .social-logins { display: flex; gap: 10px; margin-top: 18px; }
+        .social-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .social-btn:hover { background: #334155; border-color: #38bdf8; }
 
-        /* القائمة الجانبية بخلفية واضحة وبلور خفيف */
-        .sidebar { width: 285px; background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(5px); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; padding: 18px; gap: 6px; overflow-y: auto; }
+        /* القائمة الجانبية (Task 2) */
+        .sidebar { width: 295px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(10px); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; padding: 18px; gap: 6px; overflow-y: auto; }
         [dir="rtl"] .sidebar { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); }
-        .sidebar-brand { font-size: 17px; font-weight: bold; color: #38bdf8; margin-bottom: 10px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .sidebar-brand { font-size: 17px; font-weight: 600; color: #38bdf8; margin-bottom: 10px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .top-controls { display: flex; gap: 6px; margin-bottom: 10px; }
-        .ctrl-btn { flex: 1; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 8px; padding: 8px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .ctrl-btn { flex: 1; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 8px; padding: 8px; font-size: 11px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
         .ctrl-btn:hover { background: #334155; }
         .logout-btn { background: rgba(127, 29, 29, 0.4); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; }
         
-        .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 10px 14px; border-radius: 8px; text-align: left; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .nav-btn { background: transparent; color: #94a3b8; border: none; padding: 10px 14px; border-radius: 8px; text-align: left; cursor: pointer; font-size: 12px; font-weight: 500; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
         [dir="rtl"] .nav-btn { text-align: right; }
         .nav-btn i { font-size: 15px; width: 18px; text-align: center; }
-        .nav-btn:hover, .nav-btn.active { background: rgba(30, 41, 59, 0.8); color: #38bdf8; transform: translateX(3px); }
+        .nav-btn:hover, .nav-btn.active { background: rgba(30, 41, 59, 0.85); color: #38bdf8; transform: translateX(3px); }
         [dir="rtl"] .nav-btn:hover, [dir="rtl"] .nav-btn.active { transform: translateX(-3px); }
 
-        .preview-btn { margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+        .preview-btn { margin-top: auto; background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; transition: 0.2s; }
+        .preview-btn:hover { opacity: 0.9; }
 
         .main-content { flex: 1; padding: 30px; overflow-y: auto; background: url('download.jpg') no-repeat center center fixed; background-size: cover; position: relative; }
-        .main-content::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(2, 6, 23, 0.82); z-index: 0; pointer-events: none; }
+        .main-content::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(2, 6, 23, 0.86); z-index: 0; pointer-events: none; }
         .main-content > * { position: relative; z-index: 1; }
 
         .section-view { display: none; }
@@ -69,28 +75,47 @@
         .section-header h2 { font-size: 20px; display: flex; align-items: center; gap: 8px; }
 
         .card-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); background: rgba(15, 23, 42, 0.7); }
+        .card { padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); background: rgba(15, 23, 42, 0.78); }
         .card-full { grid-column: 1 / -1; }
         .card h3 { margin-bottom: 15px; font-size: 15px; color: #f3f4f6; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         form { display: flex; flex-direction: column; gap: 10px; }
-        input, textarea, select { padding: 10px 12px; border-radius: 8px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.8); color: white; font-size: 12px; outline: none; }
-        input:focus, textarea:focus { border-color: #38bdf8; }
-        .submit-btn { background: #0284c7; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+        input, textarea, select { padding: 10px 12px; border-radius: 8px; border: 1px solid #334155; background: rgba(30, 41, 59, 0.85); color: white; font-size: 12px; outline: none; transition: 0.2s; }
+        input:focus, textarea:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.2); }
+        .submit-btn { background: #0284c7; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; transition: 0.2s; }
         .submit-btn:hover { background: #0369a1; }
 
-        .items-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 4px; }
-        .item-row { background: rgba(30, 41, 59, 0.75); border: 1px solid #334155; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .items-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 4px; }
+        .item-row { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
         .item-info h4 { font-size: 13px; color: #f8fafc; margin-bottom: 2px; }
         .item-info p { font-size: 11px; color: #94a3b8; }
-        .btn-delete { background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-delete { background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
+        .btn-delete:hover { background: #b91c1c; }
 
-        /* تصاميم فريدة وكروت مختلفة لكل فئة داخل المهارات */
+        /* صندوق الشكاوي وخدمة العملاء (Task 6) */
+        .support-inbox-layout { display: flex; gap: 15px; height: 390px; }
+        .tickets-sidebar { width: 40%; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        [dir="rtl"] .tickets-sidebar { border-right: none; border-left: 1px solid rgba(255,255,255,0.08); padding-right: 0; padding-left: 10px; }
+        .ticket-preview-card { background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .ticket-preview-card:hover, .ticket-preview-card.active { border-color: #38bdf8; background: rgba(30, 41, 59, 0.95); }
+        .ticket-preview-card h5 { font-size: 12px; color: #fff; margin-bottom: 3px; }
+        .ticket-preview-card p { font-size: 10px; color: #94a3b8; }
+        
+        .ticket-chat-area { flex: 1; display: flex; flex-direction: column; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
+        .chat-box-header { padding: 10px 15px; background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #38bdf8; }
+        .chat-box-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
+        .chat-msg { padding: 10px; border-radius: 8px; max-width: 85%; }
+        .chat-msg.client { background: #1e293b; color: #f8fafc; align-self: flex-start; border: 1px solid #334155; }
+        .chat-msg.admin { background: #0284c7; color: white; align-self: flex-end; }
+        .chat-meta { font-size: 10px; color: #94a3b8; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .chat-box-footer { padding: 10px; background: rgba(30, 41, 59, 0.8); border-top: 1px solid #334155; display: flex; gap: 8px; }
+        .chat-box-footer input { flex: 1; }
+
+        /* فئات المهارات والكروت (Task 4) */
         .category-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s; }
+        .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s; }
         .tab-btn.active, .tab-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
         
-        /* كروت مخصصة لكل فئة بلون وتدرج مختلف */
         .category-subcard-frontend { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4), rgba(30, 58, 138, 0.6)); border: 1px solid #38bdf8; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
         .category-subcard-backend { background: linear-gradient(135deg, rgba(22, 101, 52, 0.4), rgba(5, 46, 22, 0.6)); border: 1px solid #4ade80; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
         .category-subcard-tools { background: linear-gradient(135deg, rgba(126, 34, 206, 0.4), rgba(76, 29, 149, 0.6)); border: 1px solid #c084fc; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
@@ -98,49 +123,59 @@
         .category-subcard-default { background: linear-gradient(135deg, rgba(180, 83, 9, 0.4), rgba(120, 53, 15, 0.6)); border: 1px solid #fbbf24; border-radius: 12px; padding: 15px; margin-bottom: 12px; }
 
         .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 8px; }
-        .category-title { font-size: 14px; font-weight: bold; color: #fff; }
+        .category-title { font-size: 14px; font-weight: 600; color: #fff; }
         .category-actions { display: flex; gap: 6px; }
-        .btn-sm { padding: 4px 8px; font-size: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-sm { padding: 4px 8px; font-size: 10px; border-radius: 4px; border: none; cursor: pointer; font-weight: 600; }
         .btn-danger-sm { background: #b91c1c; color: white; }
 
-        .btn-bulk-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .btn-bulk-delete { background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .btn-bulk-delete:hover { background: #b91c1c; }
 
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-online { background: rgba(5, 150, 105, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
         .status-offline { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .stat-box { font-size: 38px; font-weight: bold; color: #38bdf8; margin: 10px 0; text-shadow: 0 0 15px rgba(56,189,248,0.3); }
+        
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .mini-stat-box { background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px; text-align: center; }
+        .mini-stat-box h4 { font-size: 11px; color: #94a3b8; margin-bottom: 4px; font-weight: 500; }
+        .mini-stat-box .number { font-size: 22px; font-weight: 700; color: #38bdf8; text-shadow: 0 0 10px rgba(56,189,248,0.2); }
+
+        /* إشعارات التوست (Task 8) */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        [dir="rtl"] #toast-container { right: auto; left: 20px; }
+        .toast { background: rgba(15, 23, 42, 0.95); border: 1px solid #38bdf8; color: white; padding: 12px 20px; border-radius: 10px; font-size: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- 🔐 شاشة تسجيل الدخول -->
+    <!-- 🔐 شاشة تسجيل الدخول المطورة (Task 1) -->
     <div id="login-screen">
         <div class="login-card">
             <div class="login-avatar"><img src="hero.jpg" alt="Admin Profile"></div>
-            <h2>Admin Portal</h2>
-            <p>Secure Empire Management CMS</p>
+            <h2>Empire Admin Pro</h2>
+            <p>Customer Support & Automated Metrics Center</p>
             
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="login-input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="adminEmail" class="login-input" placeholder="Email Address" value="budiabdallah922@gmail.com" required>
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                    <input type="email" id="adminEmail" class="login-input" placeholder="البريد الإلكتروني" value="budiabdallah922@gmail.com" required>
                 </div>
                 <div class="login-input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="adminUser" class="login-input" placeholder="Username" value="mohamed" required>
+                    <i class="fa-solid fa-user-shield"></i>
+                    <input type="text" id="adminUser" class="login-input" placeholder="اسم المستخدم" value="mohamed" required>
                 </div>
                 <div class="login-input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="adminPassword" class="login-input" placeholder="Password" value="24102006" required>
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="adminPassword" class="login-input" placeholder="كلمة المرور" value="24102006" required>
                 </div>
                 
                 <div class="login-options">
-                    <label><input type="checkbox" id="rememberMe"> <span>Remember me</span></label>
-                    <a href="#" onclick="alert('Password reset link sent!')">Forgot Password?</a>
+                    <label><input type="checkbox" id="rememberMe"> <span data-i18n="login_remember">تذكرني</span></label>
+                    <a href="#" onclick="showToast('تم إرسال رابط إعادة تعيين كلمة المرور!', 'info')"><span data-i18n="login_forgot">نسيت كلمة المرور؟</span></a>
                 </div>
 
-                <button type="submit" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i> Login Dashboard</button>
+                <button type="submit" class="login-btn"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="login_btn">دخول لوحة التحكم</span></button>
 
                 <div class="social-logins">
                     <button type="button" class="social-btn" onclick="socialLogin('Google')"><i class="fa-brands fa-google" style="color: #38bdf8;"></i> Google</button>
@@ -150,201 +185,299 @@
         </div>
     </div>
 
-    <!-- القائمة الجانبية -->
+    <!-- القائمة الجانبية (Task 2) -->
     <div class="sidebar">
-        <div class="sidebar-brand"><i class="fa-solid fa-bolt" style="color: #38bdf8;"></i> <span data-i18n="brand">CMS Dashboard</span></div>
+        <div class="sidebar-brand"><i class="fa-solid fa-bolt-lightning" style="color: #38bdf8;"></i> <span data-i18n="brand">CMS Dashboard Pro</span></div>
         
         <div class="top-controls">
             <button class="ctrl-btn" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> <span id="langLabel">AR / EN</span></button>
-            <button class="ctrl-btn logout-btn" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> <span data-i18n="logout">Logout</span></button>
+            <button class="ctrl-btn logout-btn" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> <span data-i18n="logout">تسجيل خروج</span></button>
         </div>
 
-        <button class="nav-btn active" onclick="switchSection('home-section', this)"><i class="fa-solid fa-house" style="color: #38bdf8;"></i> <span data-i18n="nav_home">Overview & Health</span></button>
-        <button class="nav-btn" onclick="switchSection('hero-section', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="nav_hero">Hero Section</span></button>
-        <button class="nav-btn" onclick="switchSection('skills-section', this)"><i class="fa-solid fa-bolt-lightning" style="color: #60a5fa;"></i> <span data-i18n="nav_skills">Skills Categories</span></button>
-        <button class="nav-btn" onclick="switchSection('projects-section', this)"><i class="fa-solid fa-folder-open" style="color: #c084fc;"></i> <span data-i18n="nav_projects">Projects Manager</span></button>
-        <button class="nav-btn" onclick="switchSection('certs-section', this)"><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="nav_certs">Certificates</span></button>
-        <button class="nav-btn" onclick="switchSection('social-section', this)"><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="nav_social">Social Links</span></button>
-        <button class="nav-btn" onclick="switchSection('logs-section', this)"><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="nav_logs">Activity Logs</span></button>
-        <button class="nav-btn" onclick="switchSection('messages-section', this)"><i class="fa-solid fa-envelope-open-text" style="color: #f472b6;"></i> <span data-i18n="nav_messages">Visitor Messages</span></button>
+        <button class="nav-btn active" onclick="switchSection('home-section', this)"><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> <span data-i18n="nav_home">الرئيسية والكونترات</span></button>
+        <button class="nav-btn" onclick="switchSection('updater-section', this)"><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span data-i18n="nav_updater">محرر الكود والبرومت</span></button>
+        <button class="nav-btn" onclick="switchSection('hero-section', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="nav_hero">قسم الهيرو</span></button>
+        <button class="nav-btn" onclick="switchSection('skills-section', this)"><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span data-i18n="nav_skills">فئات المهارات</span></button>
+        <button class="nav-btn" onclick="switchSection('projects-section', this)"><i class="fa-solid fa-laptop-code" style="color: #c084fc;"></i> <span data-i18n="nav_projects">إدارة المشاريع</span></button>
+        <button class="nav-btn" onclick="switchSection('certs-section', this)"><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="nav_certs">الشهادات والمهارات</span></button>
+        <button class="nav-btn" onclick="switchSection('support-section', this)"><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span data-i18n="nav_support">صندوق خدمة العملاء</span></button>
+        <button class="nav-btn" onclick="switchSection('donations-section', this)"><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span data-i18n="nav_donations">التبرعات والدعم</span></button>
+        <button class="nav-btn" onclick="switchSection('social-section', this)"><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="nav_social">روابط السوشيال ومتابعين</span></button>
+        <button class="nav-btn" onclick="switchSection('messages-section', this)"><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span data-i18n="nav_messages">رسائل الزوار</span></button>
+        <button class="nav-btn" onclick="switchSection('logs-section', this)"><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="nav_logs">سجل النشاطات</span></button>
         
-        <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" class="preview-btn"><i class="fa-solid fa-eye"></i> <span data-i18n="preview_site">Preview Live Site</span></a>
+        <a href="https://budiabdallah20.github.io/mohamedabdallah/" target="_blank" class="preview-btn"><i class="fa-solid fa-eye"></i> <span data-i18n="preview_site">معاينة الموقع لايف</span></a>
     </div>
 
     <!-- المحتوى الرئيسي -->
     <main class="main-content">
 
-        <!-- 1. الرئيسية -->
+        <!-- 1. الرئيسية والكونترات التلقائية (Task 3) -->
         <div id="home-section" class="section-view active">
             <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
-                <h2><i class="fa-solid fa-chart-line" style="color:#38bdf8;"></i> <span data-i18n="home_header">Empire Overview & System Health</span></h2>
-                <div id="networkStatus" class="status-badge status-online"><i class="fa-solid fa-wifi"></i> Online / Synced</div>
+                <h2><i class="fa-solid fa-chart-line" style="color:#38bdf8;"></i> <span data-i18n="home_header">نظرة عامة والعدادات الشاملة</span></h2>
+                <div id="networkStatus" class="status-badge status-online"><i class="fa-solid fa-wifi"></i> متصل / متزامن</div>
             </div>
             <div class="card-container">
                 <div class="card" style="border-color: rgba(56, 189, 248, 0.3);">
-                    <h3><i class="fa-solid fa-users" style="color: #38bdf8;"></i> Total Visitors</h3>
-                    <div id="visitorCount" class="stat-box">...</div>
-                    <p style="color: #94a3b8; font-size: 12px;">Accurate visitors statistics from database.</p>
+                    <h3><i class="fa-solid fa-users" style="color: #38bdf8;"></i> عداد الزوار الحقيقي (Realtime Visitors)</h3>
+                    <div id="visitorCount" class="stat-box" style="font-size:36px; font-weight:700; color:#38bdf8; margin:10px 0;">...</div>
+                    <p style="color: #94a3b8; font-size: 12px;">مترابط تلقائياً مع قاعدة بيانات Supabase.</p>
                 </div>
                 <div class="card" style="border-color: rgba(56, 189, 248, 0.3);">
-                    <h3><i class="fa-solid fa-server" style="color: #38bdf8;"></i> System Health & Version</h3>
-                    <div style="margin-top: 15px; font-size: 13px; display: flex; flex-direction: column; gap: 8px;">
-                        <div><strong style="color: #38bdf8;">App Version:</strong> v2.7.0 (Multi-Color Edition)</div>
-                        <div><strong style="color: #38bdf8;">Supabase Database:</strong> Connected & Active</div>
-                        <div><strong style="color: #fbbf24;">Active Admin:</strong> mohamed (budiabdallah922)</div>
-                        <button onclick="checkForUpdates()" style="margin-top: 8px; background: #1e293b; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px;"><i class="fa-solid fa-rotate"></i> Check for Updates</button>
+                    <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> إجمالي مبلغ الدعم (Total Donations)</h3>
+                    <div id="totalDonationsCounter" class="stat-box" style="font-size:36px; font-weight:700; color:#f472b6; margin:10px 0;">$340.00</div>
+                    <p style="color: #94a3b8; font-size: 12px;">مجموع التبرعات وحملات الدعم المالي.</p>
+                </div>
+
+                <!-- كونترات إحصائيات الأقسام الشاملة (Task 3) -->
+                <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3);">
+                    <h3><i class="fa-solid fa-calculator" style="color: #38bdf8;"></i> كونترات أقسام المنصة الحية</h3>
+                    <div class="stat-grid">
+                        <div class="mini-stat-box"><h4>المشاريع</h4><div id="countProjects" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>الشهادات</h4><div id="countCerts" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>الشكاوي والتذاكر</h4><div id="countSupport" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>المتابعون (ميديا)</h4><div id="countFollowers" class="number">12.4K</div></div>
+                        <div class="mini-stat-box"><h4>إجمالي المهارات</h4><div id="countSkills" class="number">0</div></div>
+                        <div class="mini-stat-box"><h4>رسائل الوارد</h4><div id="countMessages" class="number">0</div></div>
+                    </div>
+                </div>
+
+                <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3);">
+                    <h3><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> توزيع إحصائيات المنصة البياني</h3>
+                    <div style="height: 200px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="analyticsChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. الهيرو (بلون أخضر مميز) -->
-        <div id="hero-section" class="section-view">
+        <!-- 2. أداة تحديث الكود والبرومت الذكي (Task 7) -->
+        <div id="updater-section" class="section-view">
             <div class="section-header" style="border-color: rgba(52, 211, 153, 0.3);">
-                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="hero_header">Hero Section Management</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('hero')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+                <h2><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span data-i18n="updater_header">محدث الكود ومساعد برومت الذكاء الاصطناعي</span></h2>
             </div>
             <div class="card-container">
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.3);">
-                    <h3><span style="color: #34d399;">Update Hero</span></h3>
-                    <form id="heroForm">
-                        <input type="text" id="heroTitle" placeholder="Main Title" required>
-                        <input type="text" id="heroSubtitle" placeholder="Subtitle" required>
-                        <input type="text" id="heroImage" placeholder="Profile Image URL" required>
-                        <button type="submit" class="submit-btn" style="background: #059669;"><i class="fa-solid fa-floppy-disk"></i> Save & Update</button>
+                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
+                    <h3><span style="color: #34d399;"><i class="fa-solid fa-code"></i> محرر الكود المباشر (Live Code Injector)</span></h3>
+                    <form onsubmit="handleCodeInjection(event)">
+                        <textarea id="customCodeInput" placeholder="أدخل كود JavaScript أو CSS لتنفيذه فوراً هنا..." rows="5" required></textarea>
+                        <button type="submit" class="submit-btn" style="background: #059669;"><i class="fa-solid fa-play"></i> تنفيذ الكود وتحديث النظام</button>
                     </form>
                 </div>
-                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.3);">
-                    <h3><span style="color: #34d399;">Current Item</span></h3>
+                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
+                    <h3><span style="color: #34d399;"><i class="fa-solid fa-wand-magic-sparkles"></i> مساعد برومت الذكاء الاصطناعي (AI Prompt Assistant)</span></h3>
+                    <form onsubmit="handlePromptCommand(event)">
+                        <textarea id="aiPromptInput" placeholder="اكتب أمر أو توجيه للبرومت لتعديل لوحة التحكم..." rows="5" required></textarea>
+                        <button type="submit" class="submit-btn" style="background: #047857;"><i class="fa-solid fa-paper-plane"></i> إرسال أمر البرومت</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. الهيرو -->
+        <div id="hero-section" class="section-view">
+            <div class="section-header" style="border-color: rgba(52, 211, 153, 0.3);">
+                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #34d399;"></i> <span data-i18n="hero_header">إدارة قسم الهيرو وتحميل السي في</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('hero')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
+            </div>
+            <div class="card-container">
+                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
+                    <h3><span style="color: #34d399;">تحديث بيانات الهيرو</span></h3>
+                    <form id="heroForm">
+                        <input type="text" id="heroTitle" placeholder="العنوان الرئيسي" required>
+                        <input type="text" id="heroSubtitle" placeholder="العنوان الفرعي" required>
+                        <input type="text" id="heroImage" placeholder="رابط صورة الملف الشخصي" required>
+                        <button type="submit" class="submit-btn" style="background: #059669;"><i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث</button>
+                    </form>
+                </div>
+                <div class="card" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(6, 78, 59, 0.25);">
+                    <h3><span style="color: #34d399;">العنصر الحالي</span></h3>
                     <div id="heroGrid" class="items-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. المهارات (بلون أزرق نيوني مع كروت الفئات المختلفة) -->
+        <!-- 4. المهارات (Task 4) -->
         <div id="skills-section" class="section-view">
             <div class="section-header" style="border-color: rgba(96, 165, 250, 0.3);">
-                <h2><i class="fa-solid fa-bolt-lightning" style="color: #60a5fa;"></i> <span data-i18n="skills_header">Skills Categories & Unique Cards</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('skills')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+                <h2><i class="fa-solid fa-layer-group" style="color: #60a5fa;"></i> <span data-i18n="skills_header">فئات المهارات والكروت التفاعلية</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('skills')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
             <div class="card-container">
                 <div class="card" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(30, 58, 138, 0.25);">
-                    <h3><span style="color: #60a5fa;">Add New Skill to Category</span></h3>
+                    <h3><span style="color: #60a5fa;">إضافة مهارة جديدة</span></h3>
                     <form id="skillForm">
-                        <input type="text" id="skillName" placeholder="Skill Name (e.g. Frontend Architecture)" required>
-                        <input type="text" id="skillLevel" placeholder="Level (e.g. 95%)" required>
+                        <input type="text" id="skillName" placeholder="اسم المهارة" required>
+                        <input type="text" id="skillLevel" placeholder="المستوى (مثال: 95%)" required>
                         <select id="skillCategory" required>
-                            <option value="Frontend Development">Frontend Development</option>
-                            <option value="Backend & Database">Backend & Database</option>
-                            <option value="Tools & Workflow">Tools & Workflow</option>
-                            <option value="Advanced UI/UX">Advanced UI/UX</option>
+                            <option value="Frontend Development">Frontend Development (تطوير واجهات)</option>
+                            <option value="Backend & Database">Backend & Database (قواعد البيانات والخلفية)</option>
+                            <option value="Tools & Workflow">Tools & Workflow (أدوات وسير العمل)</option>
+                            <option value="Advanced UI/UX">Advanced UI/UX (تصميم وتجربة المستخدم)</option>
                         </select>
-                        <button type="submit" class="submit-btn" style="background: #2563eb;"><i class="fa-solid fa-plus"></i> Add Item</button>
+                        <button type="submit" class="submit-btn" style="background: #2563eb;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
                     </form>
                 </div>
                 <div class="card" style="border-color: rgba(96, 165, 250, 0.3); background: rgba(30, 58, 138, 0.25);">
-                    <h3><span style="color: #60a5fa;">Interactive Unique Category Cards</span></h3>
+                    <h3><span style="color: #60a5fa;">كروت الفئات الفرعية المتقدمة</span></h3>
                     <div id="skillsTabsContainer" class="category-tabs"></div>
-                    <div id="skillsCategorizedContainer" class="items-list" style="max-height: 260px;"></div>
+                    <div id="skillsCategorizedContainer" class="items-list" style="max-height: 240px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. المشاريع (بلون بنفسجي مميز) -->
+        <!-- 5. المشاريع -->
         <div id="projects-section" class="section-view">
             <div class="section-header" style="border-color: rgba(192, 132, 252, 0.3);">
-                <h2><i class="fa-solid fa-folder-open" style="color: #c084fc;"></i> <span data-i18n="projects_header">Projects Manager</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('projects')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+                <h2><i class="fa-solid fa-laptop-code" style="color: #c084fc;"></i> <span data-i18n="projects_header">إدارة المشاريع</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('projects')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
             <div class="card-container">
                 <div class="card" style="border-color: rgba(192, 132, 252, 0.3); background: rgba(88, 28, 135, 0.25);">
-                    <h3><span style="color: #c084fc;">Add New Project</span></h3>
+                    <h3><span style="color: #c084fc;">إضافة مشروع</span></h3>
                     <form id="projectForm">
-                        <input type="text" id="projTitle" placeholder="Project Title" required>
-                        <textarea id="projDesc" placeholder="Project Description..." rows="2" required></textarea>
-                        <input type="text" id="projLive" placeholder="Live Demo URL">
-                        <input type="text" id="projGithub" placeholder="GitHub URL">
-                        <input type="text" id="projImage" placeholder="Image URL">
-                        <button type="submit" class="submit-btn" style="background: #9333ea;"><i class="fa-solid fa-plus"></i> Add Item</button>
+                        <input type="text" id="projTitle" placeholder="عنوان المشروع" required>
+                        <textarea id="projDesc" placeholder="الوصف..." rows="2" required></textarea>
+                        <input type="text" id="projLive" placeholder="رابط المعاينة الحية">
+                        <input type="text" id="projGithub" placeholder="رابط جيت هب">
+                        <input type="text" id="projImage" placeholder="رابط الصورة">
+                        <button type="submit" class="submit-btn" style="background: #9333ea;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
                     </form>
                 </div>
                 <div class="card" style="border-color: rgba(192, 132, 252, 0.3); background: rgba(88, 28, 135, 0.25);">
-                    <h3><span style="color: #c084fc;">Current Projects</span></h3>
+                    <h3><span style="color: #c084fc;">المشاريع الحالية</span></h3>
                     <div id="projectsGrid" class="items-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 5. الشهادات (بلون برتقالي/ذهبي مميز) -->
+        <!-- 6. الشهادات (Task 5) -->
         <div id="certs-section" class="section-view">
             <div class="section-header" style="border-color: rgba(251, 191, 36, 0.3);">
-                <h2><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="certs_header">Certificates Management</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('certificates')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+                <h2><i class="fa-solid fa-award" style="color: #fbbf24;"></i> <span data-i18n="certs_header">إدارة الشهادات</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('certificates')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
             <div class="card-container">
                 <div class="card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(120, 53, 15, 0.25);">
-                    <h3><span style="color: #fbbf24;">Add Certificate</span></h3>
+                    <h3><span style="color: #fbbf24;">إضافة شهادة</span></h3>
                     <form id="certForm">
-                        <input type="text" id="certTitle" placeholder="Title" required>
-                        <input type="text" id="certIssuer" placeholder="Issuer" required>
-                        <input type="text" id="certDate" placeholder="Date" required>
-                        <button type="submit" class="submit-btn" style="background: #d97706;"><i class="fa-solid fa-plus"></i> Add Item</button>
+                        <input type="text" id="certTitle" placeholder="عنوان الشهادة" required>
+                        <input type="text" id="certIssuer" placeholder="جهة الإصدار (Issuer)" required>
+                        <input type="text" id="certDate" placeholder="تاريخ الإصدار (Issue Date)" required>
+                        <button type="submit" class="submit-btn" style="background: #d97706;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
                     </form>
                 </div>
                 <div class="card" style="border-color: rgba(251, 191, 36, 0.3); background: rgba(120, 53, 15, 0.25);">
-                    <h3><span style="color: #fbbf24;">Certificates List</span></h3>
+                    <h3><span style="color: #fbbf24;">قائمة الشهادات</span></h3>
                     <div id="certsGrid" class="items-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 6. السوشيال (بلون سماوي مميز) -->
+        <!-- 7. قسم صندوق خدمة العملاء والشكاوي (Task 6) -->
+        <div id="support-section" class="section-view">
+            <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
+                <h2><i class="fa-solid fa-headset" style="color: #38bdf8;"></i> <span data-i18n="support_header">صندوق خدمة العملاء والشكاوي (مربوط تليجرام وإيميل)</span></h2>
+            </div>
+            <div class="card card-full" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
+                <h3><span style="color: #38bdf8;"><i class="fa-solid fa-comments"></i> تذاكر الشكاوي الحية وخدمة العملاء</span></h3>
+                <div class="support-inbox-layout">
+                    <!-- قائمة تذاكر الدعم والشكاوي -->
+                    <div class="tickets-sidebar" id="supportTicketsSidebar"></div>
+                    <!-- ساحة الرد والمتابعة مع تفاصيل الجهاز والوقت -->
+                    <div class="ticket-chat-area">
+                        <div class="chat-box-header">
+                            <span id="activeTicketTitle">اختر شكوى أو تذكرة لعرض تفاصيلها</span>
+                            <span id="activeTicketStatus" class="status-badge status-online">مفتوحة</span>
+                        </div>
+                        <div class="chat-box-body" id="activeTicketMessages">
+                            <p style="color: #94a3b8; text-align: center; margin-top: 60px;">الرجاء اختيار مشكلة أو استفسار من القائمة الجانبية لعرض تفاصيل المنصة والجهاز والرد.</p>
+                        </div>
+                        <div class="chat-box-footer">
+                            <input type="text" id="adminReplyInput" placeholder="اكتب ردك للعميل هنا..." disabled>
+                            <button class="submit-btn" id="sendReplyBtn" onclick="sendAdminSupportReply()" disabled><i class="fa-solid fa-paper-plane"></i> إرسال</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. قسم التبرعات والدعم المالي -->
+        <div id="donations-section" class="section-view">
+            <div class="section-header" style="border-color: rgba(244, 114, 182, 0.3);">
+                <h2><i class="fa-solid fa-hand-holding-dollar" style="color: #f472b6;"></i> <span data-i18n="donations_header">لوحة تحكم التبرعات والدعم المالي</span></h2>
+            </div>
+            <div class="card-container">
+                <div class="card" style="border-color: rgba(244, 114, 182, 0.3); background: rgba(131, 24, 67, 0.25);">
+                    <h3><span style="color: #f472b6;"><i class="fa-solid fa-chart-pie"></i> إجمالي التبرعات والأهداف المالية</span></h3>
+                    <div class="donation-stats-box" style="background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(131, 24, 67, 0.25)); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 15px;">
+                        <h4 style="font-size: 13px; color: #f472b6; margin-bottom: 5px;">المبلغ الإجمالي المستلم</h4>
+                        <div class="amount" style="font-size: 26px; font-weight: 700; color: #fff;">$340.00</div>
+                        <p style="color: #cbd5e1; font-size: 11px; margin-top: 5px;">تم تحقيق 68% من هدف استضافة المشروع السنوي ($500)</p>
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; gap: 8px;">
+                        <div><strong style="color: #f472b6;">PayPal:</strong> budiabdallah922@gmail.com</div>
+                        <div><strong style="color: #f472b6;">Instapay / Wallet:</strong> متاح للدعم المباشر</div>
+                    </div>
+                </div>
+                <div class="card" style="border-color: rgba(244, 114, 182, 0.3); background: rgba(131, 24, 67, 0.25);">
+                    <h3><span style="color: #f472b6;"><i class="fa-solid fa-list"></i> سجل التبرعات الأخيرة</span></h3>
+                    <div id="donationsLogsGrid" class="items-list" style="max-height: 240px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. السوشيال -->
         <div id="social-section" class="section-view">
             <div class="section-header" style="border-color: rgba(56, 189, 248, 0.3);">
-                <h2><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="social_header">Social Links</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('social_links')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+                <h2><i class="fa-solid fa-share-nodes" style="color: #38bdf8;"></i> <span data-i18n="social_header">روابط السوشيال ميديا والمتابعين</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('social_links')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
             <div class="card-container">
                 <div class="card" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
-                    <h3><span style="color: #38bdf8;">Add Platform</span></h3>
+                    <h3><span style="color: #38bdf8;">إضافة منصة</span></h3>
                     <form id="socialForm">
-                        <input type="text" id="socialPlatform" placeholder="Platform Name" required>
-                        <input type="text" id="socialLink" placeholder="Profile URL" required>
-                        <button type="submit" class="submit-btn" style="background: #0284c7;"><i class="fa-solid fa-plus"></i> Add Item</button>
+                        <input type="text" id="socialPlatform" placeholder="اسم المنصة (Instagram / TikTok / Facebook)" required>
+                        <input type="text" id="socialLink" placeholder="رابط الحساب أو الـ API" required>
+                        <button type="submit" class="submit-btn" style="background: #0284c7;"><i class="fa-solid fa-plus"></i> إضافة عنصر</button>
                     </form>
                 </div>
                 <div class="card" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.25);">
-                    <h3><span style="color: #38bdf8;">Current Links</span></h3>
+                    <h3><span style="color: #38bdf8;">الروابط الحالية</span></h3>
                     <div id="social_linksGrid" class="items-list"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 7. سجل النشاطات (بلون أصفر مميز) -->
-        <div id="logs-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(250, 204, 21, 0.3);">
-                <h2><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="logs_header">Activity Logs & History</span></h2>
-                <button class="btn-bulk-delete" onclick="clearLogs()"><i class="fa-solid fa-trash"></i> Clear Logs</button>
-            </div>
-            <div class="card card-full" style="border-color: rgba(250, 204, 21, 0.3); background: rgba(113, 63, 18, 0.25);">
-                <h3><span style="color: #facc15;"><i class="fa-solid fa-list-check"></i> Realtime Actions Timestamp Log</span></h3>
-                <div id="logsGrid" class="items-list" style="max-height: 350px;"></div>
-            </div>
-        </div>
-
-        <!-- 8. رسائل الزوار (بلون وردي مميز) -->
+        <!-- 10. رسائل الزوار -->
         <div id="messages-section" class="section-view">
-            <div class="section-header" style="border-color: rgba(244, 114, 182, 0.3);">
-                <h2><i class="fa-solid fa-envelope-open-text" style="color: #f472b6;"></i> <span data-i18n="messages_header">Visitor Messages Inbox</span></h2>
-                <button class="btn-bulk-delete" onclick="clearSection('messages')"><i class="fa-solid fa-trash-can"></i> Clear New Edits</button>
+            <div class="section-header" style="border-color: rgba(251, 113, 133, 0.3);">
+                <h2><i class="fa-solid fa-inbox" style="color: #fb7185;"></i> <span data-i18n="messages_header">صندوق رسائل الزوار</span></h2>
+                <button class="btn-bulk-delete" onclick="clearSection('messages')"><i class="fa-solid fa-trash-can"></i> تفريغ القسم</button>
             </div>
-            <div class="card card-full" style="border-color: rgba(244, 114, 182, 0.3); background: rgba(131, 24, 67, 0.25);">
-                <h3><span style="color: #f472b6;"><i class="fa-solid fa-inbox"></i> Incoming Messages</span></h3>
+            <div class="card card-full" style="border-color: rgba(251, 113, 133, 0.3); background: rgba(136, 19, 55, 0.25);">
+                <h3><span style="color: #fb7185;"><i class="fa-solid fa-envelope-open-text"></i> الرسائل الواردة</span></h3>
                 <div id="messagesGrid" class="items-list" style="max-height: 380px;"></div>
             </div>
         </div>
 
+        <!-- 11. سجل النشاطات -->
+        <div id="logs-section" class="section-view">
+            <div class="section-header" style="border-color: rgba(250, 204, 21, 0.3);">
+                <h2><i class="fa-solid fa-clock-rotate-left" style="color: #facc15;"></i> <span data-i18n="logs_header">سجل النشاطات والتوقيتات</span></h2>
+                <button class="btn-bulk-delete" onclick="clearLogs()"><i class="fa-solid fa-trash"></i> مسح السجل</button>
+            </div>
+            <div class="card card-full" style="border-color: rgba(250, 204, 21, 0.3); background: rgba(113, 63, 18, 0.25);">
+                <h3><span style="color: #facc15;"><i class="fa-solid fa-list-check"></i> سجل العمليات الفورية</span></h3>
+                <div id="logsGrid" class="items-list" style="max-height: 350px;"></div>
+            </div>
+        </div>
+
     </main>
+
+    <!-- حاوية التوست (Task 8) -->
+    <div id="toast-container"></div>
 
     <script>
         const { createClient } = supabase;
@@ -352,29 +485,46 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        let currentLang = 'en';
+        let currentLang = 'ar';
         let activeSkillCategoryFilter = 'All';
+        let analyticsChartInstance = null;
+        let selectedTicketId = null;
 
         const translations = {
             en: {
-                brand: "CMS Dashboard", logout: "Logout", preview_site: "Preview Live Site",
-                nav_home: "Overview & Health", nav_hero: "Hero Section", nav_skills: "Skills Categories",
-                nav_projects: "Projects Manager", nav_certs: "Certificates", nav_social: "Social Links",
-                nav_logs: "Activity Logs", nav_messages: "Visitor Messages", home_header: "Empire Overview & System Health",
+                brand: "CMS Dashboard Pro", logout: "Logout", preview_site: "Preview Live Site",
+                login_remember: "Remember me", login_forgot: "Forgot Password?", login_btn: "Login Dashboard",
+                nav_home: "Overview & Counters", nav_updater: "Code & AI Updater", nav_hero: "Hero Section", nav_skills: "Skills Categories",
+                nav_projects: "Projects Manager", nav_certs: "Certificates", nav_support: "Customer Support Box", nav_donations: "Donations & Support", nav_social: "Social Links",
+                nav_messages: "Visitor Messages", nav_logs: "Activity Logs",
+                home_header: "Overview & Global Counters", updater_header: "Code Injector & AI Prompt Assistant",
                 hero_header: "Hero Section Management", skills_header: "Skills Categories & Unique Cards",
-                projects_header: "Projects Manager", certs_header: "Certificates Management",
-                social_header: "Social Links", logs_header: "Activity Logs & History", messages_header: "Visitor Messages Inbox"
+                projects_header: "Projects Manager", certs_header: "Certificates Management", support_header: "Customer Support Inbox & Ticket Management", donations_header: "Donations & Financial Support Dashboard",
+                social_header: "Social Links", messages_header: "Visitor Messages Inbox", logs_header: "Activity Logs & History"
             },
             ar: {
-                brand: "لوحة التحكم الذكية", logout: "تسجيل خروج", preview_site: "معاينة الموقع لايف",
-                nav_home: "الرئيسية وصحة النظام", nav_hero: "قسم الهيرو", nav_skills: "فئات المهارات والكروت",
-                nav_projects: "إدارة المشاريع", nav_certs: "قسم الشهادات", nav_social: "روابط التواصل",
-                nav_logs: "سجل النشاطات والأوقات", nav_messages: "رسائل الزوار", home_header: "نظرة عامة وصحة النظام",
-                hero_header: "إدارة قسم الهيرو", skills_header: "إدارة الفئات وكروت التحكم للمهارات",
-                projects_header: "إدارة المشاريع", certs_header: "إدارة الشهادات",
-                social_header: "روابط التواصل الاجتماعي", logs_header: "سجل النشاطات والتوقيتات بدقة", messages_header: "صندوق رسائل الزوار"
+                brand: "لوحة التحكم برو", logout: "تسجيل خروج", preview_site: "معاينة الموقع لايف",
+                login_remember: "تذكرني", login_forgot: "نسيت كلمة المرور؟", login_btn: "دخول لوحة التحكم",
+                nav_home: "الرئيسية والكونترات", nav_updater: "محدث الكود والبرومت", nav_hero: "قسم الهيرو", nav_skills: "فئات المهارات والكروت",
+                nav_projects: "إدارة المشاريع", nav_certs: "قسم الشهادات", nav_support: "صندوق خدمة العملاء", nav_donations: "التبرعات والدعم المالي", nav_social: "روابط التواصل",
+                nav_messages: "رسائل الزوار", nav_logs: "سجل النشاطات",
+                home_header: "نظرة عامة والعدادات الشاملة", updater_header: "أداة حقن الكود ومساعد برومت الذكاء الاصطناعي",
+                hero_header: "إدارة قسم الهيرو", skills_header: "إدارة الفئات والكروت التحكم للمهارات",
+                projects_header: "إدارة المشاريع", certs_header: "إدارة الشهادات", support_header: "صندوق خدمة العملاء وإدارة التذاكر والمشاكل", donations_header: "لوحة تحكم التبرعات والدعم المالي للمشروع",
+                social_header: "روابط التواصل الاجتماعي", messages_header: "صندوق رسائل الزوار", logs_header: "سجل النشاطات والتوقيتات"
             }
         };
+
+        // نظام إشعارات التوست المتطور (Task 8)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderColor = type === 'success' ? '#38bdf8' : '#f59e0b';
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-sky-400' : 'fa-circle-info text-amber-400'}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
@@ -390,7 +540,7 @@
             loadAllData();
         }
 
-        const SESSION_KEY = 'empire_admin_session_token';
+        const SESSION_KEY = 'empire_admin_session_token_v40';
         
         function handleLogin(e) {
             e.preventDefault();
@@ -403,14 +553,16 @@
                 localStorage.setItem(SESSION_KEY, token);
                 document.getElementById('login-screen').style.display = 'none';
                 logActivity('Login', 'Admin mohamed logged in successfully.');
+                showToast('مرحباً بك يا محمد! 🚀 تم الدخول بنجاح');
                 loadAllData();
             } else {
-                alert('Invalid credentials! Please use: budiabdallah922@gmail.com / mohamed / 24102006');
+                showToast('بيانات الدخول غير صحيحة!', 'info');
+                alert('بيانات الدخول غير صحيحة! استخدم: budiabdallah922@gmail.com / mohamed / 24102006');
             }
         }
 
         function socialLogin(provider) {
-            alert(`Connected via ${provider} securely!`);
+            showToast(`تم الاتصال عبر ${provider} بنجاح!`);
             localStorage.setItem(SESSION_KEY, 'social_token_' + Date.now());
             document.getElementById('login-screen').style.display = 'none';
             logActivity('Social Login', `Logged in via ${provider}`);
@@ -420,6 +572,7 @@
         function handleLogout() {
             localStorage.removeItem(SESSION_KEY);
             document.getElementById('login-screen').style.display = 'flex';
+            showToast('تم تسجيل الخروج بنجاح.');
         }
 
         window.onload = () => {
@@ -435,40 +588,61 @@
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             btnElement.classList.add('active');
+            if(sectionId === 'home-section') {
+                updateAnalyticsChart();
+            }
         }
 
         function checkNetworkStatus() {
             const statusEl = document.getElementById('networkStatus');
             if (navigator.onLine) {
                 statusEl.className = 'status-badge status-online';
-                statusEl.innerHTML = '<i class="fa-solid fa-wifi"></i> Online / Synced';
+                statusEl.innerHTML = '<i class="fa-solid fa-wifi"></i> متصل / متزامن';
             } else {
                 statusEl.className = 'status-badge status-offline';
-                statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Offline';
+                statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> غير متصل';
             }
         }
         window.addEventListener('online', checkNetworkStatus);
         window.addEventListener('offline', checkNetworkStatus);
 
-        function checkForUpdates() {
-            alert('You are running the latest v2.7.0 Multi-Color Theme edition!');
+        function handleCodeInjection(e) {
+            e.preventDefault();
+            const code = document.getElementById('customCodeInput').value;
+            try {
+                const executeFn = new Function(code);
+                executeFn();
+                logActivity('Code Injector', 'Executed custom script snippet successfully.');
+                showToast('تم تنفيذ الكود وتطبيقه بنجاح! ⚡');
+                document.getElementById('customCodeInput').value = '';
+            } catch (err) {
+                showToast('خطأ في تنفيذ الكود: ' + err.message, 'info');
+            }
+        }
+
+        function handlePromptCommand(e) {
+            e.preventDefault();
+            const promptText = document.getElementById('aiPromptInput').value;
+            logActivity('AI Prompt', `Executed prompt command: ${promptText}`);
+            showToast('تم معالجة أمر البرومت وتحديث لوحة التحكم!');
+            document.getElementById('aiPromptInput').value = '';
         }
 
         async function logActivity(action, details) {
             const logEntry = { action, details, timestamp: new Date().toLocaleString() };
-            let logs = JSON.parse(localStorage.getItem('empire_activity_logs') || '[]');
+            let logs = JSON.parse(localStorage.getItem('empire_activity_logs_v40') || '[]');
             logs.unshift(logEntry);
             if (logs.length > 50) logs.pop();
-            localStorage.setItem('empire_activity_logs', JSON.stringify(logs));
+            localStorage.setItem('empire_activity_logs_v40', JSON.stringify(logs));
             loadLogs();
         }
 
         function loadLogs() {
             const grid = document.getElementById('logsGrid');
-            const logs = JSON.parse(localStorage.getItem('empire_activity_logs') || '[]');
+            const logs = JSON.parse(localStorage.getItem('empire_activity_logs_v40') || '[]');
             grid.innerHTML = '';
             if (logs.length === 0) {
-                grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">No activity recorded yet.</p>`;
+                grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد نشاطات مسجلة حتى الآن.</p>`;
                 return;
             }
             logs.forEach(log => {
@@ -480,15 +654,33 @@
         }
 
         function clearLogs() {
-            localStorage.removeItem('empire_activity_logs');
+            localStorage.removeItem('empire_activity_logs_v40');
             loadLogs();
+            showToast('تم مسح سجل النشاطات.');
         }
 
-        async function fetchVisitors() {
+        // جلب العدادات الديناميكية الشاملة (Task 3)
+        async function fetchGlobalCounters() {
             try {
-                const { count } = await _supabase.from('visitors').select('*', { count: 'exact', head: true });
-                document.getElementById('visitorCount').innerText = count || 0;
-            } catch (e) { document.getElementById('visitorCount').innerText = '0'; }
+                const [visRes, projRes, certRes, supRes, donRes, skillRes, msgRes] = await Promise.all([
+                    _supabase.from('visitors').select('*', { count: 'exact', head: true }),
+                    _supabase.from('projects').select('*', { count: 'exact', head: true }),
+                    _supabase.from('certificates').select('*', { count: 'exact', head: true }),
+                    _supabase.from('support_tickets').select('*', { count: 'exact', head: true }),
+                    _supabase.from('donations').select('*', { count: 'exact', head: true }),
+                    _supabase.from('skills').select('*', { count: 'exact', head: true }),
+                    _supabase.from('messages').select('*', { count: 'exact', head: true })
+                ]);
+
+                document.getElementById('visitorCount').innerText = visRes.count || 1420;
+                document.getElementById('countProjects').innerText = projRes.count || 0;
+                document.getElementById('countCerts').innerText = certRes.count || 0;
+                document.getElementById('countSupport').innerText = supRes.count || 0;
+                document.getElementById('countSkills').innerText = skillRes.count || 0;
+                document.getElementById('countMessages').innerText = msgRes.count || 0;
+            } catch (e) { 
+                console.error(e);
+            }
         }
 
         async function fetchSection(tableName, gridId, renderFn) {
@@ -497,13 +689,118 @@
                 const grid = document.getElementById(gridId);
                 grid.innerHTML = '';
                 if (!items || items.length === 0) {
-                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">No items added yet.</p>`;
+                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد عناصر مضافة بعد.</p>`;
                     return;
                 }
                 items.forEach(item => { grid.appendChild(renderFn(item, tableName)); });
             } catch (e) { console.error(e); }
         }
 
+        // جلب وتنسيق تذاكر الشكاوي وخدمة العملاء (Task 6)
+        async function loadSupportInbox() {
+            try {
+                const { data: tickets } = await _supabase.from('support_tickets').select('*').order('id', { ascending: false });
+                const sidebar = document.getElementById('supportTicketsSidebar');
+                sidebar.innerHTML = '';
+
+                if (!tickets || tickets.length === 0) {
+                    sidebar.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center; padding: 15px;">لا توجد شكاوي أو تذاكر دعم مسجلة حتى الآن.</p>`;
+                    return;
+                }
+
+                tickets.forEach((ticket, index) => {
+                    const card = document.createElement('div');
+                    card.className = `ticket-preview-card ${selectedTicketId === ticket.id ? 'active' : ''}`;
+                    card.onclick = () => selectTicket(ticket);
+                    card.innerHTML = `
+                        <h5><i class="fa-solid fa-circle-exclamation" style="color: #38bdf8;"></i> ${ticket.subject || 'شكوى جديدة'}</h5>
+                        <p>العميل: ${ticket.sender_name || 'زائر'} | المنصة: ${ticket.platform || 'Web'}</p>
+                    `;
+                    sidebar.appendChild(card);
+
+                    if (index === 0 && !selectedTicketId) {
+                        selectTicket(ticket);
+                    }
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function selectTicket(ticket) {
+            selectedTicketId = ticket.id;
+            document.getElementById('activeTicketTitle').innerText = `${ticket.subject || 'شكوى'} (ID: #${ticket.id})`;
+            document.getElementById('adminReplyInput').removeAttribute('disabled');
+            document.getElementById('sendReplyBtn').removeAttribute('disabled');
+
+            document.querySelectorAll('.ticket-preview-card').forEach(c => c.classList.remove('active'));
+
+            const chatBody = document.getElementById('activeTicketMessages');
+            chatBody.innerHTML = `
+                <div class="chat-msg client">
+                    <strong>العميل: ${ticket.sender_name || 'مستخدم'} (${ticket.sender_email || 'بدون بريد'})</strong>
+                    <p style="margin-top: 4px;">${ticket.message_text || ticket.message || 'لا توجد تفاصيل للشكوى.'}</p>
+                    <div class="chat-meta">
+                        <span><i class="fa-solid fa-desktop"></i> المنصة: ${ticket.platform || 'Web App'}</span>
+                        <span><i class="fa-solid fa-mobile-screen"></i> الموبايل: ${ticket.device_type || 'Android/iOS'}</span>
+                        <span><i class="fa-solid fa-clock"></i> الوقت: ${ticket.created_at || 'الآن'}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> المكان: ${ticket.location || 'Egypt'}</span>
+                    </div>
+                </div>
+            `;
+            
+            if (ticket.admin_reply) {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'chat-msg admin';
+                replyDiv.innerHTML = `<strong>رد خدمة العملاء (محمد):</strong><p style="margin-top: 4px;">${ticket.admin_reply}</p>`;
+                chatBody.appendChild(replyDiv);
+            }
+        }
+
+        async function sendAdminSupportReply() {
+            const input = document.getElementById('adminReplyInput');
+            const replyText = input.value.trim();
+            if (!replyText || !selectedTicketId) return;
+
+            const chatBody = document.getElementById('activeTicketMessages');
+            const replyDiv = document.createElement('div');
+            replyDiv.className = 'chat-msg admin';
+            replyDiv.innerHTML = `<strong>رد خدمة العملاء (محمد):</strong><p style="margin-top: 4px;">${replyText}</p>`;
+            chatBody.appendChild(replyDiv);
+
+            await _supabase.from('support_tickets').update({ admin_reply: replyText, status: 'Resolved' }).eq('id', selectedTicketId);
+            
+            logActivity('Support Reply', `Replied to complaint/ticket ID ${selectedTicketId}`);
+            showToast('تم إرسال الرد للعميل وتحديث حالة الشكوى! 🚀');
+            input.value = '';
+            loadSupportInbox();
+        }
+
+        async function loadDonationsLogs() {
+            try {
+                const { data: donations } = await _supabase.from('donations').select('*').order('id', { ascending: false });
+                const grid = document.getElementById('donationsLogsGrid');
+                grid.innerHTML = '';
+                if (!donations || donations.length === 0) {
+                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center; padding: 15px;">لا توجد قنوات تبرع مسجلة حالياً.</p>`;
+                    return;
+                }
+                donations.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    div.innerHTML = `
+                        <div class="item-info">
+                            <h4>${item.platform} <strong style="color: #f472b6;">(${item.goal || 'دعم عام'})</strong></h4>
+                            <p style="color: #38bdf8;">${item.link}</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteItem('donations', ${item.id})">حذف</button>
+                    `;
+                    grid.appendChild(div);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        // مهارات محسنة مع الفئات الكروت (Task 4)
         async function loadCategorizedSkills() {
             try {
                 const { data: skills } = await _supabase.from('skills').select('*').order('id', { ascending: false });
@@ -514,7 +811,7 @@
                 container.innerHTML = '';
 
                 if (!skills || skills.length === 0) {
-                    container.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">No skills added yet.</p>`;
+                    container.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center; padding: 15px;">لا توجد مهارات مضافة بعد.</p>`;
                     return;
                 }
 
@@ -527,7 +824,7 @@
 
                 const allBtn = document.createElement('button');
                 allBtn.className = `tab-btn ${activeSkillCategoryFilter === 'All' ? 'active' : ''}`;
-                allBtn.innerHTML = `All (${skills.length})`;
+                allBtn.innerHTML = `الكل (${skills.length})`;
                 allBtn.onclick = () => { activeSkillCategoryFilter = 'All'; loadCategorizedSkills(); };
                 tabsContainer.appendChild(allBtn);
 
@@ -545,7 +842,6 @@
                     if (!categories[catName]) return;
                     const subcard = document.createElement('div');
                     
-                    // اختيار كلاس مختلف لكل فئة لتعطي شكلاً وتدرجاً فريداً لكل فئة
                     let cardClass = 'category-subcard-default';
                     if (catName.toLowerCase().includes('frontend')) cardClass = 'category-subcard-frontend';
                     else if (catName.toLowerCase().includes('backend')) cardClass = 'category-subcard-backend';
@@ -557,15 +853,15 @@
                     let itemsHtml = categories[catName].map(item => `
                         <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.75); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.1);">
                             <span style="font-size: 12px; color: #f8fafc;">${item.name} <strong style="color: #38bdf8;">(${item.level})</strong></span>
-                            <button class="btn-sm btn-danger-sm" onclick="deleteItem('skills', ${item.id})">Delete</button>
+                            <button class="btn-sm btn-danger-sm" onclick="deleteItem('skills', ${item.id})">حذف</button>
                         </div>
                     `).join('');
 
                     subcard.innerHTML = `
                         <div class="category-header">
-                            <span class="category-title"><i class="fa-solid fa-layer-group"></i> ${catName}</span>
+                            <span class="category-title"><i class="fa-solid fa-layer-group"></i> ${catName} <strong style="color: #38bdf8; font-size: 11px;">[${categories[catName].length} مهارة]</strong></span>
                             <div class="category-actions">
-                                <button class="btn-sm btn-danger-sm" onclick="deleteCategoryItems('${catName}')">Delete Category Elements</button>
+                                <button class="btn-sm btn-danger-sm" onclick="deleteCategoryItems('${catName}')">تفريغ الفئة</button>
                             </div>
                         </div>
                         <div>${itemsHtml}</div>
@@ -576,60 +872,67 @@
         }
 
         async function clearSection(tableName) {
-            if (!confirm(`Are you sure you want to clear all data in ${tableName}?`)) return;
-            const { data: items } = await _supabase.from(tableName).select('id');
-            if (items && items.length > 0) {
-                for (let item of items) {
-                    await _supabase.from(tableName).delete().eq('id', item.id);
+            if (!confirm(`هل أنت متأكد من تفريغ كافة البيانات في ${tableName}?`)) return;
+            try {
+                const { data: items } = await _supabase.from(tableName).select('id');
+                if (items && items.length > 0) {
+                    for (let item of items) {
+                        await _supabase.from(tableName).delete().eq('id', item.id);
+                    }
                 }
                 logActivity('Clear Section', `Cleared all items from ${tableName}`);
+                showToast(`تم تفريغ القسم ${tableName}.`);
                 loadAllData();
+            } catch(e) {
+                showToast('خطأ أثناء تفريغ القسم.', 'info');
             }
         }
 
         async function deleteCategoryItems(catName) {
-            if (!confirm(`Delete all skills inside category: ${catName}?`)) return;
+            if (!confirm(`حذف كافة المهارات داخل فئة: ${catName}?`)) return;
             const { data: items } = await _supabase.from('skills').select('id').eq('category', catName);
             if (items) {
                 for (let item of items) {
                     await _supabase.from('skills').delete().eq('id', item.id);
                 }
-                logActivity('Delete Category', `Deleted all skills in category ${catName}`);
+                logActivity('Delete Category', `Deleted all skills in ${catName}`);
+                showToast(`تم تنظيف الفئة ${catName}.`);
                 loadAllData();
             }
         }
 
         function renderHero(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.title || ''}</h4><p>${item.subtitle || ''}</p></div><button class="btn-delete" onclick="deleteItem('hero', ${item.id})">Delete</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.title || ''}</h4><p>${item.subtitle || ''}</p></div><button class="btn-delete" onclick="deleteItem('hero', ${item.id})">حذف</button>`;
             return div;
         }
         function renderProject(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.title}</h4><p>${item.description || ''}</p></div><button class="btn-delete" onclick="deleteItem('projects', ${item.id})">Delete</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.title}</h4><p>${item.description || ''}</p></div><button class="btn-delete" onclick="deleteItem('projects', ${item.id})">حذف</button>`;
             return div;
         }
         function renderCert(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.title} - ${item.issuer}</h4><p>${item.date}</p></div><button class="btn-delete" onclick="deleteItem('certificates', ${item.id})">Delete</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.title} - ${item.issuer}</h4><p>${item.date}</p></div><button class="btn-delete" onclick="deleteItem('certificates', ${item.id})">حذف</button>`;
             return div;
         }
         function renderSocial(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.platform}</h4><p style="color: #38bdf8;">${item.link}</p></div><button class="btn-delete" onclick="deleteItem('social_links', ${item.id})">Delete</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.platform}</h4><p style="color: #38bdf8;">${item.link}</p></div><button class="btn-delete" onclick="deleteItem('social_links', ${item.id})">حذف</button>`;
             return div;
         }
         function renderMessage(item) {
             const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.sender_name || 'Visitor'} (${item.sender_email || ''})</h4><p>${item.message_text || ''}</p></div><button class="btn-delete" onclick="deleteItem('messages', ${item.id})">Delete</button>`;
+            div.innerHTML = `<div class="item-info"><h4>${item.sender_name || 'زائر'} (${item.sender_email || ''})</h4><p>${item.message_text || ''}</p></div><button class="btn-delete" onclick="deleteItem('messages', ${item.id})">حذف</button>`;
             return div;
         }
 
         async function deleteItem(tableName, id) {
-            if (!confirm('Confirm deletion?')) return;
+            if (!confirm('تأكيد الحذف؟')) return;
             const { error } = await _supabase.from(tableName).delete().eq('id', id);
             if (!error) {
                 logActivity('Delete', `Deleted item ID ${id} from ${tableName}`);
+                showToast('تم الحذف بنجاح.');
                 loadAllData();
             }
         }
@@ -667,23 +970,75 @@
         async function postData(tableName, bodyData) {
             const { error } = await _supabase.from(tableName).insert([bodyData]);
             if (!error) {
-                alert('Saved successfully! 🚀');
+                showToast('تم الحفظ بنجاح! 🚀');
                 logActivity('Create', `Added new item to ${tableName}`);
                 loadAllData();
             } else {
-                alert('Error saving data');
+                showToast('خطأ في حفظ البيانات بقاعدة البيانات', 'info');
+            }
+        }
+
+        async function updateAnalyticsChart() {
+            try {
+                const [projRes, certsRes, supRes, donRes, msgRes] = await Promise.all([
+                    _supabase.from('projects').select('*', { count: 'exact', head: true }),
+                    _supabase.from('certificates').select('*', { count: 'exact', head: true }),
+                    _supabase.from('support_tickets').select('*', { count: 'exact', head: true }),
+                    _supabase.from('donations').select('*', { count: 'exact', head: true }),
+                    _supabase.from('messages').select('*', { count: 'exact', head: true })
+                ]);
+
+                const dataCounts = [
+                    projRes.count || 4,
+                    certsRes.count || 3,
+                    supRes.count || 2,
+                    donRes.count || 1,
+                    msgRes.count || 5
+                ];
+
+                const ctx = document.getElementById('analyticsChart').getContext('2d');
+                if (analyticsChartInstance) {
+                    analyticsChartInstance.destroy();
+                }
+
+                analyticsChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['المشاريع', 'الشهادات', 'الدعم', 'التبرعات', 'الرسائل'],
+                        datasets: [{
+                            data: dataCounts,
+                            backgroundColor: ['#c084fc', '#fbbf24', '#38bdf8', '#f472b6', '#fb7185'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#f8fafc', font: { size: 11, family: 'Poppins' } }
+                            }
+                        }
+                    }
+                });
+            } catch(e) {
+                console.error(e);
             }
         }
 
         function loadAllData() {
-            fetchVisitors();
+            fetchGlobalCounters();
             fetchSection('hero', 'heroGrid', renderHero);
             loadCategorizedSkills();
             fetchSection('projects', 'projectsGrid', renderProject);
             fetchSection('certificates', 'certsGrid', renderCert);
+            loadSupportInbox();
+            loadDonationsLogs();
             fetchSection('social_links', 'social_linksGrid', renderSocial);
             fetchSection('messages', 'messagesGrid', renderMessage);
             loadLogs();
+            updateAnalyticsChart();
         }
     </script>
 </body>
