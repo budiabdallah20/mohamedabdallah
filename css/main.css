@@ -682,4 +682,68 @@ footer a:hover {
         width: 100% !important;
         text-align: center !important;
     }
+}/* تنسيق شريط الترحيب العلوي */
+.welcome-banner {
+    background: linear-gradient(135deg, #4f46e5, #6366f1, #0284c7);
+    color: #ffffff;
+    padding: 10px 20px;
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    position: relative;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.welcome-icon {
+    font-size: 1.1rem;
+    animation: wave 1.5s infinite;
+    display: inline-block;
+}
+
+@keyframes wave {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(14deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.welcome-text p {
+    margin: 0;
+    display: inline;
+}
+
+#closeWelcomeBtn {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: absolute;
+    left: 10px; /* لو الموقع إنجليزي أو لليسار، غيرها لـ right حسب الرغبة */
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+#closeWelcomeBtn:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
 }

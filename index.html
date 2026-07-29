@@ -48,6 +48,17 @@
 </head>
 
 <body>
+    <!-- شريط الترحيب العلوي -->
+<div id="welcomeBanner" class="welcome-banner">
+    <div class="welcome-content">
+        <span class="welcome-icon">👋</span>
+        <p class="welcome-text">
+            <span class="lang-ar">أهلاً بك في موقعي الشخصي! سعيد بزيارتك 🚀</span>
+            <span class="lang-en" style="display: none;">Welcome to my personal portfolio! Glad to have you here 🚀</span>
+        </p>
+        <button id="closeWelcomeBtn" title="إغلاق">&times;</button>
+    </div>
+</div>
     <!-- حاوية النجوم -->
     <div class="stars-container" id="starsContainer"></div>
     <div class="preloader">
@@ -684,7 +695,19 @@
         }
     });
 </script>
-  
+  <script>
+  async function trackVisitor() {
+      try {
+          if (!sessionStorage.getItem('visited_tracked')) {
+              await _supabase.from('visitors').insert([{ ip_address: 'live_visitor' }]);
+              sessionStorage.setItem('visited_tracked', 'true');
+          }
+      } catch(e) { 
+          console.log('Visitor tracking error:', e); 
+      }
+  }
+  trackVisitor();
+</script>
     
 </body>
 </html>

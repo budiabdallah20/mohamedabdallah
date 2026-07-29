@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (backToTopBtn) {
         window.addEventListener("scroll", () => {
-            if (window.scrollY > 300) {
+            if (window.scrollY > 400) {
                 backToTopBtn.classList.add("show");
             } else {
                 backToTopBtn.classList.remove("show");

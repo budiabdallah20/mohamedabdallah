@@ -52,4 +52,26 @@ document.addEventListener("DOMContentLoaded", () => {
             changeLanguage(newLang);
         });
     }
+});// إغلاق شريط الترحيب عند الضغط على زر X
+document.getElementById('closeWelcomeBtn').addEventListener('click', function() {
+    const banner = document.getElementById('welcomeBanner');
+    banner.style.opacity = '0';
+    banner.style.transition = 'opacity 0.4s ease';
+    setTimeout(() => {
+        banner.style.display = 'none';
+    }, 400);
 });
+
+// ميزة اختيارية: لو حبيت تخليه يتبدل تلقائياً مع نظام الترجمة (عربي/إنجليزي)
+// لو عندك متغير أو دالة بتغير لغة الموقع، تقدر تظهر النص المناسب بناءً عليها:
+function switchWelcomeLanguage(lang) {
+    const arText = document.querySelector('.welcome-banner .lang-ar');
+    const enText = document.querySelector('.welcome-banner .lang-en');
+    if (lang === 'en') {
+        arText.style.display = 'none';
+        enText.style.display = 'inline';
+    } else {
+        arText.style.display = 'inline';
+        enText.style.display = 'none';
+    }
+}
