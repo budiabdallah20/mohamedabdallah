@@ -69,13 +69,15 @@
         .submit-btn:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5); }
         
         .items-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding-right: 2px; }
-        .item-row { background: rgba(30, 27, 75, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .item-row { background: rgba(30, 27, 75, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .item-row:hover { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.5); transform: translateX(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .item-info h4 { font-size: 13px; color: #f8fafc; margin-bottom: 4px; font-weight: 600; }
+        .item-info h4 { font-size: 13px; color: #f8fafc; margin-bottom: 4px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .item-info p { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
         
-        .btn-delete, .btn-bulk-delete { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid rgba(220, 38, 38, 0.3); padding: 7px 14px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.3s; }
+        .btn-delete, .btn-bulk-delete, .btn-edit { background: rgba(220, 38, 38, 0.2); color: #fca5a5; border: 1px solid rgba(220, 38, 38, 0.3); padding: 6px 12px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.3s; }
         .btn-delete:hover, .btn-bulk-delete:hover { background: #dc2626; color: white; border-color: #dc2626; box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); transform: translateY(-1px); }
+        .btn-edit { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.4); margin-left: 5px; }
+        .btn-edit:hover { background: #a855f7; color: white; border-color: #a855f7; }
         .btn-bulk-delete { display: flex; align-items: center; gap: 6px; }
 
         .support-inbox-layout { display: flex; gap: 15px; height: 440px; }
@@ -220,12 +222,14 @@
                 <div class="card" style="position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #a855f7;"></div>
                     <h3>
-                        <span id="catTitle-1" contenteditable="true" onblur="updateCategoryName(1, this.innerText)" style="border-bottom: 1px dashed #a855f7; outline: none; cursor: pointer;">Frontend Development</span>
-                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Frontend Development')">حذف عناصر الفئة</button>
+                        <span id="catTitle-1" contenteditable="true" onblur="updateCategoryName(1, this.innerText)" style="border-bottom: 1px dashed #a855f7; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Frontend Development</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Frontend Development')">حذف العناصر</button>
                     </h3>
                     <form onsubmit="addSkillToCategory(event, 'Frontend Development')">
-                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_1_name" required>
-                        <input type="text" placeholder="المستوى (مثال: 95%)" id="skill_1_level" required>
+                        <input type="text" placeholder="اسم المهارة (مثال: HTML5 / CSS3)" id="skill_1_name" required>
+                        <input type="text" placeholder="المستوى (مثال: Intermediate)" id="skill_1_level" required>
+                        <input type="text" placeholder="كلاس الأيقونة FontAwesome (مثال: fab fa-html5)" id="skill_1_icon">
+                        <input type="text" placeholder="وصف مختصر (مثال: تصميم وتجاوب)" id="skill_1_desc">
                         <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #a855f7, #9333ea);">إضافة للمهارات الأمامية</button>
                     </form>
                     <div id="list-cat-frontend" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
@@ -234,27 +238,31 @@
                 <div class="card" style="position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #34d399;"></div>
                     <h3>
-                        <span id="catTitle-2" contenteditable="true" onblur="updateCategoryName(2, this.innerText)" style="border-bottom: 1px dashed #34d399; outline: none; cursor: pointer;">Backend & Database</span>
-                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Backend & Database')">حذف عناصر الفئة</button>
+                        <span id="catTitle-2" contenteditable="true" onblur="updateCategoryName(2, this.innerText)" style="border-bottom: 1px dashed #34d399; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Programming</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Programming')">حذف العناصر</button>
                     </h3>
-                    <form onsubmit="addSkillToCategory(event, 'Backend & Database')">
-                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_2_name" required>
-                        <input type="text" placeholder="المستوى (مثال: 85%)" id="skill_2_level" required>
-                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #059669, #047857);">إضافة لقاعدة البيانات</button>
+                    <form onsubmit="addSkillToCategory(event, 'Programming')">
+                        <input type="text" placeholder="اسم اللغة (مثال: Python)" id="skill_2_name" required>
+                        <input type="text" placeholder="المستوى (مثال: Intermediate)" id="skill_2_level" required>
+                        <input type="text" placeholder="كلاس الأيقونة (مثال: fab fa-python)" id="skill_2_icon">
+                        <input type="text" placeholder="وصف مختصر (مثال: أساسيات وسكربتات)" id="skill_2_desc">
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #059669, #047857);">إضافة لقسم البرمجة</button>
                     </form>
-                    <div id="list-cat-backend" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
+                    <div id="list-cat-programming" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
 
                 <div class="card" style="position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #ec4899;"></div>
                     <h3>
-                        <span id="catTitle-3" contenteditable="true" onblur="updateCategoryName(3, this.innerText)" style="border-bottom: 1px dashed #ec4899; outline: none; cursor: pointer;">Tools & Workflow</span>
-                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Tools & Workflow')">حذف عناصر الفئة</button>
+                        <span id="catTitle-3" contenteditable="true" onblur="updateCategoryName(3, this.innerText)" style="border-bottom: 1px dashed #ec4899; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Tools & Environment</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Tools & Environment')">حذف العناصر</button>
                     </h3>
-                    <form onsubmit="addSkillToCategory(event, 'Tools & Workflow')">
-                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_3_name" required>
-                        <input type="text" placeholder="المستوى (مثال: 90%)" id="skill_3_level" required>
-                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #ec4899, #db2777);">إضافة لأدوات العمل</button>
+                    <form onsubmit="addSkillToCategory(event, 'Tools & Environment')">
+                        <input type="text" placeholder="اسم الأداة (مثال: VS Code)" id="skill_3_name" required>
+                        <input type="text" placeholder="المستوى (مثال: Intermediate)" id="skill_3_level" required>
+                        <input type="text" placeholder="كلاس الأيقونة (مثال: fas fa-laptop-code)" id="skill_3_icon">
+                        <input type="text" placeholder="وصف مختصر (مثال: بيئة التطوير)" id="skill_3_desc">
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #ec4899, #db2777);">إضافة للأدوات</button>
                     </form>
                     <div id="list-cat-tools" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
@@ -262,15 +270,17 @@
                 <div class="card" style="position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; right: 0; width: 4px; height: 100%; background: #fbbf24;"></div>
                     <h3>
-                        <span id="catTitle-4" contenteditable="true" onblur="updateCategoryName(4, this.innerText)" style="border-bottom: 1px dashed #fbbf24; outline: none; cursor: pointer;">Advanced UI/UX</span>
-                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Advanced UI/UX')">حذف عناصر الفئة</button>
+                        <span id="catTitle-4" contenteditable="true" onblur="updateCategoryName(4, this.innerText)" style="border-bottom: 1px dashed #fbbf24; outline: none; cursor: pointer;" title="اضغط لتعديل اسم الفئة">Soft Skills</span>
+                        <button class="btn-delete" style="font-size: 9px; padding: 3px 8px;" onclick="clearCategoryElements('Soft Skills')">حذف العناصر</button>
                     </h3>
-                    <form onsubmit="addSkillToCategory(event, 'Advanced UI/UX')">
-                        <input type="text" placeholder="اسم المهارة الجديدة" id="skill_4_name" required>
-                        <input type="text" placeholder="المستوى (مثال: 80%)" id="skill_4_level" required>
-                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #d97706, #b45309);">إضافة لتصميم الواجهات</button>
+                    <form onsubmit="addSkillToCategory(event, 'Soft Skills')">
+                        <input type="text" placeholder="اسم المهارة (مثال: Problem Solving)" id="skill_4_name" required>
+                        <input type="text" placeholder="المستوى (مثال: Professional)" id="skill_4_level" required>
+                        <input type="text" placeholder="كلاس الأيقونة (مثال: fas fa-brain)" id="skill_4_icon">
+                        <input type="text" placeholder="وصف مختصر (مثال: حل المشكلات)" id="skill_4_desc">
+                        <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #d97706, #b45309);">إضافة للمهارات الحياتية</button>
                     </form>
-                    <div id="list-cat-ui" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
+                    <div id="list-cat-soft" class="items-list" style="margin-top: 15px; max-height: 180px;"></div>
                 </div>
             </div>
         </div>
@@ -396,7 +406,6 @@
     <div id="toast-container"></div>
 
     <script>
-        // تأثير النجوم المتحركة في الخلفية
         const canvas = document.getElementById('stars-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -432,7 +441,6 @@
         }
         animateStars();
 
-        // الاتصال بـ Supabase
         const { createClient } = supabase;
         const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
@@ -655,54 +663,103 @@
             try {
                 const { data: skills } = await _supabase.from('skills').select('*').order('id', { ascending: false });
                 const fList = document.getElementById('list-cat-frontend');
-                const bList = document.getElementById('list-cat-backend');
+                const pList = document.getElementById('list-cat-programming');
                 const tList = document.getElementById('list-cat-tools');
-                const uList = document.getElementById('list-cat-ui');
+                const sList = document.getElementById('list-cat-soft');
                 
                 if(fList) fList.innerHTML = '';
-                if(bList) bList.innerHTML = '';
+                if(pList) pList.innerHTML = '';
                 if(tList) tList.innerHTML = '';
-                if(uList) uList.innerHTML = '';
+                if(sList) sList.innerHTML = '';
 
                 if (!skills || skills.length === 0) return;
 
                 skills.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'item-row';
-                    div.style.background = 'rgba(30, 27, 75, 0.3)';
-                    div.style.padding = '8px 12px';
-                    div.innerHTML = `<div class="item-info"><h4 style="font-size:11px; margin:0;">${item.name} <span style="color:#a855f7;">(${item.level})</span></h4></div><button class="btn-delete" style="padding:3px 6px; font-size:10px;" onclick="deleteItem('skills', ${item.id})"><i class="fa-solid fa-trash"></i></button>`;
+                    div.innerHTML = `
+                        <div class="item-info">
+                            <h4><i class="${item.icon_class || 'fa-solid fa-check'}"></i> ${item.name} <span style="color:#a855f7;">(${item.level})</span></h4>
+                            <p>${item.description || ''}</p>
+                        </div>
+                        <div style="display:flex; gap:4px;">
+                            <button class="btn-edit" onclick="editSkill(${item.id}, '${item.name}', '${item.level}', '${item.icon_class || ''}', '${item.description || ''}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-delete" onclick="deleteItem('skills', ${item.id})"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
 
                     if (item.category === 'Frontend Development' && fList) fList.appendChild(div);
-                    else if (item.category === 'Backend & Database' && bList) bList.appendChild(div);
-                    else if (item.category === 'Tools & Workflow' && tList) tList.appendChild(div);
-                    else if (uList) uList.appendChild(div);
+                    else if (item.category === 'Programming' && pList) pList.appendChild(div);
+                    else if (item.category === 'Tools & Environment' && tList) tList.appendChild(div);
+                    else if (item.category === 'Soft Skills' && sList) sList.appendChild(div);
                 });
             } catch (e) { console.error(e); }
         }
 
         async function addSkillToCategory(e, categoryName) {
             e.preventDefault();
-            let nameVal, levelVal;
+            let nameVal, levelVal, iconVal, descVal;
             if(categoryName === 'Frontend Development') {
                 nameVal = document.getElementById('skill_1_name').value;
                 levelVal = document.getElementById('skill_1_level').value;
-            } else if(categoryName === 'Backend & Database') {
+                iconVal = document.getElementById('skill_1_icon').value;
+                descVal = document.getElementById('skill_1_desc').value;
+            } else if(categoryName === 'Programming') {
                 nameVal = document.getElementById('skill_2_name').value;
                 levelVal = document.getElementById('skill_2_level').value;
-            } else if(categoryName === 'Tools & Workflow') {
+                iconVal = document.getElementById('skill_2_icon').value;
+                descVal = document.getElementById('skill_2_desc').value;
+            } else if(categoryName === 'Tools & Environment') {
                 nameVal = document.getElementById('skill_3_name').value;
                 levelVal = document.getElementById('skill_3_level').value;
+                iconVal = document.getElementById('skill_3_icon').value;
+                descVal = document.getElementById('skill_3_desc').value;
             } else {
                 nameVal = document.getElementById('skill_4_name').value;
                 levelVal = document.getElementById('skill_4_level').value;
+                iconVal = document.getElementById('skill_4_icon').value;
+                descVal = document.getElementById('skill_4_desc').value;
             }
 
-            await _supabase.from('skills').insert([{ name: nameVal, level: levelVal, category: categoryName }]);
+            await _supabase.from('skills').insert([{ name: nameVal, level: levelVal, icon_class: iconVal, description: descVal, category: categoryName }]);
             e.target.reset();
             loadCategorizedSkills();
             fetchGlobalCounters();
-            showToast('تمت إضافة المهارة بنجاح وتحديث الكارت!');
+            showToast('تمت إضافة المهارة باللوجو والوصف بنجاح!');
+        }
+
+        async function updateCategoryName(catNum, newTitle) {
+            if (!newTitle.trim()) {
+                showToast('اسم الفئة لا يمكن أن يكون فارغاً!', 'info');
+                return;
+            }
+            try {
+                const { error } = await _supabase
+                    .from('skills')
+                    .update({ category: newTitle.trim() })
+                    .eq('id', catNum);
+
+                if (error) {
+                    showToast('حدث خطأ أثناء تحديث اسم الفئة', 'info');
+                } else {
+                    showToast(`تم تحديث اسم الفئة إلى: ${newTitle.trim()} بنجاح!`);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('خطأ في الاتصال بقاعدة البيانات', 'info');
+            }
+        }
+
+        async function editSkill(id, oldName, oldLevel, oldIcon, oldDesc) {
+            const newName = prompt('تعديل اسم المهارة:', oldName);
+            if (newName === null) return;
+            const newLevel = prompt('تعديل المستوى:', oldLevel);
+            const newIcon = prompt('تعديل كلاس الأيقونة (FontAwesome):', oldIcon);
+            const newDesc = prompt('تعديل الوصف المختصر:', oldDesc);
+
+            await _supabase.from('skills').update({ name: newName, level: newLevel, icon_class: newIcon, description: newDesc }).eq('id', id);
+            loadCategorizedSkills();
+            showToast('تم تحديث المهارة بنجاح!');
         }
 
         async function clearCategoryElements(categoryName) {
@@ -725,10 +782,6 @@
             loadCategorizedSkills();
             fetchGlobalCounters();
             showToast('تم مسح جميع المهارات.');
-        }
-
-        function updateCategoryName(catNum, newTitle) {
-            showToast(`تم تحديث اسم الفئة رقم ${catNum} إلى: ${newTitle}`);
         }
 
         async function loadProjectsManager() {
@@ -863,7 +916,7 @@
 
         async function loadHeroData() {
             try {
-                const { data, error } = await _supabase.from('hero_section').select('*').limit(1).single();
+                const { data } = await _supabase.from('hero_section').select('*').limit(1).single();
                 if (data) {
                     document.getElementById('heroTitle').value = data.title || '';
                     document.getElementById('heroSubtitle').value = data.subtitle || '';
@@ -871,7 +924,7 @@
                     document.getElementById('heroImage').value = data.image_url || '';
                 }
             } catch (e) {
-                console.error('Error loading hero data for dashboard:', e);
+                console.error(e);
             }
         }
 
@@ -888,7 +941,6 @@
             const { error } = await _supabase.from('hero_section').update(updatedData).eq('id', 1);
             if (error) {
                 alert('حدث خطأ أثناء التحديث!');
-                console.error(error);
             } else {
                 showToast('تم تحديث قسم الهيرو بنجاح وسيظهر في الموقع الرئيسي فوراً!');
             }

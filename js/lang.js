@@ -5,17 +5,15 @@
 // دالة لتغيير وتحميل اللغات من ملفات JSON الخارجية
 async function changeLanguage(lang) {
     try {
-        // جلب ملف الترجمة الخاص باللغة المختار (ar.json أو en.json)
-        // تأكد أن ملفات الـ JSON موجودة في نفس المسار أو مجلد assets/lang/ مثلاً
         const response = await fetch(`./${lang}.json`);
         if (!response.ok) throw new Error(`Could not load ${lang}.json`);
         
         const translations = await response.json();
 
-        // حفظ اللغة في الذاكرة وتثبيت الاتجاه دائمًا على LTR
+        // حفظ اللغة وتحديد الاتجاه تلقائياً (rtl للعربية، ltr للإنجليزية)
         localStorage.setItem("lang", lang);
         document.documentElement.setAttribute("lang", lang);
-        document.documentElement.setAttribute("dir", "ltr");
+        document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
 
         // تطبيق الترجمة على العناصر التي تحتوي على data-i18n
         document.querySelectorAll("[data-i18n]").forEach(element => {
@@ -32,6 +30,11 @@ async function changeLanguage(lang) {
                 element.placeholder = translations[key];
             }
         });
+
+        // تحديث شريط الترحيب إن وجد
+        if (typeof switchWelcomeLanguage === 'function') {
+            switchWelcomeLanguage(lang);
+        }
 
     } catch (error) {
         console.error("Error loading translation files:", error);
@@ -52,26 +55,34 @@ document.addEventListener("DOMContentLoaded", () => {
             changeLanguage(newLang);
         });
     }
-});// إغلاق شريط الترحيب عند الضغط على زر X
-document.getElementById('closeWelcomeBtn').addEventListener('click', function() {
-    const banner = document.getElementById('welcomeBanner');
-    banner.style.opacity = '0';
-    banner.style.transition = 'opacity 0.4s ease';
-    setTimeout(() => {
-        banner.style.display = 'none';
-    }, 400);
 });
 
-// ميزة اختيارية: لو حبيت تخليه يتبدل تلقائياً مع نظام الترجمة (عربي/إنجليزي)
-// لو عندك متغير أو دالة بتغير لغة الموقع، تقدر تظهر النص المناسب بناءً عليها:
+// إغلاق شريط الترحيب عند الضغط على زر X
+const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
+if (closeWelcomeBtn) {
+    closeWelcomeBtn.addEventListener('click', function() {
+        const banner = document.getElementById('welcomeBanner');
+        if (banner) {
+            banner.style.opacity = '0';
+            banner.style.transition = 'opacity 0.4s ease';
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 400);
+        }
+    });
+}
+
+// دالة تبديل لغة شريط الترحيب
 function switchWelcomeLanguage(lang) {
     const arText = document.querySelector('.welcome-banner .lang-ar');
     const enText = document.querySelector('.welcome-banner .lang-en');
-    if (lang === 'en') {
-        arText.style.display = 'none';
-        enText.style.display = 'inline';
-    } else {
-        arText.style.display = 'inline';
-        enText.style.display = 'none';
+    if (arText && enText) {
+        if (lang === 'en') {
+            arText.style.display = 'none';
+            enText.style.display = 'inline';
+        } else {
+            arText.style.display = 'inline';
+            enText.style.display = 'none';
+        }
     }
 }
