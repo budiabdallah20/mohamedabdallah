@@ -531,7 +531,7 @@
         }
 
         // جلب وتحديث كافة الكونترات الحقيقية من قاعدة البيانات
-    async function fetchGlobalCounters() {
+  async function fetchGlobalCounters() {
     try {
         const [visRes, projRes, certRes, supRes, skillRes, msgRes, socRes, donRes] = await Promise.all([
             _supabase.from('visitors').select('*', { count: 'exact', head: true }),
@@ -544,7 +544,6 @@
             _supabase.from('donations').select('amount')
         ]);
 
-        // عداد الزوار الحقيقي من قاعدة البيانات (إن لم يوجد جدول يعرض 0 أو العدد الفعلي)
         document.getElementById('visitorCount').innerText = visRes.count !== null ? visRes.count : 0;
         document.getElementById('countProjects').innerText = projRes.count || 0;
         document.getElementById('countCerts').innerText = certRes.count || 0;
@@ -569,7 +568,9 @@
         const donBox = document.getElementById('donationsAmountBox');
         if(donBox) donBox.innerText = `$${totalDonations.toFixed(2)}`;
 
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e); 
+    }
 }
 
         async function fetchSection(tableName, gridId, renderFn) {
