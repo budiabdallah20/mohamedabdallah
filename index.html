@@ -708,6 +708,28 @@
   }
   trackVisitor();
 </script>
+<script>
+    async function fetchHeroForWebsite() {
+        try {
+            const { data, error } = await _supabase.from('hero_section').select('*').limit(1).single();
+            if (data) {
+                // استبدل الـ IDs أدناه بما يناسب كلاسات أو إيديوهات موقعك الأصلي إذا لزم الأمر
+                const titleEl = document.querySelector('.hero-title') || document.getElementById('siteHeroTitle');
+                const subtitleEl = document.querySelector('.hero-subtitle') || document.getElementById('siteHeroSubtitle');
+                const descEl = document.querySelector('.hero-description') || document.getElementById('siteHeroDesc');
+                const imgEl = document.querySelector('.hero-img') || document.getElementById('siteHeroImg');
+
+                if (titleEl) titleEl.innerText = data.title;
+                if (subtitleEl) subtitleEl.innerText = data.subtitle;
+                if (descEl) descEl.innerText = data.description;
+                if (imgEl) imgEl.src = data.image_url;
+            }
+        } catch (e) {
+            console.error('Error loading hero section:', e);
+        }
+    }
+    fetchHeroForWebsite();
+</script>
     
 </body>
 </html>
