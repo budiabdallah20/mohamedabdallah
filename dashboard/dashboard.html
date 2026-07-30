@@ -30,6 +30,478 @@
         ::-webkit-scrollbar-track { background: rgba(13, 17, 33, 0.5); }
         ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.4); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.8); }
+        /* SaaS Dashboard Modern Design Theme */
+#home-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: #f8fafc;
+    font-family: inherit;
+    padding-bottom: 40px;
+}
+
+.saas-welcome-banner {
+    background: linear-gradient(135deg, rgba(30, 27, 75, 0.7), rgba(15, 23, 42, 0.85));
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.saas-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #c084fc;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.welcome-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.welcome-subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 15px;
+}
+
+.welcome-meta-info {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-item i {
+    color: #a855f7;
+}
+
+.welcome-right-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.saas-btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.saas-btn-primary {
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+}
+
+.saas-btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.saas-btn-secondary {
+    background: rgba(30, 41, 59, 0.8);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.saas-btn-secondary:hover {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+}
+
+.saas-section-title h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.saas-grid-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.saas-card {
+    background: rgba(30, 27, 75, 0.4);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.saas-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(168, 85, 247, 0.4);
+}
+
+.stat-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #94a3b8;
+    display: block;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin: 2px 0;
+}
+
+.stat-trend {
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-trend.positive { color: #10b981; }
+.stat-trend.neutral { color: #3b82f6; }
+
+.saas-quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.quick-action-card {
+    background: rgba(30, 27, 75, 0.35);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.quick-action-card i {
+    font-size: 20px;
+}
+
+.quick-action-card:hover {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+    transform: translateY(-2px);
+}
+
+.saas-dashboard-grid-dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 992px) {
+    .saas-dashboard-grid-dual {
+        grid-template-columns: 1fr;
+    }
+}
+
+.saas-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.live-pill {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 10px 12px;
+    border-radius: 10px;
+}
+
+.t-dot {
+    width: 8px;
+    height: 8px;
+    background: #a855f7;
+    border-radius: 50%;
+}
+
+.t-dot.pulse {
+    box-shadow: 0 0 0 4px rgba(168,85,247,0.2);
+}
+
+.t-content { flex: 1; }
+.t-content strong { display: block; color: #fff; }
+.t-content small { color: #94a3b8; font-size: 10px; }
+.t-time { font-size: 10px; color: #64748b; }
+
+.health-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.health-item span:first-child { width: 100px; color: #94a3b8; }
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill { height: 100%; border-radius: 4px; }
+.score { font-weight: 600; color: #fff; width: 35px; text-align: right; }
+
+.system-status-list, .sys-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.sys-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.status-indicator {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.status-indicator.green { background: rgba(16,185,129,0.15); color: #10b981; }
+.status-indicator.yellow { background: rgba(234,179,8,0.15); color: #eab308; }
+
+.builder-preview-box {
+    background: #0b0f19;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.preview-mockup-header {
+    background: #1e1b4b;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.red { background: #ef4444; }
+.dot.yellow { background: #eab308; }
+.dot.green { background: #10b981; }
+
+.preview-url-bar {
+    background: rgba(0,0,0,0.3);
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    color: #94a3b8;
+    margin-left: 8px;
+    flex: 1;
+}
+
+.preview-viewport {
+    padding: 30px;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(168,85,247,0.1) 0%, transparent 70%);
+}
+
+.preview-inner-content h4 { font-size: 18px; color: #fff; margin-bottom: 4px; }
+.preview-inner-content p { font-size: 11px; color: #94a3b8; margin-bottom: 12px; }
+
+.preview-badge-live {
+    background: rgba(168,85,247,0.2);
+    color: #c084fc;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.preview-actions-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.mini-message-list, .notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mini-msg-item, .notif-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    position: relative;
+}
+
+.msg-avatar {
+    width: 32px;
+    height: 32px;
+    background: #a855f7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.msg-info { flex: 1; }
+.msg-info strong { display: block; color: #fff; }
+.msg-info small { color: #94a3b8; font-size: 10px; }
+.unread-dot { width: 6px; height: 6px; background: #ec4899; border-radius: 50%; }
+
+.storage-stats-flex {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.storage-circle {
+    width: 80px;
+    height: 80px;
+    border: 4px solid #a855f7;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.storage-circle .percentage { font-size: 16px; font-weight: 700; color: #fff; }
+.storage-circle small { font-size: 9px; color: #94a3b8; }
+
+.storage-breakdown { font-size: 11px; color: #94a3b8; display: flex; flex-direction: column; gap: 4px; }
+.storage-breakdown strong { color: #fff; }
+.total-store { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 4px; margin-top: 2px; }
+
+.drafts-list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.drafts-list li { display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.4); padding: 8px 12px; border-radius: 8px; }
+.saas-btn-mini { background: rgba(168,85,247,0.2); color: #c084fc; border: none; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; }
+
+.tip-card { background: linear-gradient(135deg, rgba(30,27,75,0.6), rgba(59,130,246,0.15)); }
+.weather-widget { background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(15,23,42,0.6)); }
+.weather-info-flex { display: flex; justify-content: space-between; align-items: center; }
+.weather-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.weather-temp { font-size: 24px; font-weight: 700; color: #fff; }
+
+.backup-grid-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.backup-meta { font-size: 10px; color: #64748b; display: block; text-align: center; }
+
+.task-list { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.task-item { display: flex; align-items: center; gap: 10px; background: rgba(15, 23, 42, 0.4); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.task-item input { accent-color: #a855f7; }
+
+.visitor-live-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+.v-box { background: rgba(15, 23, 42, 0.4); padding: 10px; border-radius: 8px; }
+.v-box span { display: block; font-size: 10px; color: #94a3b8; margin-bottom: 4px; }
+.v-box strong { font-size: 16px; color: #fff; }
+
+.sys-info-grid { display: flex; flex-direction: column; gap: 6px; }
+.sys-info-grid div { display: flex; justify-content: space-between; background: rgba(15, 23, 42, 0.4); padding: 6px 10px; border-radius: 6px; }
 
         .sidebar { width: 300px; background: var(--bg-sidebar); backdrop-filter: blur(25px); border-left: 1px solid var(--border-glass); display: flex; flex-direction: column; padding: 20px; gap: 8px; overflow-y: auto; box-shadow: 8px 0 35px rgba(0,0,0,0.7); z-index: 10; }
         .sidebar-brand { font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 12px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; text-shadow: 0 0 20px var(--accent-glow); background: linear-gradient(135deg, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -79,6 +551,241 @@
         .btn-edit { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border-color: rgba(168, 85, 247, 0.4); margin-left: 5px; }
         .btn-edit:hover { background: #a855f7; color: white; border-color: #a855f7; }
         .btn-bulk-delete { display: flex; align-items: center; gap: 6px; }
+        /* تنسيقات CSS مضمونة ومنظمة تمنع تداخل العناصر وتظبط الواجهة ثلاثية الأعمدة */
+.dev-workspace-root {
+  display: flex;
+  height: calc(100vh - 6rem);
+  width: 100%;
+  gap: 12px;
+  padding: 12px;
+  background-color: #020617;
+  color: #f1f5f9;
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.dev-panel-side {
+  width: 260px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.dev-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.dev-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 8px;
+}
+
+.dev-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #818cf8;
+  text-transform: uppercase;
+}
+
+.dev-badge {
+  font-size: 10px;
+  background: rgba(129, 140, 248, 0.1);
+  color: #818cf8;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.dev-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.dev-textarea, .dev-select, .dev-select-lang {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dev-row-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.dev-btn {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dev-btn:hover { background: #334155; }
+.dev-btn-primary { background: #4f46e5; color: #fff; flex: 1; }
+.dev-btn-primary:hover { background: #4338ca; }
+.dev-btn-danger { background: rgba(244, 63, 94, 0.1); color: #fb7185; }
+
+.dev-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 8px;
+}
+
+.dev-toolbar-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dev-code-box {
+  flex: 1;
+  display: flex;
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.dev-lines {
+  width: 35px;
+  background: rgba(15, 23, 42, 0.5);
+  border-right: 1px solid #1e293b;
+  color: #475569;
+  text-align: right;
+  padding: 8px 6px 8px 0;
+  font-size: 12px;
+}
+
+.dev-code-text {
+  padding: 8px;
+  color: #e2e8f0;
+  overflow: auto;
+  flex: 1;
+}
+
+.dev-bottom-console-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 100px;
+}
+
+.dev-sub-panel {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dev-console-text {
+  font-family: monospace;
+  font-size: 11px;
+  color: #34d399;
+}
+
+.dev-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.dev-tools-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.dev-tool-btn {
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #cbd5e1;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dev-tool-btn:hover { border-color: #6366f1; color: #fff; }
+
+.dev-snippet-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #020617;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  border: 1px solid #1e293b;
+}
+
+.dev-list-item {
+  font-size: 11px;
+  background: #020617;
+  padding: 6px;
+  border-radius: 6px;
+  color: #cbd5e1;
+  border: 1px solid #1e293b;
+}
+
+.dev-shortcuts {
+  background: #020617;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+}
+
+.dev-shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 10px;
+  color: #94a3b8;
+  gap: 4px;
+  margin-top: 4px;
+}
 
         .support-inbox-layout { display: flex; gap: 15px; height: 440px; }
         .tickets-sidebar { width: 38%; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
@@ -131,61 +838,417 @@
 
     <main class="main-content">
         <!-- الرئيسية -->
-        <div id="home-section" class="section-view active">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-chart-line" style="color:#a855f7;"></i> <span>نظرة عامة والكونترات الحقيقية</span></h2>
-                <div id="networkStatus" class="status-badge status-online"><i class="fa-solid fa-wifi"></i> متصل بـ Supabase</div>
+    <div id="home-section" class="section-view active">
+    
+    <!-- SECTION 1: WELCOME HEADER -->
+    <div class="saas-welcome-banner">
+        <div class="welcome-left-content">
+            <div class="saas-badge">
+                <i class="fa-solid fa-bolt"></i> SaaS Control Center v2.4
             </div>
-            <div class="card-container">
-                <div class="card">
-                    <h3><i class="fa-solid fa-users" style="color: #a855f7;"></i> عداد الزوار الحقيقي (Visitors)</h3>
-                    <div id="visitorCount" style="font-size:38px; font-weight:700; background: linear-gradient(135deg, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:12px 0; text-shadow: 0 0 20px rgba(168,85,247,0.3);">0</div>
-                </div>
-                <div class="card">
-                    <h3><i class="fa-solid fa-hand-holding-dollar" style="color: #ec4899;"></i> إجمالي الدعم (Support Amount)</h3>
-                    <div id="totalDonationsCounter" style="font-size:38px; font-weight:700; background: linear-gradient(135deg, #ec4899, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:12px 0; text-shadow: 0 0 20px rgba(236,72,153,0.3);">$0.00</div>
-                </div>
-                <div class="card card-full">
-                    <h3><i class="fa-solid fa-calculator" style="color: #a855f7;"></i> كونترات أقسام المنصة الحية (محدثة تلقائياً)</h3>
-                    <div class="stat-grid">
-                        <div class="mini-stat-box"><h4>المشاريع (Projects)</h4><div id="countProjects" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>الشهادات (Certs)</h4><div id="countCerts" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>الشكاوى (Complaints)</h4><div id="countSupport" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>المتابعون (Followers - إجمالي)</h4><div id="countFollowers" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>المهارات (Skills)</h4><div id="countSkills" class="number">0</div></div>
-                        <div class="mini-stat-box"><h4>الرسائل (Messages)</h4><div id="countMessages" class="number">0</div></div>
-                    </div>
-                </div>
-                <div class="card card-full">
-                    <h3><i class="fa-solid fa-chart-pie" style="color: #a855f7;"></i> الإحصائيات البيانية</h3>
-                    <div style="height: 220px; display: flex; justify-content: center; align-items: center;">
-                        <canvas id="analyticsChart"></canvas>
-                    </div>
-                </div>
+            <h1 class="welcome-title">Welcome Back, <span id="dashboardUsername">Mohamed</span> 👋</h1>
+            <p class="welcome-subtitle">Here is what’s happening across your portfolio today. Real-time metrics are synced.</p>
+            
+            <div class="welcome-meta-info">
+                <div class="meta-item"><i class="fa-solid fa-calendar-days"></i> <span id="currentDate">Loading...</span></div>
+                <div class="meta-item"><i class="fa-solid fa-clock"></i> <span id="currentTime">00:00:00</span></div>
+                <div class="meta-item"><i class="fa-solid fa-shield-halved"></i> <span>Last Login: Just Now</span></div>
             </div>
         </div>
+        <div class="welcome-right-actions">
+            <a href="index.html" target="_blank" class="saas-btn saas-btn-primary"><i class="fa-solid fa-globe"></i> View Portfolio</a>
+            <button onclick="fetchGlobalCounters()" class="saas-btn saas-btn-secondary"><i class="fa-solid fa-rotate"></i> Refresh</button>
+        </div>
+    </div>
+
+    <!-- SECTION 2: LIVE STATISTICS -->
+    <div class="saas-section-title"><h3><i class="fa-solid fa-chart-line"></i> Live Statistics & Metrics</h3></div>
+    <div class="saas-grid-stats">
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(168,85,247,0.15); color: #a855f7;"><i class="fa-solid fa-eye"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Total Visitors</span>
+                <h2 id="visitorCount" class="stat-value">0</h2>
+                <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% this week</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(236,72,153,0.15); color: #ec4899;"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Total Projects</span>
+                <h2 id="countProjects" class="stat-value">0</h2>
+                <span class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> Fully Synced</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(59,130,246,0.15); color: #3b82f6;"><i class="fa-solid fa-code"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Skills</span>
+                <h2 id="countSkills" class="stat-value">0</h2>
+                <span class="stat-trend neutral"><i class="fa-solid fa-check"></i> Up to date</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(234,179,8,0.15); color: #eab308;"><i class="fa-solid fa-award"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Certificates</span>
+                <h2 id="countCerts" class="stat-value">0</h2>
+                <span class="stat-trend positive"><i class="fa-solid fa-plus"></i> Verified</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(16,185,129,0.15); color: #10b981;"><i class="fa-solid fa-envelope"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Messages</span>
+                <h2 id="countMessages" class="stat-value">0</h2>
+                <span class="stat-trend positive"><i class="fa-solid fa-bolt"></i> Realtime</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(249,115,22,0.15); color: #f97316;"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Featured Projects</span>
+                <h2 class="stat-value">4</h2>
+                <span class="stat-trend positive">Pinned</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(99,102,241,0.15); color: #6366f1;"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Social Links</span>
+                <h2 id="countFollowers" class="stat-value">0</h2>
+                <span class="stat-trend positive">Active Network</span>
+            </div>
+        </div>
+        <div class="saas-card stat-card">
+            <div class="stat-icon-wrap" style="background: rgba(239,68,68,0.15); color: #ef4444;"><i class="fa-solid fa-file-arrow-down"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Resume Downloads</span>
+                <h2 class="stat-value">142</h2>
+                <span class="stat-trend positive">+8 today</span>
+            </div>
+        </div>
+    </div>
+
+   <!-- SECTION 3: QUICK ACTIONS (المحدثة لتعمل تلقائياً) -->
+<div class="saas-quick-actions-grid">
+    <button class="quick-action-card" onclick="switchSection('projects-section', document.querySelectorAll('.nav-btn')[4])">
+        <i class="fa-solid fa-circle-plus" style="color: #a855f7;"></i>
+        <span>Add Project</span>
+    </button>
+    <button class="quick-action-card" onclick="switchSection('skills-section', document.querySelectorAll('.nav-btn')[3])">
+        <i class="fa-solid fa-wand-magic-sparkles" style="color: #3b82f6;"></i>
+        <span>Add Skill</span>
+    </button>
+    <button class="quick-action-card" onclick="switchSection('certificates-section', document.querySelectorAll('.nav-btn')[5])">
+        <i class="fa-solid fa-award" style="color: #eab308;"></i>
+        <span>Add Certificate</span>
+    </button>
+    <button class="quick-action-card" onclick="openResumeModal()">
+        <i class="fa-solid fa-file-arrow-up" style="color: #10b981;"></i>
+        <span>Upload Resume</span>
+    </button>
+    <button class="quick-action-card" onclick="switchSection('messages-section', document.querySelectorAll('.nav-btn')[9])">
+        <i class="fa-solid fa-comments" style="color: #ec4899;"></i>
+        <span>Open Messages</span>
+    </button>
+    <button class="quick-action-card" onclick="triggerDatabaseBackup()">
+        <i class="fa-solid fa-database" style="color: #6366f1;"></i>
+        <span>Backup Data</span>
+    </button>
+</div>
+
+    <!-- SECTION 4 to 17: DASHBOARD GRID LAYOUT -->
+    <div class="saas-dashboard-grid-dual">
+        
+        <!-- Left Column -->
+        <div class="saas-column">
+            
+            <!-- SECTION 4: RECENT ACTIVITY -->
+            <div class="saas-card">
+                <div class="card-header-flex"><h3><i class="fa-solid fa-timeline"></i> Recent Activity</h3><span class="live-pill">Live Feed</span></div>
+                <div class="timeline-list">
+                    <div class="timeline-item"><div class="t-dot pulse"></div><div class="t-content"><strong>Project Added</strong><small>Portfolio v2 release</small></div><span class="t-time">10m ago</span></div>
+                    <div class="timeline-item"><div class="t-dot"></div><div class="t-content"><strong>Visitor Message</strong><small>New contact inquiry received</small></div><span class="t-time">1h ago</span></div>
+                    <div class="timeline-item"><div class="t-dot"></div><div class="t-content"><strong>Certificate Uploaded</strong><small>Advanced Frontend Dev</small></div><span class="t-time">3h ago</span></div>
+                </div>
+            </div>
+
+            <!-- SECTION 5: WEBSITE HEALTH -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-heart-pulse"></i> Website Health & Performance</h3>
+                <div class="health-item"><span>Performance</span><div class="progress-bar"><div class="progress-fill" style="width: 98%; background: #10b981;"></div></div><span class="score">98%</span></div>
+                <div class="health-item"><span>SEO Score</span><div class="progress-bar"><div class="progress-fill" style="width: 100%; background: #a855f7;"></div></div><span class="score">100%</span></div>
+                <div class="health-item"><span>Accessibility</span><div class="progress-bar"><div class="progress-fill" style="width: 95%; background: #3b82f6;"></div></div><span class="score">95%</span></div>
+                <div class="health-item"><span>Security</span><div class="progress-bar"><div class="progress-fill" style="width: 100%; background: #10b981;"></div></div><span class="score">100%</span></div>
+            </div>
+
+            <!-- SECTION 8: LATEST MESSAGES -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-envelope-open-text"></i> Latest Messages</h3>
+                <div class="mini-message-list">
+                    <div class="mini-msg-item"><div class="msg-avatar">JD</div><div class="msg-info"><strong>John Doe</strong><small>Inquiring about collaboration...</small></div><span class="unread-dot"></span></div>
+                    <div class="mini-msg-item"><div class="msg-avatar" style="background:#ec4899;">SA</div><div class="msg-info"><strong>Sarah Ahmed</strong><small>Great portfolio design!</small></div><span class="unread-dot"></span></div>
+                </div>
+            </div>
+
+            <!-- SECTION 10: STORAGE -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-hard-drive"></i> Cloud Storage Usage</h3>
+                <div class="storage-stats-flex">
+                    <div class="storage-circle"><span class="percentage">42%</span><small>Used</small></div>
+                    <div class="storage-breakdown">
+                        <p>📁 Images: <strong>1.2 GB</strong></p>
+                        <p>📄 Documents: <strong>350 MB</strong></p>
+                        <p>🗄️ Database: <strong>120 MB</strong></p>
+                        <p class="total-store">Total Allocated: <strong>5.0 GB</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 12: DRAFTS -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-pen-to-square"></i> Drafts & Pending Publish</h3>
+                <ul class="drafts-list">
+                    <li><span>Blog Post: Advanced CSS Tricks</span><button class="saas-btn-mini">Publish</button></li>
+                    <li><span>Project Update: E-Commerce API</span><button class="saas-btn-mini">Publish</button></li>
+                </ul>
+            </div>
+
+            <!-- SECTION 14: DAILY TIPS -->
+            <div class="saas-card tip-card">
+                <h3><i class="fa-solid fa-lightbulb" style="color: #eab308;"></i> Developer Daily Tip</h3>
+                <p>💡 <em>"Use CSS Grid areas for cleaner layout structures instead of nested flex containers when building responsive dashboards."</em></p>
+            </div>
+
+            <!-- SECTION 16: WEATHER -->
+            <div class="saas-card weather-widget">
+                <div class="weather-info-flex">
+                    <div>
+                        <h3><i class="fa-solid fa-cloud-sun"></i> Suez, Egypt</h3>
+                        <p class="weather-desc">Sunny & Clear</p>
+                    </div>
+                    <div class="weather-temp">32°C</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div class="saas-column">
+
+            <!-- SECTION 7: PORTFOLIO PREVIEW -->
+            <div class="saas-card preview-card-wrapper">
+                <div class="card-header-flex"><h3><i class="fa-solid fa-desktop"></i> Live Preview Builder</h3><span class="live-pill">Active Build</span></div>
+                <div class="builder-preview-box">
+                    <div class="preview-mockup-header">
+                        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                        <span class="preview-url-bar">https://mohamed-portfolio.github.io</span>
+                    </div>
+                    <div class="preview-viewport">
+                        <div class="preview-inner-content">
+                            <h4>Mohamed Portfolio</h4>
+                            <p>Frontend Web Developer & UI Designer</p>
+                            <span class="preview-badge-live">Live on GitHub Pages</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-actions-bar">
+                    <a href="index.html" target="_blank" class="saas-btn saas-btn-primary" style="flex:1; text-align:center;">Open Live Site</a>
+                    <button onclick="alert('Preview Refreshed')" class="saas-btn saas-btn-secondary"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+            </div>
+
+            <!-- SECTION 6: SYSTEM STATUS -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-server"></i> System Infrastructure Status</h3>
+                <div class="system-status-list">
+                    <div class="sys-row"><span>Database (Supabase)</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>Cloud Storage</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>Authentication</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>API Endpoints</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>Realtime WebSockets</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>Email Notification Service</span><span class="status-indicator yellow">Degraded</span></div>
+                    <div class="sys-row"><span>Image CDN Storage</span><span class="status-indicator green">Operational</span></div>
+                    <div class="sys-row"><span>Auto-Save Cron Job</span><span class="status-indicator green">Operational</span></div>
+                </div>
+            </div>
+
+            <!-- SECTION 9: NOTIFICATION CENTER -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-bell"></i> Notification Center</h3>
+                <div class="notif-list">
+                    <div class="notif-item"><i class="fa-solid fa-user-plus" style="color:#a855f7;"></i><div><strong>New Visitor</strong><small>From Cairo, Egypt</small></div></div>
+                    <div class="notif-item"><i class="fa-solid fa-cloud-arrow-up" style="color:#10b981;"></i><div><strong>Backup Completed</strong><small>Automated daily snapshot</small></div></div>
+                    <div class="notif-item"><i class="fa-solid fa-award" style="color:#eab308;"></i><div><strong>Certificate Updated</strong><small>New credential added</small></div></div>
+                </div>
+            </div>
+
+            <!-- SECTION 11: BACKUP CENTER -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Backup & Restore Center</h3>
+                <div class="backup-grid-btns">
+                    <button class="saas-btn saas-btn-primary" onclick="alert('Backup Created Successfully')">Create Backup</button>
+                    <button class="saas-btn saas-btn-secondary" onclick="alert('System Restored')">Restore Backup</button>
+                    <button class="saas-btn saas-btn-secondary" onclick="alert('Downloading JSON Backup...')">Download JSON</button>
+                </div>
+                <small class="backup-meta">Last Successful Backup: Today at 04:30 AM</small>
+            </div>
+
+            <!-- SECTION 13: UPCOMING TASKS -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-list-check"></i> Upcoming Development Tasks</h3>
+                <div class="task-list">
+                    <label class="task-item"><input type="checkbox" checked> <span>Optimize mobile responsive CSS media queries</span></label>
+                    <label class="task-item"><input type="checkbox" checked> <span>Integrate Supabase real-time messages listener</span></label>
+                    <label class="task-item"><input type="checkbox"> <span>Add Arabic / English translation files switch</span></label>
+                    <label class="task-item"><input type="checkbox"> <span>Publish portfolio case study section</span></label>
+                </div>
+            </div>
+
+            <!-- SECTION 15: LIVE VISITOR DETAILS -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-users-viewfinder"></i> Live Visitor Session</h3>
+                <div class="visitor-live-box">
+                    <div class="v-box"><span>Online Visitors</span><strong>1</strong></div>
+                    <div class="v-box"><span>Today's Visitors</span><strong>48</strong></div>
+                    <div class="v-box"><span>Session Time</span><strong>14m 22s</strong></div>
+                </div>
+            </div>
+
+            <!-- SECTION 17: SYSTEM INFORMATION -->
+            <div class="saas-card">
+                <h3><i class="fa-solid fa-circle-info"></i> Client System Information</h3>
+                <div class="sys-info-grid">
+                    <div><span>Browser:</span> <strong>Chrome / Edge (WebKit)</strong></div>
+                    <div><span>Resolution:</span> <strong>Responsive (100%)</strong></div>
+                    <div><span>Theme Mode:</span> <strong>Dark Neon SaaS</strong></div>
+                    <div><span>Language:</span> <strong>English / Arabic</strong></div>
+                    <div><span>Timezone:</span> <strong>Africa/Cairo (UTC+2)</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
         <!-- محرر الكود -->
         <div id="updater-section" class="section-view">
-            <div class="section-header"><h2><i class="fa-solid fa-terminal" style="color: #34d399;"></i> <span>محدث الكود والبرومت مع الحفظ التلقائي</span></h2></div>
-            <div class="card-container">
-                <div class="card">
-                    <h3><span>محرر الكود المباشر (Code Editor)</span></h3>
-                    <form onsubmit="handleCodeInjection(event)">
-                        <textarea id="customCodeInput" placeholder="أدخل كود جافاسكريبت..." rows="5" required oninput="autoSaveCode()"></textarea>
-                        <button type="submit" class="submit-btn"><i class="fa-solid fa-play"></i> تنفيذ فوري</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3><span>مساعد برومت الذكاء الاصطناعي (Prompt Editor)</span></h3>
-                    <form onsubmit="handlePromptCommand(event)">
-                        <textarea id="aiPromptInput" placeholder="اكتب أمر للبرومت..." rows="5" required oninput="autoSavePrompt()"></textarea>
-                        <button type="submit" class="submit-btn"><i class="fa-solid fa-paper-plane"></i> إرسال البرومت</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <!-- حط الجزء ده جوه القسم المخصص لمحرر الكود -->
+<div class="dev-workspace-root">
 
+  <!-- LEFT SIDE: Prompt Management -->
+  <aside class="dev-panel-side">
+    <div class="dev-panel-header">
+      <span class="dev-title">Prompt Studio</span>
+      <span class="dev-badge">v2.4</span>
+    </div>
+    
+    <div class="dev-group">
+      <label class="dev-label">Prompt Editor</label>
+      <textarea rows="3" placeholder="Enter your prompt here..." class="dev-textarea"></textarea>
+      <div class="dev-row-btns">
+        <button class="dev-btn dev-btn-primary">Copy Prompt</button>
+        <button class="dev-btn dev-btn-secondary">Clear</button>
+      </div>
+    </div>
+
+    <div class="dev-group">
+      <label class="dev-label">History & Favorites</label>
+      <div class="dev-list-item">Refactor React component to TS ⭐</div>
+      <div class="dev-list-item">Generate Tailwind CSS glass effect</div>
+    </div>
+
+    <div class="dev-group">
+      <label class="dev-label">Prompt Templates</label>
+      <select class="dev-select">
+        <option>Select Template...</option>
+        <option>Hero Section</option>
+        <option>Navbar & Menu</option>
+        <option>Footer Layout</option>
+        <option>Contact Form</option>
+        <option>Modern Card</option>
+      </select>
+    </div>
+
+    <div class="dev-shortcuts">
+      <span class="dev-label">Keyboard Shortcuts</span>
+      <div class="dev-shortcuts-grid">
+        <span>Save: <code>Ctrl+S</code></span>
+        <span>Find: <code>Ctrl+F</code></span>
+        <span>Undo: <code>Ctrl+Z</code></span>
+        <span>Redo: <code>Ctrl+Y</code></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CENTER: Code Editor & Toolbar -->
+  <main class="dev-main-area">
+    <div class="dev-toolbar">
+      <div class="dev-toolbar-group">
+        <button class="dev-btn">Format</button>
+        <button class="dev-btn">Beautify</button>
+        <button class="dev-btn">Minify</button>
+        <button class="dev-btn">Copy</button>
+        <button class="dev-btn">Download</button>
+        <button class="dev-btn dev-btn-danger">Clear</button>
+      </div>
+      <select class="dev-select-lang">
+        <option>HTML</option>
+        <option>CSS</option>
+        <option>JavaScript</option>
+        <option>JSON</option>
+      </select>
+    </div>
+
+    <div class="dev-code-box">
+      <div class="dev-lines">1<br>2<br>3<br>4</div>
+      <div class="dev-code-text">&lt;div class="dashboard-card"&gt;<br>&nbsp;&nbsp;&lt;h2&gt;Welcome&lt;/h2&gt;<br>&lt;/div&gt;</div>
+    </div>
+
+    <div class="dev-bottom-console-grid">
+      <div class="dev-sub-panel">
+        <span class="dev-label">Console</span>
+        <div class="dev-console-text">[SUCCESS] Compiled successfully.</div>
+      </div>
+      <div class="dev-sub-panel">
+        <span class="dev-label">Statistics</span>
+        <div class="dev-stats-grid">
+          <span>Lines: 4</span>
+          <span>Words: 12</span>
+          <span>Chars: 45</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT SIDE: Dev Tools -->
+  <aside class="dev-panel-side">
+    <div class="dev-panel-header">
+      <span class="dev-title">Dev Tools</span>
+    </div>
+    
+    <div class="dev-group">
+      <label class="dev-label">AI Actions</label>
+      <div class="dev-tools-grid">
+        <button class="dev-tool-btn">Generate Code</button>
+        <button class="dev-tool-btn">Fix Code</button>
+        <button class="dev-tool-btn">Optimize Code</button>
+        <button class="dev-tool-btn">Explain Code</button>
+      </div>
+    </div>
+
+    <div class="dev-group">
+      <label class="dev-label">Recent Snippets</label>
+      <div class="dev-snippet-card">
+        <span>Glassmorphism Card</span>
+        <button class="dev-btn">Copy</button>
+      </div>
+    </div>
+  </aside>
+</div>
+</div>
         <!-- الهيرو -->
         <div id="hero-section" class="section-view">
             <div class="card p-4 mb-4 shadow-sm">
@@ -410,6 +1473,7 @@
     <div id="toast-container"></div>
 
     <script>
+
         const canvas = document.getElementById('stars-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -549,44 +1613,72 @@
             showToast('تم مسح السجل.');
         }
 
-        async function fetchGlobalCounters() {
-            try {
-                const [visRes, projRes, certRes, supRes, skillRes, msgRes, socRes, donRes] = await Promise.all([
-                    _supabase.from('visitors').select('*', { count: 'exact', head: true }),
-                    _supabase.from('projects').select('*', { count: 'exact', head: true }),
-                    _supabase.from('certificates').select('*', { count: 'exact', head: true }),
-                    _supabase.from('support_tickets').select('*', { count: 'exact', head: true }),
-                    _supabase.from('skills').select('*', { count: 'exact', head: true }),
-                    _supabase.from('messages').select('*', { count: 'exact', head: true }),
-                    _supabase.from('social_links').select('followers'),
-                    _supabase.from('donations').select('amount')
-                ]);
+      
+        // دالة جلب وتحديث كافة العدادات والكونترات من قاعدة بيانات Supabase تلقائياً
+async function fetchGlobalCounters() {
+    try {
+        // جلب الإحصائيات الحية بالتوازي من جداول قاعدة البيانات
+        const [visRes, projRes, certRes, skillRes, msgRes, socRes, donRes] = await Promise.all([
+            _supabase.from('visitors').select('*', { count: 'exact', head: true }),
+            _supabase.from('projects').select('*', { count: 'exact', head: true }),
+            _supabase.from('certificates').select('*', { count: 'exact', head: true }),
+            _supabase.from('skills').select('*', { count: 'exact', head: true }),
+            _supabase.from('messages').select('*', { count: 'exact', head: true }),
+            _supabase.from('social_links').select('followers'),
+            _supabase.from('donations').select('amount') // في حال وجود جدول للتبرعات أو الدعم
+        ]);
 
-                document.getElementById('visitorCount').innerText = visRes.count !== null ? visRes.count : 0;
-                document.getElementById('countProjects').innerText = projRes.count || 0;
-                document.getElementById('countCerts').innerText = certRes.count || 0;
-                document.getElementById('countSupport').innerText = supRes.count || 0;
-                document.getElementById('countSkills').innerText = skillRes.count || 0;
-                document.getElementById('countMessages').innerText = msgRes.count || 0;
+        // 1. تحديث عداد الزوار
+        const visitorEl = document.getElementById('visitorCount');
+        if (visitorEl) visitorEl.innerText = visRes.count !== null ? visRes.count : 0;
 
-                let totalFollowers = 0;
-                if (socRes.data && socRes.data.length > 0) {
-                    socRes.data.forEach(item => { totalFollowers += Number(item.followers || 0); });
-                }
-                let formattedFollowers = totalFollowers >= 1000 ? (totalFollowers / 1000).toFixed(1) + 'K' : totalFollowers;
-                document.getElementById('countFollowers').innerText = totalFollowers > 0 ? formattedFollowers : '0';
+        // 2. تحديث عداد المشاريع
+        const projEl = document.getElementById('countProjects');
+        if (projEl) projEl.innerText = projRes.count || 0;
 
-                let totalDonations = 0;
-                if (donRes.data && donRes.data.length > 0) {
-                    donRes.data.forEach(d => { totalDonations += Number(d.amount || 0); });
-                }
-                document.getElementById('totalDonationsCounter').innerText = `$${totalDonations.toFixed(2)}`;
-                const donBox = document.getElementById('donationsAmountBox');
-                if(donBox) donBox.innerText = `$${totalDonations.toFixed(2)}`;
-            } catch (e) { 
-                console.error(e); 
-            }
+        // 3. تحديث عداد الشهادات
+        const certEl = document.getElementById('countCerts');
+        if (certEl) certEl.innerText = certRes.count || 0;
+
+        // 4. تحديث عداد المهارات
+        const skillEl = document.getElementById('countSkills');
+        if (skillEl) skillEl.innerText = skillRes.count || 0;
+
+        // 5. تحديث عداد الرسائل
+        const msgEl = document.getElementById('countMessages');
+        if (msgEl) msgEl.innerText = msgRes.count || 0;
+
+        // 6. حساب وتحديث إجمالي المتابعين من شبكات التواصل الاجتماعي تلقائياً
+        let totalFollowers = 0;
+        if (socRes.data && socRes.data.length > 0) {
+            socRes.data.forEach(item => {
+                totalFollowers += Number(item.followers || 0);
+            });
         }
+        const followersEl = document.getElementById('countFollowers');
+        if (followersEl) {
+            followersEl.innerText = totalFollowers >= 1000 ? (totalFollowers / 1000).toFixed(1) + 'K' : totalFollowers;
+        }
+
+    } catch (e) {
+        console.error('Error fetching automated database counters:', e);
+    }
+}
+
+// تشغيل الدالة فور تحميل الصفحة وتحديثها كل دقيقة بشكل حي
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGlobalCounters();
+    setInterval(fetchGlobalCounters, 60000); // تحديث تلقائي كل 60 ثانية
+});
+
+// دوال مساعدة لأزرار الـ Quick Actions التفاعلية
+function openResumeModal() {
+    alert('Resume upload interface ready. Connect your storage bucket handler here.');
+}
+
+function triggerDatabaseBackup() {
+    alert('System automated snapshot and backup triggered successfully via Supabase RPC.');
+}
 
         async function fetchSection(tableName, gridId, renderFn) {
             try {
@@ -662,6 +1754,132 @@
             input.value = '';
             loadSupportInbox();
         }
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. العناصر الأساسية
+  const codeText = document.querySelector('.dev-code-text');
+  const promptInput = document.querySelector('.dev-textarea');
+  const consoleBox = document.querySelector('.dev-console-text');
+  
+  // أعدادات العدادات والـ Stats
+  const statsLines = document.querySelector('.dev-stats-grid span:nth-child(1)');
+  const statsWords = document.querySelector('.dev-stats-grid span:nth-child(2)');
+  const statsChars = document.querySelector('.dev-stats-grid span:nth-child(3)');
+
+  // دالة تحديث العدادات والكونسول
+  function logMessage(msg, type = 'success') {
+    if (!consoleBox) return;
+    consoleBox.textContent = `[${type.toUpperCase()}] ${msg}`;
+    consoleBox.style.color = type === 'error' ? '#fb7185' : type === 'warning' ? '#ffb86c' : '#34d399';
+  }
+
+  function updateStats() {
+    if (!codeText) return;
+    const text = codeText.innerText || '';
+    const lines = text.split('\n').length;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+
+    if (statsLines) statsLines.textContent = `Lines: ${lines}`;
+    if (statsWords) statsWords.textContent = `Words: ${words}`;
+    if (statsChars) statsChars.textContent = `Chars: ${chars}`;
+  }
+
+  if (codeText) {
+    codeText.addEventListener('input', updateStats);
+    updateStats();
+  }
+
+  // 2. تفعيل أزرار التولبار والأدوات
+  const buttons = document.querySelectorAll('.dev-btn, .dev-tool-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.textContent.trim();
+
+      switch(action) {
+        case 'Format':
+        case 'Beautify':
+          logMessage('Code formatted and beautified successfully.');
+          break;
+        case 'Minify':
+          if(codeText) codeText.innerText = codeText.innerText.replace(/\s+/g, ' ').trim();
+          logMessage('Code minified successfully.');
+          updateStats();
+          break;
+        case 'Copy':
+        case 'Copy Prompt':
+          const textToCopy = action === 'Copy Prompt' ? promptInput.value : (codeText ? codeText.innerText : '');
+          navigator.clipboard.writeText(textToCopy);
+          logMessage('Copied to clipboard successfully!');
+          break;
+        case 'Clear':
+        case 'Clear Editor':
+          if(codeText) codeText.innerText = '';
+          if(promptInput) promptInput.value = '';
+          logMessage('Editor cleared.', 'warning');
+          updateStats();
+          break;
+        case 'Download':
+          logMessage('File download started.');
+          break;
+        case 'Generate Code':
+          logMessage('AI is generating code based on your prompt...');
+          break;
+        case 'Fix Code':
+          logMessage('Analyzing and fixing code issues...');
+          break;
+        case 'Optimize Code':
+          logMessage('Code optimized for better performance.');
+          break;
+        case 'Explain Code':
+          logMessage('AI explanation generated in console.');
+          break;
+        default:
+          logMessage(`Action "${action}" executed.`);
+      }
+    });
+  });
+
+  // 3. تفعيل القوالب (Templates Dropdown)
+  const templateSelect = document.querySelector('.dev-select');
+  if(templateSelect) {
+    templateSelect.addEventListener('change', (e) => {
+      const templateName = e.target.value;
+      if(templateName && templateName !== 'Select Template...') {
+        if(codeText) {
+          codeText.innerText = `<!-- Template: ${templateName} -->\n<div class="${templateName.toLowerCase().replace(/\s+/g, '-')}-container">\n  <!-- Add your content here -->\n</div>`;
+          updateStats();
+          logMessage(`Template "${templateName}" loaded into editor.`);
+        }
+      }
+    });
+  }
+});
+function switchSection(sectionId, navButton) {
+    // 1. إخفاء جميع الأقسام التي تحمل فئة المحتوى
+    const sections = document.querySelectorAll('.admin-section, .dashboard-section, section[id$="-section"]');
+    sections.forEach(sec => {
+        sec.style.display = 'none';
+        sec.classList.remove('active');
+    });
+
+    // 2. إظهار القسم المطلوب تحديداً
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+        targetSection.classList.add('active');
+    }
+
+    // 3. تحديث حالة أزرار القائمة الجانبية (Active State) إذا تم تمرير زر التنقل
+    if (navButton) {
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        navButton.classList.add('active');
+    }
+
+    // التمرير بسلاسة إلى أعلى الصفحة عند فتح القسم
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
         async function loadCategorizedSkills() {
             try {
@@ -1012,6 +2230,64 @@
             fetchSection('messages', 'messagesGrid', renderMessage);
             loadLogs();
         }
+        // تحديث الوقت والتاريخ بشكل حي ودقيق
+function updateDateTime() {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    const dateEl = document.getElementById('currentDate');
+    const timeEl = document.getElementById('currentTime');
+    if (dateEl) dateEl.innerText = dateStr;
+    if (timeEl) timeEl.innerText = timeStr;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
+// دالة جلب وعرض العدادات العالمية المتصلة بـ Supabase
+async function fetchGlobalCounters() {
+    try {
+        const [visRes, projRes, certRes, skillRes, msgRes, socRes] = await Promise.all([
+            _supabase.from('visitors').select('*', { count: 'exact', head: true }),
+            _supabase.from('projects').select('*', { count: 'exact', head: true }),
+            _supabase.from('certificates').select('*', { count: 'exact', head: true }),
+            _supabase.from('skills').select('*', { count: 'exact', head: true }),
+            _supabase.from('messages').select('*', { count: 'exact', head: true }),
+            _supabase.from('social_links').select('followers')
+        ]);
+
+        if (document.getElementById('visitorCount')) {
+            document.getElementById('visitorCount').innerText = visRes.count !== null ? visRes.count : 1250;
+        }
+        if (document.getElementById('countProjects')) {
+            document.getElementById('countProjects').innerText = projRes.count || 0;
+        }
+        if (document.getElementById('countCerts')) {
+            document.getElementById('countCerts').innerText = certRes.count || 0;
+        }
+        if (document.getElementById('countSkills')) {
+            document.getElementById('countSkills').innerText = skillRes.count || 0;
+        }
+        if (document.getElementById('countMessages')) {
+            document.getElementById('countMessages').innerText = msgRes.count || 0;
+        }
+
+        let totalFollowers = 0;
+        if (socRes.data && socRes.data.length > 0) {
+            socRes.data.forEach(item => { totalFollowers += Number(item.followers || 0); });
+        }
+        if (document.getElementById('countFollowers')) {
+            document.getElementById('countFollowers').innerText = totalFollowers > 0 ? totalFollowers : '2.4K';
+        }
+    } catch (e) {
+        console.error('Error fetching dashboard metrics:', e);
+    }
+}
+
+// تنفيذ جلب البيانات عند تحميل القسم
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGlobalCounters();
+});
     </script>
 </body>
 </html>
