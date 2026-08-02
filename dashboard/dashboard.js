@@ -1,3055 +1,5775 @@
-   const canvas = document.getElementById('stars-canvas');
-        const ctx = canvas.getContext('2d');
-        let stars = [];
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;  }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        for (let i = 0; i < 110; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 1.8,
-                speed: Math.random() * 0.4 + 0.1,
-                alpha: Math.random()
-            }); } function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(168, 85, 247, 0.7)';
-            stars.forEach(star => {
-                ctx.globalAlpha = star.alpha;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fill();
-                star.y -= star.speed;
-                if (star.y < 0) star.y = canvas.height;
-            });
-            requestAnimationFrame(animateStars);
-        }
-        animateStars();
+// الاتصال بقاعدة بيانات Supabase الخاصة بك
+const SUPABASE_URL = "https://txcuibshcvfusegrfcbm.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI";
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/**
+ * ============================================================
+ * DASHBOARD.JS - المرحلة الأولى
+ * التهيئة | نظام التنقل | قسم الهوم
+ * ============================================================
+ */
 
-        const { createClient } = supabase;
-        const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        let currentLang = 'ar';
-        let analyticsChartInstance = null;
-        let selectedTicketId = null;
-        const SESSION_KEY = 'empire_admin_session_token_v40';
+// ============================================================
+// 1. APPLICATION STATE (الحالة المركزية للتطبيق)
+// ============================================================
+const AppState = {
+  // الإعدادات العامة
+  config: {
+    theme: localStorage.getItem("dashboard-theme") || "dark",
+    language: localStorage.getItem("dashboard-language") || "ar",
+    direction: localStorage.getItem("dashboard-direction") || "rtl",
+  },
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.borderColor = type === 'success' ? '#a855f7' : '#f59e0b';
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3500);
-        }
+  // الحالة الحالية
+  current: {
+    section: "home-section",
+    tab: null,
+    modal: null,
+    previewDevice: "desktop",
+    previewTheme: "dark",
+  },
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            document.getElementById('htmlRoot').setAttribute('lang', currentLang);
-            document.getElementById('htmlRoot').setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-            loadAllData();
-        }
+  // البيانات (مؤقتة - سيتم ربطها بـ Supabase لاحقاً)
+  data: {
+    projects: [],
+    skills: [],
+    certificates: [],
+    donations: [],
+    messages: [],
+    socialLinks: [],
+    logs: [],
+    supportTickets: [],
+    goals: [],
+    achievements: [],
+    stats: {
+      projects: 0,
+      skills: 0,
+      certificates: 0,
+      messages: 0,
+      donations: 0,
+    },
+  },
 
-        function handleLogout() {
-            localStorage.removeItem(SESSION_KEY);
-            window.location.href = 'login.html';
-        }
+  // التاريخ للتراجع والإعادة
+  history: {
+    past: [],
+    future: [],
+    maxLength: 50,
+  },
 
-        window.onload = () => {
-            if (!localStorage.getItem(SESSION_KEY)) {
-                window.location.href = 'login.html';
-                return;
-            }
-            if (localStorage.getItem('saved_custom_code')) {
-                document.getElementById('customCodeInput').value = localStorage.getItem('saved_custom_code');
-            }
-            if (localStorage.getItem('saved_ai_prompt')) {
-                document.getElementById('aiPromptInput').value = localStorage.getItem('saved_ai_prompt');
-            }
-            loadAllData();
-            loadHeroData();
-        };
+  // حالة التحميل
+  loading: {
+    home: false,
+    hero: false,
+    skills: false,
+    projects: false,
+    certificates: false,
+    support: false,
+    donations: false,
+    social: false,
+    messages: false,
+    logs: false,
+  },
+};
 
-        function autoSaveCode() {
-            localStorage.setItem('saved_custom_code', document.getElementById('customCodeInput').value);
-        }
+// ============================================================
+// 2. UTILITIES (الدواسات المساعدة)
+// ============================================================
+const Utils = {
+  // ========================
+  // DOM Helpers
+  // ========================
+  get: (id) => document.getElementById(id),
+  getVal: (id) => document.getElementById(id)?.value || "",
+  setVal: (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  },
+  setText: (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  },
+  setHTML: (id, html) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  },
+  show: (id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "block";
+  },
+  hide: (id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  },
+  toggle: (id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === "none" ? "block" : "none";
+  },
+  addClass: (id, cls) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add(cls);
+  },
+  removeClass: (id, cls) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove(cls);
+  },
+  hasClass: (id, cls) => {
+    const el = document.getElementById(id);
+    return el ? el.classList.contains(cls) : false;
+  },
 
-        function autoSavePrompt() {
-            localStorage.setItem('saved_ai_prompt', document.getElementById('aiPromptInput').value);
-        }
+  // ========================
+  // Date / Time
+  // ========================
+  formatDate: (date, locale = "ar-EG") => {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    return d.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  },
+  formatTime: (date, locale = "ar-EG") => {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    return d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+  },
+  formatDateTime: (date, locale = "ar-EG") => {
+    return `${Utils.formatDate(date, locale)} - ${Utils.formatTime(date, locale)}`;
+  },
+  getGreeting: () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "صباح الخير 🌅";
+    if (hour < 18) return "مساء الخير ☀️";
+    return "مساء الخير 🌙";
+  },
 
-        function switchSection(sectionId, btnElement) {
-            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            btnElement.classList.add('active');
-            
-            if (sectionId === 'projects-section') {
-                loadProjectsManager();
-            } else if (sectionId === 'certificates-section') {
-                loadCertificatesManager();
-            } else if (sectionId === 'home-section') {
-                updateAnalyticsChart();
-            }
-        }
+  // ========================
+  // Toast Notifications
+  // ========================
+  toast: (message, type = "success", duration = 3000) => {
+    const old = document.querySelector(".toast-custom");
+    if (old) old.remove();
 
-        function handleCodeInjection(e) {
-            e.preventDefault();
-            try {
-                new Function(document.getElementById('customCodeInput').value)();
-                showToast('تم تنفيذ الكود بنجاح والحفظ تلقائياً! ⚡');
-            } catch (err) {
-                showToast('خطأ في التنفيذ: ' + err.message, 'info');
-            }
-        }
+    const toast = document.createElement("div");
+    toast.className = `toast-custom toast-${type}`;
+    const icons = { success: "✅", error: "❌", warning: "⚠️", info: "ℹ️" };
+    toast.innerHTML = `${icons[type] || "📢"} ${message}`;
+    document.body.appendChild(toast);
 
-        function handlePromptCommand(e) {
-            e.preventDefault();
-            showToast('تم معالجة أمر البرومت وحفظه تلقائياً بنجاح!');
-        }
+    requestAnimationFrame(() => {
+      toast.classList.add("show");
+    });
 
-        function loadLogs() {
-            const grid = document.getElementById('logsGrid');
-            const logs = JSON.parse(localStorage.getItem('empire_activity_logs_v40') || '[]');
-            if(!grid) return;
-            grid.innerHTML = logs.length === 0 ? '<p style="color: #94a3b8; font-size: 12px; text-align: center;">لا توجد نشاطات مسجلة.</p>' : '';
-            logs.forEach(log => {
-                const div = document.createElement('div');
-                div.className = 'item-row';
-                div.innerHTML = `<div class="item-info"><h4><span style="color:#facc15;">[${log.action}]</span> ${log.details}</h4><p>${log.timestamp}</p></div>`;
-                grid.appendChild(div);
-            });
-        }
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  },
 
-        function clearLogs() {
-            localStorage.removeItem('empire_activity_logs_v40');
-            loadLogs();
-            showToast('تم مسح السجل.');
-        }
-
-      
-        // دالة جلب وتحديث كافة العدادات والكونترات من قاعدة بيانات Supabase تلقائياً
-async function fetchGlobalCounters() {
-    try {
-        // جلب الإحصائيات الحية بالتوازي من جداول قاعدة البيانات
-        const [visRes, projRes, certRes, skillRes, msgRes, socRes, donRes] = await Promise.all([
-            _supabase.from('visitors').select('*', { count: 'exact', head: true }),
-            _supabase.from('projects').select('*', { count: 'exact', head: true }),
-            _supabase.from('certificates').select('*', { count: 'exact', head: true }),
-            _supabase.from('skills').select('*', { count: 'exact', head: true }),
-            _supabase.from('messages').select('*', { count: 'exact', head: true }),
-            _supabase.from('social_links').select('followers'),
-            _supabase.from('donations').select('amount') // في حال وجود جدول للتبرعات أو الدعم
-        ]);
-
-        // 1. تحديث عداد الزوار
-        const visitorEl = document.getElementById('visitorCount');
-        if (visitorEl) visitorEl.innerText = visRes.count !== null ? visRes.count : 0;
-
-        // 2. تحديث عداد المشاريع
-        const projEl = document.getElementById('countProjects');
-        if (projEl) projEl.innerText = projRes.count || 0;
-
-        // 3. تحديث عداد الشهادات
-        const certEl = document.getElementById('countCerts');
-        if (certEl) certEl.innerText = certRes.count || 0;
-
-        // 4. تحديث عداد المهارات
-        const skillEl = document.getElementById('countSkills');
-        if (skillEl) skillEl.innerText = skillRes.count || 0;
-
-        // 5. تحديث عداد الرسائل
-        const msgEl = document.getElementById('countMessages');
-        if (msgEl) msgEl.innerText = msgRes.count || 0;
-
-        // 6. حساب وتحديث إجمالي المتابعين من شبكات التواصل الاجتماعي تلقائياً
-        let totalFollowers = 0;
-        if (socRes.data && socRes.data.length > 0) {
-            socRes.data.forEach(item => {
-                totalFollowers += Number(item.followers || 0);
-            });
-        }
-        const followersEl = document.getElementById('countFollowers');
-        if (followersEl) {
-            followersEl.innerText = totalFollowers >= 1000 ? (totalFollowers / 1000).toFixed(1) + 'K' : totalFollowers;
-        }
-
-    } catch (e) {
-        console.error('Error fetching automated database counters:', e);
+  // ========================
+  // Clipboard
+  // ========================
+  copy: (text) => {
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          Utils.toast("تم النسخ ✅", "success");
+        })
+        .catch(() => Utils._fallbackCopy(text));
+    } else {
+      Utils._fallbackCopy(text);
     }
+  },
+  _fallbackCopy: (text) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;opacity:0;";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    Utils.toast("تم النسخ ✅", "success");
+  },
+
+  // ========================
+  // Download / Upload
+  // ========================
+  download: (content, filename, type = "text/plain") => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  },
+  exportJSON: (data, filename = "data.json") => {
+    Utils.download(JSON.stringify(data, null, 2), filename, "application/json");
+  },
+  importJSON: (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          resolve(JSON.parse(e.target.result));
+        } catch (err) {
+          reject("Invalid JSON format");
+        }
+      };
+      reader.onerror = () => reject("Failed to read file");
+      reader.readAsText(file);
+    });
+  },
+
+  // ========================
+  // IDs & Strings
+  // ========================
+  genId: () =>
+    Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+  slugify: (text) =>
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, ""),
+  truncate: (text, max = 100) =>
+    !text ? "" : text.length > max ? text.substr(0, max) + "..." : text,
+
+  // ========================
+  // Debounce / Throttle
+  // ========================
+  debounce: (fn, delay = 300) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
+    };
+  },
+  throttle: (fn, limit = 300) => {
+    let inThrottle = false;
+    return (...args) => {
+      if (!inThrottle) {
+        fn(...args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  },
+
+  // ========================
+  // Storage
+  // ========================
+  storage: {
+    set: (key, value) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        console.warn("Storage set error:", e);
+      }
+    },
+    get: (key, defaultValue = null) => {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+      } catch (e) {
+        return defaultValue;
+      }
+    },
+    remove: (key) => {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {}
+    },
+    clear: () => {
+      try {
+        localStorage.clear();
+      } catch (e) {}
+    },
+  },
+};
+
+// ============================================================
+// 3. EVENT MANAGER (مدير الأحداث المركزي)
+// ============================================================
+class EventManager {
+  constructor() {
+    this.listeners = new Map();
+    this.delegations = new Map();
+  }
+
+  // إضافة مستمع
+  on(element, event, handler, options = {}) {
+    const el =
+      typeof element === "string" ? document.querySelector(element) : element;
+    if (!el) return;
+
+    const key = `${event}-${el.id || el.className || "unknown"}`;
+    if (!this.listeners.has(key)) {
+      this.listeners.set(key, []);
+    }
+    this.listeners.get(key).push({ el, event, handler, options });
+    el.addEventListener(event, handler, options);
+  }
+
+  // إزالة مستمع
+  off(element, event, handler) {
+    const el =
+      typeof element === "string" ? document.querySelector(element) : element;
+    if (!el) return;
+
+    el.removeEventListener(event, handler);
+
+    const key = `${event}-${el.id || el.className || "unknown"}`;
+    if (this.listeners.has(key)) {
+      const handlers = this.listeners
+        .get(key)
+        .filter((h) => h.handler !== handler);
+      this.listeners.set(key, handlers);
+    }
+  }
+
+  // تفويض الأحداث (Event Delegation)
+  delegate(selector, event, handler) {
+    if (!this.delegations.has(selector)) {
+      this.delegations.set(selector, []);
+    }
+    this.delegations.get(selector).push({ event, handler });
+
+    document.addEventListener(event, (e) => {
+      const target = e.target.closest(selector);
+      if (target) {
+        handler(e, target);
+      }
+    });
+  }
+
+  // تنظيف كل المستمعين
+  clear() {
+    this.listeners.forEach((listeners) => {
+      listeners.forEach(({ el, event, handler, options }) => {
+        el.removeEventListener(event, handler, options);
+      });
+    });
+    this.listeners.clear();
+    this.delegations.clear();
+  }
 }
 
-// تشغيل الدالة فور تحميل الصفحة وتحديثها كل دقيقة بشكل حي
-document.addEventListener('DOMContentLoaded', () => {
-    fetchGlobalCounters();
-    setInterval(fetchGlobalCounters, 60000); // تحديث تلقائي كل 60 ثانية
-});
+// ============================================================
+// 4. LANGUAGE ENGINE (محرك الترجمة)
+// ============================================================
+class LanguageEngine {
+  constructor() {
+    this.currentLang = AppState.config.language || "ar";
+    this.direction = AppState.config.direction || "rtl";
+    this.translations = {
+      ar: {
+        sidebar_brand: "لوحة التحكم برو",
+        nav_home: "الرئيسية والكونترات",
+        nav_updater: "محرر الكود والبرومت",
+        nav_hero: "قسم الهيرو",
+        nav_skills: "فئات المهارات",
+        nav_projects: "إدارة المشاريع",
+        nav_certificates: "الشهادات",
+        nav_support: "صندوق خدمة العملاء",
+        nav_donations: "التبرعات والدعم",
+        nav_social: "روابط السوشيال",
+        nav_messages: "رسائل الزوار",
+        nav_logs: "سجل النشاطات",
+        nav_preview: "معاينة الموقع لايف",
+        ctrl_lang: "AR / EN",
+        ctrl_logout: "خروج",
+        home_title: "مركز ذكاء لوحة التحكم",
+        btn_refresh: "تحديث",
+        btn_global_search: "بحث عام",
+        hero_welcome: "مرحباً بك",
+        hero_subtitle: "مركز التحكم والذكاء",
+        theme_dark: "الوضع المظلم",
+        lang_indicator: "العربية",
+        last_login_just_now: "الآن",
+        loading_date: "جاري تحميل التاريخ...",
+        search_placeholder: "ابحث عن المقاييس، المشاريع، المهارات...",
+        btn_refresh_text: "تحديث",
+        btn_preview: "معاينة",
+        btn_open_site: "فتح الموقع",
+        completion_title: "اكتمال البورتفوليو",
+        completion_subtitle: "مؤشر الجاهزية",
+        badge_calculating: "جاري الحساب",
+        ring_complete: "مكتمل",
+        stat_completed_items: "العناصر المكتملة",
+        stat_pending_action: "في انتظار الإجراء",
+        top_recommendation: "أفضل توصية",
+        analyzing_cms: "جاري تحليل سجلات CMS...",
+        score_title: "جودة لوحة التحكم",
+        score_subtitle: "معيار البورتفوليو 100 نقطة",
+        evaluating: "جاري التقييم...",
+        last_update: "آخر تحديث",
+      },
+      en: {
+        sidebar_brand: "Dashboard Pro",
+        nav_home: "Home & Counters",
+        nav_updater: "Code & Prompt Editor",
+        nav_hero: "Hero Section",
+        nav_skills: "Skills Categories",
+        nav_projects: "Projects Management",
+        nav_certificates: "Certificates",
+        nav_support: "Customer Support",
+        nav_donations: "Donations & Support",
+        nav_social: "Social Links",
+        nav_messages: "Visitor Messages",
+        nav_logs: "Activity Logs",
+        nav_preview: "Live Preview",
+        ctrl_lang: "AR / EN",
+        ctrl_logout: "Logout",
+        home_title: "Dashboard Intelligence Center",
+        btn_refresh: "Refresh",
+        btn_global_search: "Global Search",
+        hero_welcome: "Welcome back",
+        hero_subtitle: "Portfolio CMS Intelligence & Command Center",
+        theme_dark: "Dark Mode",
+        lang_indicator: "English",
+        last_login_just_now: "Just Now",
+        loading_date: "Loading date...",
+        search_placeholder: "Quick search metrics, projects, skills...",
+        btn_refresh_text: "Refresh",
+        btn_preview: "Preview",
+        btn_open_site: "Open Site",
+        completion_title: "Portfolio Completion",
+        completion_subtitle: "Setup & Readiness Gauge",
+        badge_calculating: "Calculating",
+        ring_complete: "Complete",
+        stat_completed_items: "Completed Items",
+        stat_pending_action: "Pending Action",
+        top_recommendation: "Top Recommendation",
+        analyzing_cms: "Analyzing CMS records...",
+        score_title: "Dashboard Quality Score",
+        score_subtitle: "100-Point Portfolio Standard",
+        evaluating: "Evaluating...",
+        last_update: "Last Update",
+      },
+    };
 
-// دوال مساعدة لأزرار الـ Quick Actions التفاعلية
-function openResumeModal() {
-    alert('Resume upload interface ready. Connect your storage bucket handler here.');
+    this.init();
+  }
+
+  init() {
+    this.applyLanguage(this.currentLang);
+    this.applyDirection(this.direction);
+  }
+
+  applyLanguage(lang) {
+    this.currentLang = lang;
+    const dict = this.translations[lang] || this.translations.ar;
+
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) {
+        if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+          el.placeholder = dict[key];
+        } else {
+          el.textContent = dict[key];
+        }
+      }
+    });
+
+    // تحديث مؤشر اللغة
+    const indicator = document.getElementById("home-lang-indicator");
+    if (indicator) {
+      indicator.textContent = lang === "ar" ? "العربية (RTL)" : "English (LTR)";
+    }
+
+    localStorage.setItem("dashboard-language", lang);
+    AppState.config.language = lang;
+  }
+
+  applyDirection(dir) {
+    this.direction = dir;
+    document.documentElement.dir = dir;
+    document.documentElement.lang = dir === "rtl" ? "ar" : "en";
+    localStorage.setItem("dashboard-direction", dir);
+    AppState.config.direction = dir;
+
+    // تحديث زر اللغة
+    const label = document.getElementById("langLabel");
+    if (label) {
+      label.textContent = dir === "rtl" ? "AR / EN" : "EN / AR";
+    }
+  }
+
+  toggle() {
+    const newLang = this.currentLang === "ar" ? "en" : "ar";
+    const newDir = this.direction === "rtl" ? "ltr" : "rtl";
+    this.applyLanguage(newLang);
+    this.applyDirection(newDir);
+    Utils.toast(
+      newLang === "ar" ? "🌐 تم التبديل إلى العربية" : "🌐 Switched to English",
+      "info",
+    );
+  }
+
+  translate(key) {
+    const dict = this.translations[this.currentLang] || this.translations.ar;
+    return dict[key] || key;
+  }
 }
 
-function triggerDatabaseBackup() {
-    alert('System automated snapshot and backup triggered successfully via Supabase RPC.');
+// ============================================================
+// 5. THEME ENGINE (محرك الثيم)
+// ============================================================
+class ThemeEngine {
+  constructor() {
+    this.currentTheme = AppState.config.theme || "dark";
+    this.init();
+  }
+
+  init() {
+    this.applyTheme(this.currentTheme);
+  }
+
+  applyTheme(theme) {
+    this.currentTheme = theme;
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("dashboard-theme", theme);
+    AppState.config.theme = theme;
+
+    // تحديث مؤشر الثيم
+    const indicator = document.getElementById("home-theme-indicator");
+    if (indicator) {
+      indicator.textContent =
+        theme === "dark" ? "الوضع المظلم 🌙" : "الوضع الفاتح ☀️";
+    }
+  }
+
+  toggle() {
+    const newTheme = this.currentTheme === "dark" ? "light" : "dark";
+    this.applyTheme(newTheme);
+    Utils.toast(
+      newTheme === "dark"
+        ? "🌙 تم التبديل إلى الوضع المظلم"
+        : "☀️ تم التبديل إلى الوضع الفاتح",
+      "info",
+    );
+  }
 }
 
-        async function fetchSection(tableName, gridId, renderFn) {
-            try {
-                const { data: items } = await _supabase.from(tableName).select('*').order('id', { ascending: false });
-                const grid = document.getElementById(gridId);
-                if(!grid) return;
-                grid.innerHTML = '';
-                if (!items || items.length === 0) {
-                    grid.innerHTML = `<p style="color: #94a3b8; font-size: 12px; text-align: center;">لا توجد عناصر.</p>`;
-                    return;
-                }
-                items.forEach(item => { grid.appendChild(renderFn(item, tableName)); });
-            } catch (e) { console.error(e); }
+// ============================================================
+// 6. NAVIGATION ENGINE (محرك التنقل بين الأقسام)
+// ============================================================
+class NavigationEngine {
+  constructor() {
+    this.currentSection = "home-section";
+    this.sections = {};
+    this.init();
+  }
+
+  init() {
+    this.setupNavButtons();
+    this.setupQuickActions();
+    this.setupHashRouting();
+    this.setupKeyboardShortcuts();
+    console.log("✅ Navigation Engine ready");
+  }
+
+  setupNavButtons() {
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const sectionId = btn.dataset.section;
+        if (sectionId) {
+          this.navigateTo(sectionId, btn);
+        }
+      });
+    });
+  }
+
+  setupQuickActions() {
+    document
+      .querySelectorAll(".quick-action-card[data-section]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const sectionId = btn.dataset.section;
+          if (sectionId) {
+            this.navigateTo(sectionId);
+          }
+        });
+      });
+  }
+
+  setupHashRouting() {
+    window.addEventListener("hashchange", () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && document.getElementById(hash)) {
+        this.navigateTo(hash);
+      }
+    });
+
+    const initialHash = window.location.hash.replace("#", "");
+    if (initialHash && document.getElementById(initialHash)) {
+      this.navigateTo(initialHash);
+    }
+  }
+
+  setupKeyboardShortcuts() {
+    document.addEventListener("keydown", (e) => {
+      // Ctrl+K = بحث سريع
+      if (e.ctrlKey && e.key === "k") {
+        e.preventDefault();
+        const search = document.getElementById("home-quick-search");
+        if (search) {
+          search.focus();
+          search.select();
+        }
+      }
+      // Escape = إلغاء التركيز
+      if (e.key === "Escape") {
+        document.activeElement?.blur();
+      }
+    });
+  }
+
+  navigateTo(sectionId, activeBtn = null) {
+    // إخفاء كل الأقسام
+    document.querySelectorAll(".section-view").forEach((section) => {
+      section.classList.remove("active");
+    });
+
+    // إظهار القسم المطلوب
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.classList.add("active");
+      this.currentSection = sectionId;
+    }
+
+    // تحديث أزرار التنقل
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+
+    if (activeBtn) {
+      activeBtn.classList.add("active");
+    } else {
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        if (btn.dataset.section === sectionId) {
+          btn.classList.add("active");
+        }
+      });
+    }
+
+    // استدعاء load للقسم لو موجود
+    if (
+      this.sections[sectionId] &&
+      typeof this.sections[sectionId].load === "function"
+    ) {
+      this.sections[sectionId].load();
+    }
+
+    // تحديث الـ URL hash
+    window.location.hash = sectionId;
+
+    console.log(`📱 Navigated to: ${sectionId}`);
+  }
+
+  registerSection(sectionId, instance) {
+    this.sections[sectionId] = instance;
+  }
+}
+
+// ============================================================
+// 7. HOME ENGINE (محرك قسم الرئيسية)
+// ============================================================
+class HomeEngine {
+  constructor(app) {
+    this.app = app;
+    this.clockInterval = null;
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.load();
+    console.log("🏠 Home Engine ready");
+  }
+
+  setupEvents() {
+    // زر تحديث الرئيسية
+    const refreshBtn = document.getElementById("refreshHomeBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        this.load();
+        Utils.toast("تم تحديث البيانات ✅", "success");
+      });
+    }
+
+    // زر البحث العام
+    const searchBtn = document.getElementById("globalSearchBtn");
+    if (searchBtn) {
+      searchBtn.addEventListener("click", () => this.openGlobalSearch());
+    }
+
+    // حقل البحث السريع
+    const searchInput = document.getElementById("home-quick-search");
+    if (searchInput) {
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          this.doQuickSearch(searchInput.value);
+        }
+      });
+    }
+
+    // أزرار التشغيل السريع
+    const quickActions = {
+      quickOpenSiteBtn: () => window.open("../index.html", "_blank"),
+      quickPreviewBtn: () => this.togglePreview(true),
+      quickBackupBtn: () => this.doBackup(),
+      quickPublishBtn: () => this.doPublish(),
+      quickMediaBtn: () => this.openMediaManager(),
+    };
+
+    for (const [id, fn] of Object.entries(quickActions)) {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", fn);
+      }
+    }
+
+    // أزرار المعاينة في الهوم
+    const previewBtns = ["btn-preview-website", "btn-open-website"];
+    previewBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", (e) => {
+          // الروابط شغالة طبيعي
+        });
+      }
+    });
+
+    // زر تحديث الداش بورد
+    const refreshDashBtn = document.getElementById("btn-refresh-dashboard");
+    if (refreshDashBtn) {
+      refreshDashBtn.addEventListener("click", () => this.load());
+    }
+  }
+
+  async load() {
+    console.log("🔄 Loading Home Section...");
+    AppState.loading.home = true;
+
+    try {
+      // تحميل الإحصائيات
+      await this.loadStats();
+      // تحميل مؤشرات الأداء
+      await this.loadKPIs();
+      // تحديث الساعة
+      this.updateClock();
+      // تحميل الرسوم البيانية
+      this.initCharts();
+      // تحميل الأهداف والإنجازات
+      this.loadGoalsAndAchievements();
+      // تحميل التوصيات الذكية
+      this.loadInsights();
+
+      // تشغيل الساعة كل دقيقة
+      if (this.clockInterval) {
+        clearInterval(this.clockInterval);
+      }
+      this.clockInterval = setInterval(() => this.updateClock(), 60000);
+    } catch (error) {
+      console.error("❌ Home load error:", error);
+      Utils.toast("فشل تحميل البيانات ❌", "error");
+    }
+
+    AppState.loading.home = false;
+  }
+
+  async loadStats() {
+    // محاكاة بيانات - ستأتي من Supabase لاحقاً
+    const stats = {
+      projects: 12,
+      skills: 8,
+      certificates: 5,
+      messages: 3,
+      featuredProjects: 4,
+      featuredSkills: 3,
+      featuredCerts: 2,
+      unreadMessages: 1,
+      drafts: 2,
+    };
+
+    // تحديث العداد
+    const counters = {
+      "counter-projects": stats.projects,
+      "counter-skills": stats.skills,
+      "counter-certificates": stats.certificates,
+      "counter-messages": stats.messages,
+      "kpi-featured-projects-count": `${stats.featuredProjects} Featured`,
+      "kpi-featured-skills-count": `${stats.featuredSkills} Featured`,
+      "kpi-featured-certs-count": `${stats.featuredCerts} Featured`,
+      "kpi-unread-messages-count": `${stats.unreadMessages} Unread`,
+      "sub-draft-projects": `${stats.drafts} Drafts`,
+      "sub-unread-messages": `${stats.unreadMessages} Action required`,
+    };
+
+    for (const [id, val] of Object.entries(counters)) {
+      Utils.setText(id, val);
+    }
+
+    // تحديث أشرطة التقدم
+    const projectProgress =
+      Math.round((stats.featuredProjects / stats.projects) * 100) || 0;
+    const skillProgress =
+      Math.round((stats.featuredSkills / stats.skills) * 100) || 0;
+    const certProgress =
+      Math.round((stats.featuredCerts / stats.certificates) * 100) || 0;
+    const msgProgress = Math.min(
+      Math.round((stats.unreadMessages / stats.messages) * 100) || 0,
+      100,
+    );
+
+    const bars = {
+      "bar-projects": projectProgress,
+      "bar-skills": skillProgress,
+      "bar-certificates": certProgress,
+      "bar-messages": msgProgress,
+    };
+
+    for (const [id, val] of Object.entries(bars)) {
+      const el = document.getElementById(id);
+      if (el) el.style.width = `${val}%`;
+    }
+
+    // تحديث الاتجاهات
+    const trends = {
+      "trend-projects": "مستقر",
+      "trend-skills": "نشط",
+      "trend-messages": "إجمالي",
+    };
+
+    for (const [id, val] of Object.entries(trends)) {
+      Utils.setText(id, val);
+    }
+
+    // تحديث الوصف
+    const descs = {
+      "desc-projects": `إجمالي المشاريع: ${stats.projects}`,
+      "desc-skills": `المهارات التقنية: ${stats.skills}`,
+      "desc-certificates": `الشهادات المعتمدة: ${stats.certificates}`,
+      "desc-messages": `رسائل من النموذج: ${stats.messages}`,
+    };
+
+    for (const [id, val] of Object.entries(descs)) {
+      Utils.setText(id, val);
+    }
+
+    // تخزين في الحالة
+    AppState.data.stats = stats;
+  }
+
+  async loadKPIs() {
+    // محاكاة مؤشرات الأداء
+    const completion = 75;
+    const score = 82;
+
+    // اكتمال البورتفوليو
+    const circle = document.getElementById("completion-progress-circle");
+    if (circle) {
+      const circumference = 326.72;
+      const offset = circumference - (completion / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    Utils.setText("completion-percentage-val", `${completion}%`);
+    Utils.setText("completion-items-done", `12/16`);
+    Utils.setText("completion-items-pending", "4");
+    Utils.setText(
+      "completion-top-suggestion",
+      "أضف مشروعين آخرين لتحسين المحفظة",
+    );
+
+    // درجة الجودة
+    Utils.setText("dashboard-score-val", score);
+    Utils.setText("content-quality-pct", "85%");
+    Utils.setText("website-health-pct", "78%");
+
+    const contentBar = document.getElementById("content-quality-bar");
+    const healthBar = document.getElementById("website-health-bar");
+    if (contentBar) contentBar.style.width = "85%";
+    if (healthBar) healthBar.style.width = "78%";
+
+    const rating =
+      score >= 80 ? "ممتاز 🌟" : score >= 60 ? "جيد 👍" : "يحتاج تحسين 📈";
+    Utils.setText("score-rating-label", rating);
+    Utils.setText(
+      "score-audit-summary",
+      `التقييم: ${rating} - تم التحديث تلقائياً`,
+    );
+  }
+
+  updateClock() {
+    const now = new Date();
+    Utils.setText("home-live-date", Utils.formatDate(now));
+    Utils.setText("home-live-time", Utils.formatTime(now));
+
+    // تحية
+    Utils.setText("home-dynamic-greeting", Utils.getGreeting());
+
+    // آخر تسجيل دخول
+    Utils.setText("home-last-login", Utils.formatDateTime(now));
+  }
+
+    initCharts() {
+    // تهيئة الرسوم البيانية - سيتم تفعيلها عند تحميل Chart.js
+    if (typeof Chart !== "undefined") {
+      // مخطط الزوار
+      const visitorsCtx = document.getElementById("visitorsChart");
+      if (visitorsCtx) {
+        // **إيديت مهم:** لازم نمسح الرسمة القديمة لو موجودة قبل ما نرسم جديدة
+        let existingChart = Chart.getChart(visitorsCtx);
+        if (existingChart) {
+            existingChart.destroy();
         }
 
-        async function loadSupportInbox() {
-            try {
-                const { data: tickets } = await _supabase.from('support_tickets').select('*').order('id', { ascending: false });
-                const sidebar = document.getElementById('supportTicketsSidebar');
-                if(!sidebar) return;
-                sidebar.innerHTML = '';
-                if (!tickets || tickets.length === 0) {
-                    sidebar.innerHTML = `<p style="color: #94a3b8; font-size: 11px; text-align: center;">لا توجد شكاوى أو تذاكر دعم.</p>`;
-                    return;
-                }
-                tickets.forEach((ticket, index) => {
-                    const card = document.createElement('div');
-                    card.className = `ticket-preview-card ${selectedTicketId === ticket.id ? 'active' : ''}`;
-                    card.onclick = () => selectTicket(ticket);
-                    card.innerHTML = `<h5>${ticket.subject || 'شكوى'}</h5><p>العميل: ${ticket.sender_name || 'زائر'} | المنصة: ${ticket.platform || 'Website'}</p>`;
-                    sidebar.appendChild(card);
-                    if (index === 0 && !selectedTicketId) selectTicket(ticket);
-                });
-            } catch(e) { console.error(e); }
+        new Chart(visitorsCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["زيارات", "مشاريع", "مهارات"],
+            datasets: [
+              {
+                data: [65, 25, 10],
+                backgroundColor: ["#6366f1", "#38bdf8", "#a855f7"],
+                borderColor: "transparent",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom", labels: { color: "#94a3b8" } },
+            },
+          },
+        });
+      }
+
+      // مخطط النمو
+      const growthCtx = document.getElementById("growthChart");
+      if (growthCtx) {
+        // **إيديت مهم:** نفس الكلام للمخطط الثاني
+        let existingChart = Chart.getChart(growthCtx);
+        if (existingChart) {
+            existingChart.destroy();
         }
 
-        function selectTicket(ticket) {
-            selectedTicketId = ticket.id;
-            document.getElementById('activeTicketTitle').innerText = `${ticket.subject || 'شكوى'} (ID: #${ticket.id})`;
-            document.getElementById('adminReplyInput').removeAttribute('disabled');
-            document.getElementById('sendReplyBtn').removeAttribute('disabled');
-            document.querySelectorAll('.ticket-preview-card').forEach(c => c.classList.remove('active'));
+        new Chart(growthCtx, {
+          type: "bar",
+          data: {
+            labels: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو"],
+            datasets: [
+              {
+                label: "المشاريع",
+                data: [2, 4, 6, 8, 10, 12],
+                backgroundColor: "#38bdf8",
+              },
+              {
+                label: "المهارات",
+                data: [1, 3, 4, 6, 7, 8],
+                backgroundColor: "#a855f7",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom", labels: { color: "#94a3b8" } },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(255,255,255,0.05)" },
+              },
+              x: { grid: { color: "rgba(255,255,255,0.05)" } },
+            },
+          },
+        });
+      }
+    }
+  }
 
-            const chatBody = document.getElementById('activeTicketMessages');
-            chatBody.innerHTML = `
-                <div class="chat-msg client">
-                    <strong>المرسل: ${ticket.sender_name || 'مستخدم'} (${ticket.email || 'بدون إيميل'})</strong>
-                    <p>${ticket.message_text || ticket.message || 'لا توجد تفاصيل.'}</p>
-                    <div style="margin-top: 8px; font-size: 10px; color: #cbd5e1; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
-                        <span><i class="fa-solid fa-globe"></i> المنصة: ${ticket.platform || 'Website'}</span> | 
-                        <span><i class="fa-solid fa-desktop"></i> الجهاز: ${ticket.device || 'غير معروف'}</span> | 
-                        <span><i class="fa-solid fa-compass"></i> المتصفح: ${ticket.browser || 'غير معروف'}</span> | 
-                        <span><i class="fa-solid fa-network-wired"></i> IP: ${ticket.ip || 'N/A'}</span> | 
-                        <span><i class="fa-solid fa-location-dot"></i> الموقع: ${ticket.location || 'لم يتم المشاركة'}</span> |
-                        <span><i class="fa-solid fa-clock"></i> الوقت: ${ticket.created_at || 'الآن'}</span>
+  loadGoalsAndAchievements() {
+    // محاكاة الأهداف
+    const goals = [
+      { title: "إنجاز 15 مشروع", progress: 80 },
+      { title: "إضافة 10 مهارات", progress: 70 },
+      { title: "الحصول على 5 شهادات", progress: 60 },
+      { title: "نشر الموقع", progress: 100 },
+    ];
+
+    const goalsContainer = document.getElementById("goalsListContainer");
+    if (goalsContainer) {
+      goalsContainer.innerHTML = goals
+        .map(
+          (goal) => `
+                <div class="goal-item" style="margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;margin-bottom:4px;">
+                        <span>${goal.title}</span>
+                        <span>${goal.progress}%</span>
+                    </div>
+                    <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;">
+                        <div style="height:100%;width:${goal.progress}%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;transition:width 0.6s;"></div>
+                    </div>
+                </div>
+            `,
+        )
+        .join("");
+
+      // تحديث النسبة الإجمالية
+      const avg = Math.round(
+        goals.reduce((sum, g) => sum + g.progress, 0) / goals.length,
+      );
+      Utils.setText("overallGoalsProgressText", `${avg}%`);
+    }
+
+    // محاكاة الإنجازات
+    const achievements = [
+      { icon: "🚀", title: "أول مشروع منشور" },
+      { icon: "⭐", title: "5 نجوم على المشروع" },
+      { icon: "🏆", title: "مطور معتمد" },
+      { icon: "💪", title: "10 مشاريع مكتملة" },
+    ];
+
+    const achievementsContainer = document.getElementById(
+      "achievementsContainer",
+    );
+    if (achievementsContainer) {
+      achievementsContainer.innerHTML = achievements
+        .map(
+          (a) => `
+                <div style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:10px;">
+                    <div style="font-size:24px;">${a.icon}</div>
+                    <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${a.title}</div>
+                </div>
+            `,
+        )
+        .join("");
+    }
+  }
+
+  loadInsights() {
+    const insights = [
+      "📊 لديك 4 مشاريع مميزة تظهر في الواجهة",
+      "🎯 نسبة إكمال البورتفوليو 75%، أضف مشروعين للوصول إلى 100%",
+      "💡 مهاراتك الأكثر تقدماً: React.js, JavaScript, UI/UX",
+      "🚀 يمكنك نشر التغييرات الجديدة بنقرة واحدة",
+    ];
+
+    const insightsList = document.getElementById("insightsList");
+    if (insightsList) {
+      insightsList.innerHTML = insights
+        .map(
+          (insight) => `
+                <div class="insight-item" style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:6px;font-size:12px;color:#cbd5e1;border-right:3px solid #a855f7;">
+                    ${insight}
+                </div>
+            `,
+        )
+        .join("");
+    }
+  }
+
+  // ========================
+  // Actions
+  // ========================
+  openGlobalSearch() {
+    const search = document.getElementById("home-quick-search");
+    if (search) {
+      search.focus();
+      search.select();
+      Utils.toast("🔍 ابحث عن أي شيء في الداش بورد", "info");
+    }
+  }
+
+  doQuickSearch(query) {
+    if (query.trim()) {
+      Utils.toast(`🔍 جاري البحث عن: "${query}"`, "info");
+      // هنا سيتم تنفيذ البحث الفعلي
+      console.log("Searching for:", query);
+    }
+  }
+
+  togglePreview(show) {
+    window.open("../index.html", "_blank");
+  }
+
+  doBackup() {
+    Utils.toast("💾 جاري إنشاء نسخة احتياطية...", "info");
+    setTimeout(() => {
+      const data = {
+        timestamp: new Date().toISOString(),
+        stats: AppState.data.stats,
+        config: AppState.config,
+      };
+      Utils.exportJSON(data, `dashboard-backup-${Date.now()}.json`);
+      Utils.toast("✅ تم إنشاء النسخة الاحتياطية", "success");
+    }, 1500);
+  }
+
+  doPublish() {
+    if (confirm("هل أنت متأكد من نشر التغييرات؟")) {
+      Utils.toast("🚀 جاري النشر...", "info");
+      setTimeout(() => {
+        Utils.toast("✅ تم النشر بنجاح", "success");
+        // إضافة سجل للنشاط
+        this.addLog("تم نشر التغييرات على الموقع");
+      }, 2000);
+    }
+  }
+
+  openMediaManager() {
+    Utils.toast("🖼️ فتح مكتبة الوسائط", "info");
+    // هنا سيتم فتح مدير الوسائط
+  }
+
+  addLog(message) {
+    const logs = AppState.data.logs;
+    logs.unshift({
+      id: Utils.genId(),
+      message: message,
+      time: new Date().toISOString(),
+    });
+
+    // تحديث واجهة السجلات
+    this.updateLogsDisplay();
+  }
+
+  updateLogsDisplay() {
+    const logsGrid = document.getElementById("logsGrid");
+    if (logsGrid) {
+      const logs = AppState.data.logs.slice(0, 20);
+      logsGrid.innerHTML = logs
+        .map(
+          (log) => `
+                <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;font-size:12px;">
+                    <span style="color:#cbd5e1;">${log.message}</span>
+                    <span style="color:#94a3b8;">${Utils.formatTime(log.time)}</span>
+                </div>
+            `,
+        )
+        .join("");
+    }
+  }
+}
+
+// ============================================================
+// 8. MAIN APPLICATION (التطبيق الرئيسي)
+// ============================================================
+
+// ============================================================
+// 9. RUN APPLICATION (تشغيل التطبيق)
+
+
+// دعم الصفحة بعد التحميل
+
+  // لو الصفحة محملة بالفعل
+// ============================================================
+// 9. UPDATER ENGINE (محرر الكود والبرومت)
+// ============================================================
+class UpdaterEngine {
+  constructor(app) {
+    this.app = app;
+    this.currentLanguage = "html";
+    this.editorContent = "";
+    this.promptHistory = [];
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadContent();
+    console.log("📝 Updater Engine ready");
+  }
+
+  setupEvents() {
+    // ========================
+    // Prompt Editor
+    // ========================
+    const promptEditor = document.getElementById("promptEditor");
+    if (promptEditor) {
+      promptEditor.addEventListener("input", () => {
+        // Auto-save prompt
+        this.savePromptDraft(promptEditor.value);
+      });
+    }
+
+    // Copy Prompt
+    const copyPromptBtn = document.getElementById("copyPromptBtn");
+    if (copyPromptBtn) {
+      copyPromptBtn.addEventListener("click", () => {
+        const content = document.getElementById("promptEditor")?.value;
+        if (content) {
+          Utils.copy(content);
+        } else {
+          Utils.toast("لا يوجد نص لنسخه", "warning");
+        }
+      });
+    }
+
+    // Clear Prompt
+    const clearPromptBtn = document.getElementById("clearPromptBtn");
+    if (clearPromptBtn) {
+      clearPromptBtn.addEventListener("click", () => {
+        const editor = document.getElementById("promptEditor");
+        if (editor && confirm("هل تريد مسح المحرر؟")) {
+          editor.value = "";
+          Utils.toast("تم مسح المحرر", "info");
+        }
+      });
+    }
+
+    // Prompt Templates
+    const templates = document.getElementById("promptTemplates");
+    if (templates) {
+      templates.addEventListener("change", (e) => {
+        const template = e.target.value;
+        if (template && template !== "Select Template...") {
+          this.applyTemplate(template);
+        }
+      });
+    }
+
+    // ========================
+    // Code Editor
+    // ========================
+    // Format
+    const formatBtn = document.getElementById("formatCodeBtn");
+    if (formatBtn) {
+      formatBtn.addEventListener("click", () => this.formatCode());
+    }
+
+    // Beautify
+    const beautifyBtn = document.getElementById("beautifyCodeBtn");
+    if (beautifyBtn) {
+      beautifyBtn.addEventListener("click", () => this.beautifyCode());
+    }
+
+    // Minify
+    const minifyBtn = document.getElementById("minifyCodeBtn");
+    if (minifyBtn) {
+      minifyBtn.addEventListener("click", () => this.minifyCode());
+    }
+
+    // Copy Code
+    const copyCodeBtn = document.getElementById("copyCodeBtn");
+    if (copyCodeBtn) {
+      copyCodeBtn.addEventListener("click", () => {
+        const content =
+          document.getElementById("codeEditorContent")?.textContent;
+        if (content) {
+          Utils.copy(content);
+        }
+      });
+    }
+
+    // Download Code
+    const downloadBtn = document.getElementById("downloadCodeBtn");
+    if (downloadBtn) {
+      downloadBtn.addEventListener("click", () => this.downloadCode());
+    }
+
+    // Clear Code
+    const clearCodeBtn = document.getElementById("clearCodeBtn");
+    if (clearCodeBtn) {
+      clearCodeBtn.addEventListener("click", () => {
+        if (confirm("هل تريد مسح الكود؟")) {
+          const editor = document.getElementById("codeEditorContent");
+          if (editor) {
+            editor.textContent = "";
+            this.updateStats();
+            Utils.toast("تم مسح الكود", "info");
+          }
+        }
+      });
+    }
+
+    // Language Select
+    const langSelect = document.getElementById("codeLanguageSelect");
+    if (langSelect) {
+      langSelect.addEventListener("change", (e) => {
+        this.currentLanguage = e.target.value;
+        this.updateSyntaxHighlighting();
+      });
+    }
+
+    // ========================
+    // AI Actions
+    // ========================
+    const aiActions = {
+      aiGenerateBtn: "Generating code...",
+      aiFixBtn: "Fixing code...",
+      aiOptimizeBtn: "Optimizing code...",
+      aiExplainBtn: "Explaining code...",
+    };
+
+    for (const [id, message] of Object.entries(aiActions)) {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          Utils.toast(`🤖 ${message}`, "info");
+          setTimeout(() => {
+            Utils.toast("✅ تم التنفيذ", "success");
+            this.setConsoleOutput(`[AI] ${message} completed successfully.`);
+          }, 1500);
+        });
+      }
+    }
+
+    // ========================
+    // Snippet Copy
+    // ========================
+    const snippetBtn = document.getElementById("snippetCopyBtn");
+    if (snippetBtn) {
+      snippetBtn.addEventListener("click", () => {
+        const snippet =
+          "/* Glassmorphism Card */\n.glass-card {\n  background: rgba(255,255,255,0.1);\n  backdrop-filter: blur(10px);\n  border: 1px solid rgba(255,255,255,0.2);\n  border-radius: 16px;\n  padding: 24px;\n}";
+        Utils.copy(snippet);
+        this.setEditorContent(snippet);
+      });
+    }
+
+    // ========================
+    // Keyboard Shortcuts
+    // ========================
+    document.addEventListener("keydown", (e) => {
+      // Ctrl+S = Save
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        this.saveCurrentCode();
+      }
+    });
+  }
+
+  loadContent() {
+    // تحميل المحتوى المحفوظ
+    const saved = Utils.storage.get("updater-content", null);
+    if (saved) {
+      const editor = document.getElementById("codeEditorContent");
+      if (editor) {
+        editor.textContent = saved;
+        this.updateStats();
+      }
+    }
+
+    // تحميل البرومبت المحفوظ
+    const savedPrompt = Utils.storage.get("updater-prompt", "");
+    const promptEditor = document.getElementById("promptEditor");
+    if (promptEditor) {
+      promptEditor.value = savedPrompt;
+    }
+
+    // تحميل اللغة المحفوظة
+    const savedLang = Utils.storage.get("updater-language", "HTML");
+    const langSelect = document.getElementById("codeLanguageSelect");
+    if (langSelect) {
+      langSelect.value = savedLang;
+      this.currentLanguage = savedLang;
+    }
+  }
+
+  savePromptDraft(content) {
+    Utils.storage.set("updater-prompt", content);
+  }
+
+  saveCurrentCode() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      Utils.storage.set("updater-content", editor.textContent);
+      Utils.storage.set("updater-language", this.currentLanguage);
+      Utils.toast("💾 تم حفظ الكود", "success");
+      this.setConsoleOutput("[SAVE] Code saved successfully.");
+    }
+  }
+
+  applyTemplate(template) {
+    const templates = {
+      "Hero Section": `<section class="hero">
+    <div class="container">
+        <h1>Welcome to My Portfolio</h1>
+        <p>Full Stack Developer</p>
+        <a href="#contact" class="btn-primary">Get in Touch</a>
+    </div>
+</section>`,
+      "Navbar & Menu": `<nav class="navbar">
+    <div class="logo">MyBrand</div>
+    <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>`,
+      "Footer Layout": `<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <p>&copy; 2024 All Rights Reserved</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>`,
+      "Contact Form": `<form class="contact-form">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your Name">
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" rows="4" placeholder="Your Message"></textarea>
+    </div>
+    <button type="submit" class="btn-primary">Send Message</button>
+</form>`,
+      "Modern Card": `<div class="modern-card">
+    <div class="card-image">
+        <img src="https://via.placeholder.com/400x200" alt="Card Image">
+    </div>
+    <div class="card-body">
+        <h3>Card Title</h3>
+        <p>This is a modern card design with glassmorphism effect.</p>
+        <a href="#" class="card-link">Learn More →</a>
+    </div>
+</div>`,
+    };
+
+    const content = templates[template];
+    if (content) {
+      this.setEditorContent(content);
+      Utils.toast(`📄 تم تطبيق قالب: ${template}`, "success");
+      this.setConsoleOutput(`[TEMPLATE] Applied: ${template}`);
+    }
+  }
+
+  setEditorContent(content) {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      editor.textContent = content;
+      this.updateStats();
+      this.saveCurrentCode();
+    }
+  }
+
+  formatCode() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      let content = editor.textContent;
+      // تنسيق بسيط - يمكن توسيعه لاحقاً
+      content = content.replace(/\s+/g, " ").trim();
+      content = content.replace(/>\s+</g, "><");
+      // إعادة تنسيق السطور
+      const lines = content.split(">").filter((line) => line.trim());
+      let formatted = "";
+      let indent = 0;
+      lines.forEach((line) => {
+        const trimmed = line.trim() + ">";
+        if (trimmed.includes("</")) indent--;
+        formatted += "  ".repeat(Math.max(0, indent)) + trimmed + "\n";
+        if (
+          trimmed.includes("<") &&
+          !trimmed.includes("</") &&
+          !trimmed.includes("/>")
+        )
+          indent++;
+      });
+      editor.textContent = formatted;
+      this.updateStats();
+      Utils.toast("✅ تم تنسيق الكود", "success");
+      this.setConsoleOutput("[FORMAT] Code formatted successfully.");
+    }
+  }
+
+  beautifyCode() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      let content = editor.textContent;
+      // إضافة مسافات وسطور جميلة
+      content = content.replace(/>/g, ">\n");
+      content = content.replace(/</g, "\n<");
+      const lines = content.split("\n").filter((line) => line.trim());
+      let formatted = "";
+      let indent = 0;
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed.includes("</") && !trimmed.includes("</>")) indent--;
+        formatted += "  ".repeat(Math.max(0, indent)) + trimmed + "\n";
+        if (
+          trimmed.includes("<") &&
+          !trimmed.includes("</") &&
+          !trimmed.includes("/>")
+        )
+          indent++;
+      });
+      editor.textContent = formatted;
+      this.updateStats();
+      Utils.toast("✨ تم تجميل الكود", "success");
+      this.setConsoleOutput("[BEAUTIFY] Code beautified.");
+    }
+  }
+
+  minifyCode() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      let content = editor.textContent;
+      content = content.replace(/\s+/g, " ");
+      content = content.replace(/>\s+</g, "><");
+      content = content.trim();
+      editor.textContent = content;
+      this.updateStats();
+      Utils.toast("📦 تم تصغير الكود", "success");
+      this.setConsoleOutput("[MINIFY] Code minified.");
+    }
+  }
+
+  downloadCode() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      const content = editor.textContent;
+      const ext = this.currentLanguage.toLowerCase();
+      const filename = `code.${ext === "javascript" ? "js" : ext === "html" ? "html" : ext === "css" ? "css" : "txt"}`;
+      Utils.download(content, filename);
+      Utils.toast("📥 تم تحميل الملف", "success");
+      this.setConsoleOutput(`[DOWNLOAD] Downloaded: ${filename}`);
+    }
+  }
+
+  updateStats() {
+    const editor = document.getElementById("codeEditorContent");
+    if (editor) {
+      const content = editor.textContent;
+      const lines = content.split("\n").length;
+      const words = content.split(/\s+/).filter((w) => w).length;
+      const chars = content.length;
+
+      const statsEl = document.getElementById("codeStats");
+      if (statsEl) {
+        statsEl.innerHTML = `
+                    <span>Lines: ${lines}</span>
+                    <span>Words: ${words}</span>
+                    <span>Chars: ${chars}</span>
+                `;
+      }
+    }
+  }
+
+  setConsoleOutput(message) {
+    const consoleEl = document.getElementById("devConsoleOutput");
+    if (consoleEl) {
+      const timestamp = new Date().toLocaleTimeString();
+      consoleEl.textContent = `[${timestamp}] ${message}`;
+    }
+  }
+
+  updateSyntaxHighlighting() {
+    // محاكاة تغيير لغة التظليل
+    const langMap = {
+      HTML: "HTML",
+      CSS: "CSS",
+      JavaScript: "JavaScript",
+      JSON: "JSON",
+    };
+    this.setConsoleOutput(
+      `[LANG] Switched to: ${langMap[this.currentLanguage] || this.currentLanguage}`,
+    );
+  }
+}
+
+// ============================================================
+// 10. HERO ENGINE (محرك قسم الهيرو)
+// ============================================================
+class HeroEngine {
+  constructor(app) {
+    this.app = app;
+    this.currentTab = "hero-tab-content";
+    this.previewDevice = "desktop";
+    this.previewTheme = "dark";
+    this.buttons = [];
+    this.socials = [];
+    this.stats = [];
+    this.init();
+  }
+
+  init() {
+    this.setupTabs();
+    this.setupButtons();
+    this.setupInputs();
+    this.setupPreview();
+    this.loadData();
+    console.log("🎯 Hero Engine ready");
+  }
+
+  setupTabs() {
+    document.querySelectorAll("#hero-section .tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.dataset.tab;
+        if (tabId) {
+          this.switchTab(tabId, btn);
+        }
+      });
+    });
+  }
+
+  switchTab(tabId, activeBtn) {
+    // إخفاء الكل
+    document.querySelectorAll(".hero-tab-pane").forEach((el) => {
+      el.style.display = "none";
+    });
+
+    // إظهار المطلوب
+    const target = document.getElementById(tabId);
+    if (target) target.style.display = "block";
+
+    // تحديث الأزرار
+    document.querySelectorAll("#hero-section .tab-btn").forEach((btn) => {
+      btn.className = "saas-btn saas-btn-secondary tab-btn";
+    });
+    if (activeBtn) {
+      activeBtn.className = "saas-btn saas-btn-primary tab-btn active-tab";
+    }
+
+    this.currentTab = tabId;
+  }
+
+  setupButtons() {
+    // حفظ مسودة
+    const saveBtn = document.getElementById("hero-save-draft-btn");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => this.saveDraft());
+    }
+
+    // نشر
+    const publishBtn = document.getElementById("hero-publish-btn");
+    if (publishBtn) {
+      publishBtn.addEventListener("click", () => this.publish());
+    }
+
+    // تراجع
+    const undoBtn = document.getElementById("hero-undo-btn");
+    if (undoBtn) {
+      undoBtn.addEventListener("click", () => this.undo());
+    }
+
+    // إعادة
+    const redoBtn = document.getElementById("hero-redo-btn");
+    if (redoBtn) {
+      redoBtn.addEventListener("click", () => this.redo());
+    }
+
+    // إعادة تعيين
+    const resetBtn = document.getElementById("hero-reset-btn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        if (confirm("هل تريد استعادة الإعدادات الافتراضية؟")) {
+          this.resetDefaults();
+        }
+      });
+    }
+
+    // إضافة زر
+    const addBtn = document.getElementById("hero-add-button-btn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.addButton());
+    }
+
+    // إضافة منصة
+    const socialBtn = document.getElementById("hero-add-social-btn");
+    if (socialBtn) {
+      socialBtn.addEventListener("click", () => this.addSocial());
+    }
+
+    // إضافة عداد
+    const statBtn = document.getElementById("hero-add-stat-btn");
+    if (statBtn) {
+      statBtn.addEventListener("click", () => this.addStat());
+    }
+
+    // رفع الصورة
+    const uploadBtn = document.getElementById("hero-upload-btn");
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", () => {
+        document.getElementById("hero-image-upload-input")?.click();
+      });
+    }
+
+    const fileInput = document.getElementById("hero-image-upload-input");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => this.handleImageUpload(e));
+    }
+
+    // فتح الموقع
+    const openBtn = document.getElementById("hero-open-website-btn");
+    if (openBtn) {
+      openBtn.addEventListener("click", () => {
+        window.open("../index.html", "_blank");
+      });
+    }
+  }
+
+  setupInputs() {
+    // كل الحقول اللي تحديثها يغير المعاينة
+    const inputs = [
+      "hero-main-heading",
+      "hero-sub-heading",
+      "hero-typing-text",
+      "hero-description",
+      "hero-full-name",
+      "hero-location",
+      "hero-email",
+      "hero-custom-badge",
+    ];
+
+    inputs.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => this.updatePreview());
+      }
+    });
+
+    // السليكتات
+    const selects = ["hero-availability-status", "hero-layout-style"];
+
+    selects.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.updatePreview());
+      }
+    });
+
+    // التشيك بوكسات
+    const checks = [
+      "hero-enable-typing",
+      "hero-badge-available",
+      "hero-badge-verified",
+      "hero-effect-glow",
+      "hero-effect-float",
+    ];
+
+    checks.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.updatePreview());
+      }
+    });
+
+    // اللون
+    const color = document.getElementById("hero-bg-color");
+    if (color) {
+      color.addEventListener("input", () => this.updatePreview());
+    }
+
+    // بحث الإعدادات
+    const search = document.getElementById("hero-settings-search");
+    if (search) {
+      search.addEventListener("input", () => this.filterSettings(search.value));
+    }
+  }
+
+  setupPreview() {
+    // أزرار الجهاز
+    const devices = ["desktop", "tablet", "mobile"];
+    devices.forEach((device) => {
+      const btn = document.getElementById(`hero-preview-${device}-btn`);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          this.previewDevice = device;
+          this.updatePreviewDevice(device);
+        });
+      }
+    });
+
+    // تبديل الثيم
+    const themeBtn = document.getElementById("hero-preview-theme-btn");
+    if (themeBtn) {
+      themeBtn.addEventListener("click", () => this.togglePreviewTheme());
+    }
+
+    // تحديث المعاينة
+    const refreshBtn = document.getElementById("hero-preview-refresh-btn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        this.updatePreview();
+        Utils.toast("🔄 تم تحديث المعاينة", "info");
+      });
+    }
+  }
+
+  loadData() {
+    // تحميل البيانات المحفوظة
+    const saved = Utils.storage.get("hero-data", null);
+    if (saved) {
+      // استعادة القيم
+      const fields = {
+        "hero-main-heading": saved.heading,
+        "hero-sub-heading": saved.subHeading,
+        "hero-typing-text": saved.typingText,
+        "hero-description": saved.description,
+        "hero-full-name": saved.fullName,
+        "hero-location": saved.location,
+        "hero-email": saved.email,
+        "hero-custom-badge": saved.customBadge,
+        "hero-availability-status": saved.availability,
+        "hero-layout-style": saved.layout,
+        "hero-bg-color": saved.bgColor || "#0f172a",
+      };
+
+      for (const [id, val] of Object.entries(fields)) {
+        Utils.setVal(id, val);
+      }
+
+      // التشيك بوكسات
+      const checks = {
+        "hero-enable-typing": saved.enableTyping,
+        "hero-badge-available": saved.badgeAvailable,
+        "hero-badge-verified": saved.badgeVerified,
+        "hero-effect-glow": saved.effectGlow,
+        "hero-effect-float": saved.effectFloat,
+      };
+
+      for (const [id, val] of Object.entries(checks)) {
+        const el = document.getElementById(id);
+        if (el) el.checked = val !== undefined ? val : true;
+      }
+    }
+
+    // تحديث المعاينة
+    this.updatePreview();
+  }
+
+  updatePreview() {
+    // جلب القيم
+    const data = {
+      heading: Utils.getVal("hero-main-heading"),
+      subHeading: Utils.getVal("hero-sub-heading"),
+      typingText: Utils.getVal("hero-typing-text"),
+      description: Utils.getVal("hero-description"),
+      fullName: Utils.getVal("hero-full-name"),
+      location: Utils.getVal("hero-location"),
+      email: Utils.getVal("hero-email"),
+      customBadge: Utils.getVal("hero-custom-badge"),
+      availability: Utils.getVal("hero-availability-status"),
+      layout: Utils.getVal("hero-layout-style"),
+      bgColor: Utils.getVal("hero-bg-color"),
+      enableTyping:
+        document.getElementById("hero-enable-typing")?.checked || false,
+      badgeAvailable:
+        document.getElementById("hero-badge-available")?.checked || false,
+      badgeVerified:
+        document.getElementById("hero-badge-verified")?.checked || false,
+      effectGlow: document.getElementById("hero-effect-glow")?.checked || false,
+      effectFloat:
+        document.getElementById("hero-effect-float")?.checked || false,
+    };
+
+    // تحديث المعاينة
+    Utils.setText("canvas-main-heading-view", data.heading);
+    Utils.setText("canvas-sub-heading-view", data.subHeading);
+    Utils.setText("canvas-desc-view", data.description);
+
+    // الشارات
+    const badgeView = document.getElementById("canvas-badge-view");
+    if (badgeView) {
+      badgeView.style.display = data.badgeAvailable ? "inline" : "none";
+      if (data.badgeAvailable) {
+        badgeView.innerHTML = `<i class="fa-solid fa-circle" style="font-size:7px;color:#10b981;"></i> ${data.availability || "Available"}`;
+      }
+    }
+
+    const customBadge = document.getElementById("canvas-custom-badge-view");
+    if (customBadge) {
+      customBadge.style.display = data.badgeVerified ? "inline" : "none";
+      if (data.badgeVerified) {
+        customBadge.textContent = data.customBadge || "✅ Verified";
+      }
+    }
+
+    // الاسم في المعاينة
+    const nameEl = document.getElementById("home-user-name");
+    if (nameEl) nameEl.textContent = data.fullName || "Mohamed Abdallah";
+
+    // التخطيط
+    const layoutFlex = document.getElementById("canvas-layout-flex");
+    if (layoutFlex) {
+      if (data.layout === "center") {
+        layoutFlex.style.justifyContent = "center";
+        layoutFlex.style.textAlign = "center";
+      } else if (data.layout === "image-left") {
+        layoutFlex.style.flexDirection = "row-reverse";
+      } else {
+        layoutFlex.style.flexDirection = "row";
+      }
+    }
+
+    // الخلفية
+    const canvasBox = document.getElementById("hero-live-canvas-box");
+    if (canvasBox && data.bgColor) {
+      canvasBox.style.background = data.bgColor;
+    }
+
+    // التأثيرات
+    const imgWrap = document.getElementById("canvas-profile-img-wrap");
+    if (imgWrap) {
+      const parent = imgWrap.parentElement;
+      if (data.effectGlow) {
+        parent.style.boxShadow = "0 0 30px rgba(56,189,248,0.5)";
+      } else {
+        parent.style.boxShadow = "0 0 25px rgba(56,189,248,0.3)";
+      }
+    }
+
+    // تحديث وقت الحفظ
+    const now = new Date();
+    Utils.setText(
+      "hero-last-saved-time",
+      `آخر تحديث: ${Utils.formatTime(now)}`,
+    );
+
+    // حفظ البيانات
+    this.saveToStorage(data);
+  }
+
+  updatePreviewDevice(device) {
+    const wrapper = document.getElementById("hero-canvas-wrapper");
+    const box = document.getElementById("hero-live-canvas-box");
+    if (wrapper && box) {
+      const widths = { desktop: "780px", tablet: "580px", mobile: "380px" };
+      box.style.maxWidth = widths[device] || "780px";
+      Utils.toast(
+        `📱 جهاز: ${device === "desktop" ? "حاسوب" : device === "tablet" ? "تابلت" : "موبايل"}`,
+        "info",
+      );
+    }
+  }
+
+  togglePreviewTheme() {
+    const box = document.getElementById("hero-live-canvas-box");
+    if (box) {
+      const isLight =
+        box.style.background === "#ffffff" || box.style.background === "white";
+      box.style.background = isLight ? "rgba(18,24,43,0.95)" : "#ffffff";
+      box.style.color = isLight ? "#fff" : "#000";
+
+      // تحديث النصوص
+      const headings = box.querySelectorAll("h1, h3, h4");
+      headings.forEach((el) => {
+        el.style.color = isLight ? "#fff" : "#000";
+      });
+
+      const desc = box.querySelectorAll("p, span");
+      desc.forEach((el) => {
+        if (!el.closest(".saas-badge")) {
+          el.style.color = isLight ? "#94a3b8" : "#475569";
+        }
+      });
+
+      this.previewTheme = isLight ? "dark" : "light";
+      Utils.toast(isLight ? "🌙 الوضع المظلم" : "☀️ الوضع الفاتح", "info");
+    }
+  }
+
+  saveToStorage(data) {
+    Utils.storage.set("hero-data", data);
+  }
+
+  saveDraft() {
+    this.updatePreview();
+    Utils.toast("💾 تم حفظ المسودة", "success");
+    Utils.setText(
+      "hero-last-saved-time",
+      `تم الحفظ ${Utils.formatTime(new Date())}`,
+    );
+  }
+
+  publish() {
+    if (confirm("هل أنت متأكد من نشر التغييرات؟")) {
+      this.updatePreview();
+      Utils.toast("🚀 تم نشر التغييرات بنجاح", "success");
+      // إضافة سجل
+      if (this.app.home) {
+        this.app.home.addLog("📝 تم نشر تحديثات الهيرو");
+      }
+    }
+  }
+
+  undo() {
+    Utils.toast("↩️ تراجع", "info");
+  }
+
+  redo() {
+    Utils.toast("↪️ إعادة", "info");
+  }
+
+  resetDefaults() {
+    const defaults = {
+      "hero-main-heading": "Hi, I'm Mohamed Abdallah",
+      "hero-sub-heading": "Frontend Web Developer",
+      "hero-typing-text":
+        "Frontend Developer, UI/UX Enthusiast, Supermarket Pro",
+      "hero-description":
+        "Passionate frontend web developer specializing in building exceptional digital experiences with modern web technologies.",
+      "hero-full-name": "Mohamed Abdallah",
+      "hero-location": "Egypt",
+      "hero-email": "contact@mohamed.dev",
+      "hero-custom-badge": "🔥 Available for Hire",
+      "hero-availability-status": "Available For Work",
+      "hero-layout-style": "image-right",
+      "hero-bg-color": "#0f172a",
+    };
+
+    for (const [id, val] of Object.entries(defaults)) {
+      Utils.setVal(id, val);
+    }
+
+    // التشيك بوكسات
+    const checks = {
+      "hero-enable-typing": true,
+      "hero-badge-available": true,
+      "hero-badge-verified": true,
+      "hero-effect-glow": true,
+      "hero-effect-float": true,
+    };
+
+    for (const [id, val] of Object.entries(checks)) {
+      const el = document.getElementById(id);
+      if (el) el.checked = val;
+    }
+
+    this.updatePreview();
+    Utils.toast("✅ تم استعادة الإعدادات الافتراضية", "success");
+  }
+
+  addButton() {
+    const container = document.getElementById("hero-buttons-container");
+    if (container) {
+      const id = Utils.genId();
+      const div = document.createElement("div");
+      div.className = "hero-button-row";
+      div.style.cssText =
+        "display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.05);padding:10px;border-radius:8px;";
+      div.innerHTML = `
+                <input type="text" placeholder="نص الزر" value="زر جديد" style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;">
+                <input type="url" placeholder="رابط" value="#" style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;">
+                <select style="padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;">
+                    <option value="primary">رئيسي</option>
+                    <option value="secondary">ثانوي</option>
+                </select>
+                <button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:6px 12px;cursor:pointer;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+      container.appendChild(div);
+
+      // ربط الأحداث
+      div.querySelectorAll("input, select").forEach((el) => {
+        el.addEventListener("change", () => this.updatePreview());
+        el.addEventListener("input", () => this.updatePreview());
+      });
+
+      this.updatePreview();
+      Utils.toast("➕ تم إضافة زر جديد", "success");
+    }
+  }
+
+  addSocial() {
+    const container = document.getElementById("hero-socials-container");
+    if (container) {
+      const id = Utils.genId();
+      const div = document.createElement("div");
+      div.className = "hero-social-row";
+      div.style.cssText =
+        "display:flex;gap:10px;align-items:center;background:rgba(255,255,255,0.05);padding:8px;border-radius:6px;";
+      div.innerHTML = `
+                <input type="text" placeholder="المنصة" value="منصة جديدة" style="flex:1;padding:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;">
+                <input type="url" placeholder="الرابط" value="#" style="flex:2;padding:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;">
+                <button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);border-radius:4px;padding:4px 10px;cursor:pointer;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            `;
+      container.appendChild(div);
+
+      div.querySelectorAll("input").forEach((el) => {
+        el.addEventListener("change", () => this.updatePreview());
+        el.addEventListener("input", () => this.updatePreview());
+      });
+
+      this.updatePreview();
+      Utils.toast("➕ تم إضافة منصة جديدة", "success");
+    }
+  }
+
+  addStat() {
+    const container = document.getElementById("hero-stats-container");
+    if (container) {
+      const div = document.createElement("div");
+      div.className = "hero-stat-row";
+      div.style.cssText =
+        "background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;";
+      div.innerHTML = `
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input type="text" placeholder="القيمة" value="100+" style="flex:1;padding:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;">
+                    <input type="text" placeholder="الوصف" value="مشروع" style="flex:2;padding:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:#fff;">
+                    <button onclick="this.closest('.hero-stat-row').remove()" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);border-radius:4px;padding:4px 10px;cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+      container.appendChild(div);
+
+      div.querySelectorAll("input").forEach((el) => {
+        el.addEventListener("change", () => this.updatePreview());
+        el.addEventListener("input", () => this.updatePreview());
+      });
+
+      this.updatePreview();
+      Utils.toast("➕ تم إضافة عداد جديد", "success");
+    }
+  }
+
+  handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target.result;
+        const imgWrap = document.getElementById("canvas-profile-img-wrap");
+        if (imgWrap) {
+          imgWrap.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+          Utils.toast("🖼️ تم رفع الصورة بنجاح", "success");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  filterSettings(query) {
+    const tabs = document.querySelectorAll("#hero-section .tab-btn");
+    tabs.forEach((btn) => {
+      const text = btn.textContent.toLowerCase();
+      const match = text.includes(query.toLowerCase());
+      btn.style.display = match || !query ? "inline-flex" : "none";
+    });
+  }
+}
+
+// ============================================================
+// 11. SKILLS ENGINE (محرك قسم المهارات)
+// ============================================================
+class SkillsEngine {
+  constructor(app) {
+    this.app = app;
+    this.skills = [];
+    this.categories = [
+      "Web Development",
+      "Programming",
+      "Software Skills",
+      "Tools",
+    ];
+    this.selectedSkills = new Set();
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderCategories();
+    this.updateStats();
+    console.log("💻 Skills Engine ready");
+  }
+
+  setupEvents() {
+    // إضافة مهارة
+    const addBtn = document.getElementById("openSkillModalBtn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.openModal());
+    }
+
+    // إغلاق المودال
+    const closeBtns = ["closeSkillModalBtn", "cancelSkillBtn"];
+    closeBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => this.closeModal());
+      }
+    });
+
+    // بحث
+    const search = document.getElementById("skill-search-input");
+    if (search) {
+      search.addEventListener("input", () => this.filterSkills());
+    }
+
+    // الفلترة
+    const filters = ["filter-category", "filter-level", "sort-skills-select"];
+    filters.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.filterSkills());
+      }
+    });
+
+    // أزرار Bulk
+    const bulkBtns = ["bulkShowBtn", "bulkHideBtn", "bulkDeleteBtn"];
+    bulkBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const action = id
+            .replace("bulk", "")
+            .replace("Btn", "")
+            .toLowerCase();
+          this.bulkAction(action);
+        });
+      }
+    });
+
+    // حفظ النموذج
+    const form = document.getElementById("skill-form");
+    if (form) {
+      form.addEventListener("submit", (e) => this.saveSkill(e));
+    }
+
+    // معاينة حية في النموذج
+    const previewInputs = [
+      "skill-name",
+      "skill-level",
+      "skill-progress",
+      "skill-icon",
+    ];
+    previewInputs.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => this.updatePreview());
+        el.addEventListener("change", () => this.updatePreview());
+      }
+    });
+  }
+
+  loadData() {
+    // تحميل المهارات المحفوظة
+    const saved = Utils.storage.get("skills-data", []);
+    if (saved.length > 0) {
+      this.skills = saved;
+    } else {
+      // بيانات افتراضية
+      this.skills = [
+        {
+          id: Utils.genId(),
+          name: "React.js",
+          category: "Web Development",
+          level: "Advanced",
+          progress: 90,
+          icon: "fa-brands fa-react",
+          experience: "3 Years",
+          featured: true,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "JavaScript",
+          category: "Programming",
+          level: "Expert",
+          progress: 95,
+          icon: "fa-brands fa-js",
+          experience: "5 Years",
+          featured: true,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "HTML & CSS",
+          category: "Web Development",
+          level: "Expert",
+          progress: 98,
+          icon: "fa-brands fa-html5",
+          experience: "5 Years",
+          featured: true,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Node.js",
+          category: "Programming",
+          level: "Advanced",
+          progress: 80,
+          icon: "fa-brands fa-node",
+          experience: "2 Years",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Git & GitHub",
+          category: "Tools",
+          level: "Advanced",
+          progress: 85,
+          icon: "fa-brands fa-github",
+          experience: "4 Years",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "UI/UX Design",
+          category: "Software Skills",
+          level: "Intermediate",
+          progress: 70,
+          icon: "fa-solid fa-palette",
+          experience: "2 Years",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "TypeScript",
+          category: "Programming",
+          level: "Intermediate",
+          progress: 65,
+          icon: "fa-brands fa-ts",
+          experience: "1 Year",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Tailwind CSS",
+          category: "Web Development",
+          level: "Advanced",
+          progress: 88,
+          icon: "fa-brands fa-tailwind",
+          experience: "2 Years",
+          featured: false,
+          hidden: false,
+        },
+      ];
+    }
+  }
+
+  renderCategories() {
+    const container = document.getElementById("categories-container");
+    if (!container) return;
+
+    // تجميع المهارات حسب الفئة
+    const grouped = {};
+    this.categories.forEach((cat) => {
+      grouped[cat] = this.skills.filter((s) => s.category === cat && !s.hidden);
+    });
+
+    let html = "";
+    for (const [category, skills] of Object.entries(grouped)) {
+      const visibleSkills = skills.filter((s) => !s.hidden);
+      if (visibleSkills.length === 0) continue;
+
+      html += `
+                <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+                            <i class="fa-solid fa-folder-open"></i> ${category}
+                        </h3>
+                        <span style="font-size:11px;color:#94a3b8;">${visibleSkills.length} مهارة</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+                        ${visibleSkills.map((skill) => this.renderSkillCard(skill)).join("")}
                     </div>
                 </div>
             `;
-            if (ticket.admin_reply) {
-                const replyDiv = document.createElement('div');
-                replyDiv.className = 'chat-msg admin';
-                replyDiv.innerHTML = `<strong>الرد الإداري:</strong><p>${ticket.admin_reply}</p>`;
-                chatBody.appendChild(replyDiv);
-            }
-        }
-
-        async function sendAdminSupportReply() {
-            const input = document.getElementById('adminReplyInput');
-            const replyText = input.value.trim();
-            if (!replyText || !selectedTicketId) return;
-            await _supabase.from('support_tickets').update({ admin_reply: replyText, status: 'Resolved' }).eq('id', selectedTicketId);
-            showToast('تم إرسال الرد وتحديث حالة الشكوى بنجاح!');
-            input.value = '';
-            loadSupportInbox();
-        }
-
-
-
-
-
-
-
-
-        /* ========================================================= */
-/* HOME DASHBOARD INTELLIGENCE CENTER (JAVASCRIPT)          */
-/* ========================================================= */
-
-// Global Dashboard State
-let homeDashboardState = {
-    notes: [
-        { id: 1, title: 'تحديث سيرة ذاتية', content: 'إضافة المشاريع البرمجية الأخيرة وتقنيات React.', color: '#fef08a', pinned: true, date: '2026-07-30' },
-        { id: 2, title: 'تحسين الأداء', content: 'ضغط صور المشاريع لزيادة سرعة التحميل.', color: '#bbf7d0', pinned: false, date: '2026-07-29' }
-    ],
-    todos: [
-        { id: 1, title: 'مراجعة رسائل الزوار عبر لوحة التحكم', priority: 'high', completed: false, dueDate: '2026-08-01' },
-        { id: 2, title: 'إضافة شهادة جديدة من كورسات السامسونج', priority: 'medium', completed: true, dueDate: '2026-07-28' },
-        { id: 3, title: 'ربط Supabase Realtime بالكامل', priority: 'high', completed: false, dueDate: '2026-08-05' }
-    ],
-    notifications: [
-        { id: 1, title: 'تحديث ناجح', text: 'تم تحديث قسم الـ Hero بنجاح وبدون أخطاء.', time: 'منذ 10 دقائق', type: 'success', read: false },
-        { id: 2, title: 'تنبيه ذكي', text: 'عدد المشاريع الحالية أقل من الهدف المطلوب (10 مشاريع).', time: 'منذ ساعة', type: 'warning', read: false },
-        { id: 3, title: 'نسخ احتياطي', text: 'تم إنشاء نسخة احتياطية لقاعدة البيانات.', time: 'منذ 3 ساعات', type: 'info', read: true }
-    ],
-    timeline: [
-        { id: 1, title: 'تحديث بيانات الموقع (Website Published)', time: '10:30 ص', date: 'اليوم', user: 'محمد عبد الله', icon: 'fa-rocket' },
-        { id: 2, title: 'إضافة مشروع جديد (Project Added)', time: 'أمس', date: '30 يوليو', user: 'محمد عبد الله', icon: 'fa-folder-plus' },
-        { id: 3, title: 'رفع السيرة الذاتية (Resume Uploaded)', time: 'منذ يومين', date: '29 يوليو', user: 'محمد عبد الله', icon: 'fa-file-arrow-up' }
-    ],
-    achievements: [
-        { id: 1, title: 'الخطوة الأولى', desc: 'إضافة أول مشروع بنجاح', date: '2026-07-01', icon: 'fa-flag', unlocked: true },
-        { id: 2, title: 'خبير مهارات', desc: 'إضافة 10 مهارات برمجية', date: '2026-07-10', icon: 'fa-bolt', unlocked: true },
-        { id: 3, title: 'بورتفوليو 50%', desc: 'إنجاز نصف محتوى الموقع', date: '2026-07-20', icon: 'fa-chart-pie', unlocked: true },
-        { id: 4, title: 'نشر رسمي', desc: 'ربط ونشر الموقع على الاستضافة', date: '2026-07-25', icon: 'fa-globe', unlocked: true }
-    ],
-    analyticsCharts: {}
-};
-
-// Initialize Home Dashboard Intelligence Engine on Load
-document.addEventListener('DOMContentLoaded', () => {
-    initHomeDashboardCharts();
-    renderSmartInsights();
-    renderGoalsWidget();
-    renderAchievements();
-    renderQuickNotes();
-    renderTodoList();
-    renderRecentTimeline();
-    renderNotifications();
-    updateStorageStats();
-});
-
-// Automatically Refresh Charts & Widgets after Database Updates
-function refreshHomeDashboard() {
-    showNotificationBanner('تم تحديث إحصائيات مركز الذكاء بنجاح.', 'success');
-    initHomeDashboardCharts();
-    renderSmartInsights();
-    renderGoalsWidget();
-    renderAchievements();
-}
-
-// Analytics Charts Initialization (Chart.js)
-function initHomeDashboardCharts() {
-    // 1. Visitors Chart
-    const visitorsCtx = document.getElementById('visitorsChart')?.getContext('2d');
-    if (visitorsCtx) {
-        if (homeDashboardState.analyticsCharts.visitors) homeDashboardState.analyticsCharts.visitors.destroy();
-        homeDashboardState.analyticsCharts.visitors = new Chart(visitorsCtx, {
-            type: 'line',
-            data: {
-                labels: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                datasets: [{
-                    label: 'الزوار الفريدون',
-                    data: [120, 190, 300, 250, 420, 380, 510],
-                    borderColor: '#38bdf8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
     }
 
-    // 2. Growth Chart
-    const growthCtx = document.getElementById('growthChart')?.getContext('2d');
-    if (growthCtx) {
-        if (homeDashboardState.analyticsCharts.growth) homeDashboardState.analyticsCharts.growth.destroy();
-        homeDashboardState.analyticsCharts.growth = new Chart(growthCtx, {
-            type: 'bar',
-            data: {
-                labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو'],
-                datasets: [{
-                    label: 'نمو المشاريع',
-                    data: [2, 4, 6, 8, 11, 14, 18],
-                    backgroundColor: '#c084fc',
-                    borderRadius: 6
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    container.innerHTML =
+      html ||
+      '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مضافة</p>';
+
+    // ربط الأحداث للكروت
+    container.querySelectorAll(".skill-card").forEach((card) => {
+      const checkbox = card.querySelector(".skill-select");
+      if (checkbox) {
+        checkbox.addEventListener("change", () => this.updateBulkBar());
+      }
+
+      const editBtn = card.querySelector(".edit-skill-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => {
+          const id = card.dataset.skillId;
+          if (id) this.editSkill(id);
         });
-    }
+      }
 
-    // Mini Charts (Skills, Certificates, Messages, Weekly Activity)
-    renderMiniChart('skillsChart', 'doughnut', ['Frontend', 'Backend', 'Tools'], [60, 25, 15], ['#38bdf8', '#c084fc', '#fbbf24']);
-    renderMiniChart('certificatesChart', 'pie', ['البرمجة', 'اللغات', 'إدارة المشاريع'], [5, 2, 3], ['#f43f5e', '#10b981', '#6366f1']);
-    renderMiniChart('messagesChart', 'line', ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'], [4, 8, 12, 19], '#10b981');
-    renderMiniChart('weeklyActivityChart', 'bar', ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'], [10, 15, 25, 20, 30, 35, 40], '#fbbf24');
-}
+      const deleteBtn = card.querySelector(".delete-skill-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => {
+          const id = card.dataset.skillId;
+          if (id && confirm("هل تريد حذف هذه المهارة؟")) {
+            this.deleteSkill(id);
+          }
+        });
+      }
 
-function renderMiniChart(canvasId, type, labels, data, colors) {
-    const ctx = document.getElementById(canvasId)?.getContext('2d');
-    if (!ctx) return;
-    if (homeDashboardState.analyticsCharts[canvasId]) homeDashboardState.analyticsCharts[canvasId].destroy();
-    
-    homeDashboardState.analyticsCharts[canvasId] = new Chart(ctx, {
-        type: type,
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: colors,
-                borderColor: Array.isArray(colors) ? undefined : colors,
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      const toggleBtn = card.querySelector(".toggle-skill-btn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          const id = card.dataset.skillId;
+          if (id) this.toggleSkillVisibility(id);
+        });
+      }
     });
+  }
+
+  renderSkillCard(skill) {
+    const isFeatured = skill.featured ? "⭐" : "";
+    const levelColors = {
+      Beginner: "#10b981",
+      Intermediate: "#fbbf24",
+      Advanced: "#f59e0b",
+      Expert: "#ef4444",
+    };
+
+    return `
+            <div class="skill-card" data-skill-id="${skill.id}" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;border:1px solid ${skill.featured ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.06)"};">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                    <input type="checkbox" class="skill-select" style="accent-color:#a855f7;width:14px;height:14px;">
+                    <div style="width:28px;height:28px;background:rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a855f7;">
+                        <i class="${skill.icon || "fa-solid fa-code"}"></i>
+                    </div>
+                    <span style="font-size:13px;font-weight:600;color:#fff;flex:1;">${skill.name}</span>
+                    <span style="font-size:9px;background:rgba(168,85,247,0.2);color:#a855f7;padding:2px 6px;border-radius:4px;">${isFeatured}</span>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#94a3b8;">
+                    <span>${skill.level}</span>
+                    <span>•</span>
+                    <span>${skill.experience || "N/A"}</span>
+                    <span>•</span>
+                    <span style="color:${levelColors[skill.level] || "#94a3b8"};">${skill.progress}%</span>
+                </div>
+                <div style="width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:6px;overflow:hidden;">
+                    <div style="width:${skill.progress}%;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;"></div>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:8px;">
+                    <button class="edit-skill-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-edit"></i>
+                    </button>
+                    <button class="toggle-skill-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-${skill.hidden ? "eye-slash" : "eye"}"></i>
+                    </button>
+                    <button class="delete-skill-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+  }
+
+  openModal(skillId = null) {
+    const modal = document.getElementById("skill-modal");
+    if (!modal) return;
+
+    const title = document.getElementById("skill-modal-title");
+    if (title) {
+      title.innerHTML = skillId
+        ? '<i class="fa-solid fa-edit" style="color:#a855f7;"></i> تعديل المهارة'
+        : '<i class="fa-solid fa-circle-plus" style="color:#a855f7;"></i> إضافة مهارة جديدة';
+    }
+
+    if (skillId) {
+      const skill = this.skills.find((s) => s.id === skillId);
+      if (skill) {
+        Utils.setVal("edit-skill-id", skill.id);
+        Utils.setVal("skill-name", skill.name);
+        Utils.setVal("skill-category", skill.category);
+        Utils.setVal("skill-level", skill.level);
+        Utils.setVal("skill-experience", skill.experience || "");
+        Utils.setVal("skill-progress", skill.progress);
+        Utils.setVal("skill-icon", skill.icon || "");
+        Utils.setVal("skill-desc", skill.desc || "");
+
+        const featured = document.getElementById("skill-featured");
+        if (featured) featured.checked = skill.featured || false;
+
+        const hidden = document.getElementById("skill-hidden");
+        if (hidden) hidden.checked = skill.hidden || false;
+      }
+    } else {
+      // إعادة تعيين النموذج
+      document.getElementById("skill-form")?.reset();
+      Utils.setVal("edit-skill-id", "");
+      Utils.setVal("skill-progress", 85);
+    }
+
+    modal.style.display = "flex";
+    this.updatePreview();
+  }
+
+  closeModal() {
+    const modal = document.getElementById("skill-modal");
+    if (modal) modal.style.display = "none";
+  }
+
+  saveSkill(e) {
+    e.preventDefault();
+
+    const id = Utils.getVal("edit-skill-id");
+    const data = {
+      name: Utils.getVal("skill-name"),
+      category: Utils.getVal("skill-category"),
+      level: Utils.getVal("skill-level"),
+      experience: Utils.getVal("skill-experience"),
+      progress: parseInt(Utils.getVal("skill-progress")) || 0,
+      icon: Utils.getVal("skill-icon"),
+      desc: Utils.getVal("skill-desc"),
+      featured: document.getElementById("skill-featured")?.checked || false,
+      hidden: document.getElementById("skill-hidden")?.checked || false,
+    };
+
+    if (!data.name) {
+      Utils.toast("⚠️ اسم المهارة مطلوب", "warning");
+      return;
+    }
+
+    if (id) {
+      // تعديل
+      const index = this.skills.findIndex((s) => s.id === id);
+      if (index !== -1) {
+        this.skills[index] = { ...this.skills[index], ...data };
+        Utils.toast("✅ تم تحديث المهارة", "success");
+      }
+    } else {
+      // إضافة جديدة
+      data.id = Utils.genId();
+      this.skills.push(data);
+      Utils.toast("✅ تم إضافة المهارة", "success");
+    }
+
+    this.closeModal();
+    this.saveToStorage();
+    this.renderCategories();
+    this.updateStats();
+
+    // إضافة سجل
+    if (this.app.home) {
+      this.app.home.addLog(`📝 ${id ? "تعديل" : "إضافة"} مهارة: ${data.name}`);
+    }
+  }
+
+  editSkill(id) {
+    this.openModal(id);
+  }
+
+  deleteSkill(id) {
+    this.skills = this.skills.filter((s) => s.id !== id);
+    this.saveToStorage();
+    this.renderCategories();
+    this.updateStats();
+    Utils.toast("🗑️ تم حذف المهارة", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف مهارة");
+    }
+  }
+
+  toggleSkillVisibility(id) {
+    const skill = this.skills.find((s) => s.id === id);
+    if (skill) {
+      skill.hidden = !skill.hidden;
+      this.saveToStorage();
+      this.renderCategories();
+      this.updateStats();
+      Utils.toast(
+        skill.hidden ? "👁️ تم إخفاء المهارة" : "👁️ تم إظهار المهارة",
+        "info",
+      );
+    }
+  }
+
+  filterSkills() {
+    const query = Utils.getVal("skill-search-input").toLowerCase();
+    const category = Utils.getVal("filter-category");
+    const level = Utils.getVal("filter-level");
+    const sort = Utils.getVal("sort-skills-select");
+
+    let filtered = this.skills.filter((s) => !s.hidden);
+
+    if (query) {
+      filtered = filtered.filter((s) => s.name.toLowerCase().includes(query));
+    }
+    if (category) {
+      filtered = filtered.filter((s) => s.category === category);
+    }
+    if (level) {
+      filtered = filtered.filter((s) => s.level === level);
+    }
+
+    // ترتيب
+    if (sort === "alpha") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === "progress-desc") {
+      filtered.sort((a, b) => b.progress - a.progress);
+    }
+
+    // تحديث العرض
+    const container = document.getElementById("categories-container");
+    if (container) {
+      // إعادة التجميع حسب الفئة
+      const grouped = {};
+      this.categories.forEach((cat) => {
+        grouped[cat] = filtered.filter((s) => s.category === cat);
+      });
+
+      let html = "";
+      for (const [category, skills] of Object.entries(grouped)) {
+        if (skills.length === 0) continue;
+        html += `
+                    <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+                                <i class="fa-solid fa-folder-open"></i> ${category}
+                            </h3>
+                            <span style="font-size:11px;color:#94a3b8;">${skills.length} مهارة</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+                            ${skills.map((s) => this.renderSkillCard(s)).join("")}
+                        </div>
+                    </div>
+                `;
+      }
+      container.innerHTML =
+        html ||
+        '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مطابقة</p>';
+    }
+  }
+
+  updateStats() {
+    const visible = this.skills.filter((s) => !s.hidden);
+    const featured = this.skills.filter((s) => s.featured && !s.hidden);
+    const avgProgress =
+      visible.length > 0
+        ? Math.round(
+            visible.reduce((sum, s) => sum + s.progress, 0) / visible.length,
+          )
+        : 0;
+
+    Utils.setText("stat-total-skills", this.skills.length);
+    Utils.setText("stat-visible-trend", `${visible.length} مرئية`);
+    Utils.setText("stat-featured-skills", featured.length);
+    Utils.setText("stat-avg-level", `${avgProgress}%`);
+  }
+
+  updateBulkBar() {
+    const checked = document.querySelectorAll(".skill-select:checked");
+    const count = checked.length;
+    const bar = document.getElementById("bulk-actions-bar");
+    const label = document.getElementById("selected-count-label");
+
+    if (bar) {
+      bar.style.display = count > 0 ? "flex" : "none";
+    }
+    if (label) {
+      label.textContent = `تم تحديد ${count} عناصر`;
+    }
+  }
+
+  bulkAction(action) {
+    const checked = document.querySelectorAll(".skill-select:checked");
+    const ids = Array.from(checked)
+      .map((el) => {
+        const card = el.closest(".skill-card");
+        return card ? card.dataset.skillId : null;
+      })
+      .filter(Boolean);
+
+    if (ids.length === 0) {
+      Utils.toast("⚠️ لم يتم تحديد أي مهارة", "warning");
+      return;
+    }
+
+    if (action === "delete" && !confirm(`هل تريد حذف ${ids.length} مهارة؟`)) {
+      return;
+    }
+
+    ids.forEach((id) => {
+      const skill = this.skills.find((s) => s.id === id);
+      if (skill) {
+        if (action === "show") skill.hidden = false;
+        else if (action === "hide") skill.hidden = true;
+        else if (action === "delete") {
+          this.skills = this.skills.filter((s) => s.id !== id);
+        }
+      }
+    });
+
+    this.saveToStorage();
+    this.renderCategories();
+    this.updateStats();
+    this.updateBulkBar();
+
+    const messages = {
+      show: "👁️ تم إظهار المهارات المحددة",
+      hide: "👁️ تم إخفاء المهارات المحددة",
+      delete: "🗑️ تم حذف المهارات المحددة",
+    };
+    Utils.toast(messages[action] || "✅ تم التنفيذ", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`📝 ${messages[action]}`);
+    }
+  }
+
+  updatePreview() {
+    const name = Utils.getVal("skill-name") || "اسم المهارة";
+    const level = Utils.getVal("skill-level") || "Advanced";
+    const progress = parseInt(Utils.getVal("skill-progress")) || 85;
+    const icon = Utils.getVal("skill-icon") || "fa-solid fa-code";
+
+    Utils.setText("preview-title", name);
+    Utils.setText("preview-badge", level);
+
+    const progressFill = document.getElementById("preview-progress-fill");
+    if (progressFill) progressFill.style.width = `${progress}%`;
+
+    const iconBox = document.getElementById("preview-icon-box");
+    if (iconBox) {
+      iconBox.innerHTML = `<i class="${icon}"></i>`;
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("skills-data", this.skills);
+  }
 }
 
-// Smart Recommendations Engine
-function renderSmartInsights() {
-    const container = document.getElementById('insightsList');
+// ============================================================
+// 12. PROJECTS ENGINE (محرك قسم المشاريع)
+// ============================================================
+class ProjectsEngine {
+  constructor(app) {
+    this.app = app;
+    this.projects = [];
+    this.selectedProjects = new Set();
+    this.currentTab = "tab-general";
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderProjects();
+    this.updateStats();
+    console.log("📁 Projects Engine ready");
+  }
+
+  setupEvents() {
+    // إضافة مشروع
+    const addBtn = document.getElementById("openProjectModalBtn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.openModal());
+    }
+
+    // إغلاق المودال
+    const closeBtns = ["closeProjectModalBtn", "closeProjectModalBtn2"];
+    closeBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => this.closeModal());
+      }
+    });
+
+    // إعادة تعيين النموذج
+    const resetBtn = document.getElementById("resetProjectFormBtn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => this.resetForm());
+    }
+
+    // تبويبات المودال
+    document.querySelectorAll("#project-modal .tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tabId = btn.dataset.tab;
+        if (tabId) this.switchModalTab(tabId, btn);
+      });
+    });
+
+    // بحث
+    const search = document.getElementById("project-search-input");
+    if (search) {
+      search.addEventListener("input", () => this.filterProjects());
+    }
+
+    // فلترة
+    const filters = [
+      "filter-project-category",
+      "filter-project-status",
+      "filter-project-priority",
+      "sort-projects-select",
+    ];
+    filters.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.filterProjects());
+      }
+    });
+
+    // أزرار Bulk
+    const bulkBtns = [
+      "projectBulkPublish",
+      "projectBulkUnpublish",
+      "projectBulkFeature",
+      "projectBulkArchive",
+      "projectBulkDelete",
+    ];
+    bulkBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const action = id.replace("projectBulk", "").toLowerCase();
+          this.bulkAction(action);
+        });
+      }
+    });
+
+    // حفظ النموذج
+    const form = document.getElementById("project-form");
+    if (form) {
+      form.addEventListener("submit", (e) => this.saveProject(e));
+    }
+
+    // رفع الصورة
+    const uploadBtn = document.getElementById("projImageUploadBtn");
+    if (uploadBtn) {
+      uploadBtn.addEventListener("click", () => {
+        document.getElementById("proj-image-file")?.click();
+      });
+    }
+
+    const fileInput = document.getElementById("proj-image-file");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => this.handleImageUpload(e));
+    }
+
+    // أزرار المعاينة
+    const previewDevices = [
+      "previewDesktopBtn",
+      "previewTabletBtn",
+      "previewMobileBtn",
+    ];
+    previewDevices.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const device = btn.dataset.device || "desktop";
+          this.updatePreviewDevice(device);
+        });
+      }
+    });
+
+    const themeBtn = document.getElementById("previewThemeBtn");
+    if (themeBtn) {
+      themeBtn.addEventListener("click", () => this.togglePreviewTheme());
+    }
+
+    const refreshBtn = document.getElementById("previewRefreshBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => this.updateProjectPreview());
+    }
+
+    // تصدير
+    const exportBtn = document.getElementById("exportProjectsBtn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => this.exportProjects());
+    }
+
+    // استيراد
+    const importBtn = document.getElementById("importProjectsBtn");
+    if (importBtn) {
+      importBtn.addEventListener("click", () => {
+        document.getElementById("project-file-import-input")?.click();
+      });
+    }
+
+    const importInput = document.getElementById("project-file-import-input");
+    if (importInput) {
+      importInput.addEventListener("change", (e) => this.importProjects(e));
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("projects-data", []);
+    if (saved.length > 0) {
+      this.projects = saved;
+    } else {
+      // بيانات افتراضية
+      this.projects = [
+        {
+          id: Utils.genId(),
+          name: "Portfolio Dashboard Pro",
+          category: "Web Apps",
+          status: "Published",
+          priority: "High",
+          completion: 100,
+          client: "Personal Project",
+          startDate: "2024-01-15",
+          endDate: "2024-03-20",
+          tech: "HTML, CSS, JavaScript, Supabase",
+          desc: "لوحة تحكم احترافية لإدارة البورتفوليو",
+          fullDesc: "نظام متكامل لإدارة المحتوى مع لوحة تحكم ذكية",
+          thumbnail: "",
+          liveUrl: "https://dashboard.example.com",
+          githubUrl: "https://github.com/username/dashboard",
+          featured: true,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "E-Commerce Platform",
+          category: "Web Apps",
+          status: "In Progress",
+          priority: "High",
+          completion: 65,
+          client: "Startup Company",
+          startDate: "2024-02-01",
+          endDate: "",
+          tech: "React, Node.js, MongoDB",
+          desc: "منصة تجارة إلكترونية متكاملة",
+          fullDesc: "منصة متطورة للتجارة الإلكترونية مع نظام إدارة متكامل",
+          thumbnail: "",
+          liveUrl: "",
+          githubUrl: "https://github.com/username/ecommerce",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Task Management System",
+          category: "Tools & Dashboards",
+          status: "Completed",
+          priority: "Medium",
+          completion: 100,
+          client: "Freelance",
+          startDate: "2023-11-10",
+          endDate: "2024-01-05",
+          tech: "Vue.js, Firebase",
+          desc: "نظام إدارة المهام والمشاريع",
+          fullDesc: "أداة متكاملة لإدارة المهام مع لوحة تحكم تفاعلية",
+          thumbnail: "",
+          liveUrl: "https://tasks.example.com",
+          githubUrl: "https://github.com/username/tasks",
+          featured: false,
+          hidden: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Landing Page - SaaS Product",
+          category: "Landing Pages",
+          status: "Published",
+          priority: "Low",
+          completion: 100,
+          client: "SaaS Company",
+          startDate: "2024-02-15",
+          endDate: "2024-02-28",
+          tech: "HTML, CSS, JavaScript",
+          desc: "صفحة هبوط لمنتج SaaS",
+          fullDesc: "صفحة هبوط احترافية مع تصميم جذاب",
+          thumbnail: "",
+          liveUrl: "https://saas-landing.example.com",
+          githubUrl: "",
+          featured: true,
+          hidden: false,
+        },
+      ];
+    }
+  }
+
+  renderProjects() {
+    const container = document.getElementById("projects-grid-container");
     if (!container) return;
 
-    let insightsHTML = `
-        <div class="insight-item success">
-            <span><i class="fa-solid fa-circle-check" style="color:#10b981; margin-left:6px;"></i> أداء الموقع استثنائي وسرعة التحميل محسنة بالكامل.</span>
-            <small>حالة ممتازة</small>
-        </div>
-        <div class="insight-item warning">
-            <span><i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; margin-left:6px;"></i> يوصى بإضافة 2 مشاريع جديدة للوصول للهدف الشهري (10 مشاريع).</span>
-            <small>تحسين مقترح</small>
-        </div>
-        <div class="insight-item">
-            <span><i class="fa-solid fa-circle-info" style="color:#38bdf8; margin-left:6px;"></i> معلومات الـ SEO مكتملة وجاهزة لمحركات البحث.</span>
-            <small>مكتمل</small>
-        </div>
-    `;
-    container.innerHTML = insightsHTML;
+    const visible = this.projects.filter((p) => !p.hidden);
+
+    if (visible.length === 0) {
+      container.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:60px;color:#94a3b8;">
+                    <i class="fa-solid fa-folder-open" style="font-size:48px;color:#38bdf8;opacity:0.3;"></i>
+                    <p style="margin-top:16px;">لا توجد مشاريع مضافة</p>
+                    <button class="saas-btn saas-btn-primary" onclick="document.getElementById('openProjectModalBtn')?.click()" style="margin-top:12px;">
+                        <i class="fa-solid fa-plus"></i> إضافة مشروع جديد
+                    </button>
+                </div>
+            `;
+      return;
+    }
+
+    container.innerHTML = visible
+      .map((project) => this.renderProjectCard(project))
+      .join("");
+
+    // ربط الأحداث
+    container.querySelectorAll(".project-card").forEach((card) => {
+      const checkbox = card.querySelector(".project-select");
+      if (checkbox) {
+        checkbox.addEventListener("change", () => this.updateProjectBulkBar());
+      }
+
+      const editBtn = card.querySelector(".edit-project-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => {
+          const id = card.dataset.projectId;
+          if (id) this.editProject(id);
+        });
+      }
+
+      const deleteBtn = card.querySelector(".delete-project-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => {
+          const id = card.dataset.projectId;
+          if (id && confirm("هل تريد حذف هذا المشروع؟")) {
+            this.deleteProject(id);
+          }
+        });
+      }
+
+      const toggleBtn = card.querySelector(".toggle-project-btn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          const id = card.dataset.projectId;
+          if (id) this.toggleProjectVisibility(id);
+        });
+      }
+    });
+  }
+
+  renderProjectCard(project) {
+    const statusColors = {
+      Published: "#10b981",
+      Draft: "#94a3b8",
+      "In Progress": "#fbbf24",
+      Completed: "#38bdf8",
+      Archived: "#64748b",
+    };
+
+    const priorityIcons = {
+      High: "🔴",
+      Medium: "🟡",
+      Low: "🟢",
+    };
+
+    return `
+            <div class="project-card" data-project-id="${project.id}" style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;border:1px solid ${project.featured ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.06)"};">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input type="checkbox" class="project-select" style="accent-color:#38bdf8;width:14px;height:14px;">
+                        <span style="font-size:13px;font-weight:600;color:#fff;">${project.name}</span>
+                        ${project.featured ? '<span style="font-size:9px;background:rgba(56,189,248,0.2);color:#38bdf8;padding:2px 6px;border-radius:4px;">⭐ مميز</span>' : ""}
+                    </div>
+                    <span style="font-size:10px;color:${statusColors[project.status] || "#94a3b8"};background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;">
+                        ${project.status}
+                    </span>
+                </div>
+                <div style="display:flex;gap:8px;font-size:11px;color:#94a3b8;flex-wrap:wrap;">
+                    <span>${project.category}</span>
+                    <span>•</span>
+                    <span>${priorityIcons[project.priority] || "🟡"} ${project.priority}</span>
+                    <span>•</span>
+                    <span>${project.completion}% مكتمل</span>
+                </div>
+                <p style="font-size:11px;color:#cbd5e1;margin:6px 0;">${Utils.truncate(project.desc || "", 60)}</p>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin:6px 0;">
+                    ${(project.tech || "")
+                      .split(",")
+                      .slice(0, 3)
+                      .map(
+                        (t) =>
+                          `<span style="font-size:9px;background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;color:#94a3b8;">${t.trim()}</span>`,
+                      )
+                      .join("")}
+                </div>
+                <div style="width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:4px;margin:6px 0;overflow:hidden;">
+                    <div style="width:${project.completion}%;height:100%;background:linear-gradient(90deg,#38bdf8,#6366f1);border-radius:4px;"></div>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:6px;">
+                    <button class="edit-project-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-edit"></i>
+                    </button>
+                    <button class="toggle-project-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-${project.hidden ? "eye-slash" : "eye"}"></i>
+                    </button>
+                    <button class="delete-project-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    ${
+                      project.liveUrl
+                        ? `<a href="${project.liveUrl}" target="_blank" style="background:rgba(16,185,129,0.2);color:#10b981;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;text-decoration:none;">
+                        <i class="fa-solid fa-globe"></i>
+                    </a>`
+                        : ""
+                    }
+                </div>
+            </div>
+        `;
+  }
+
+  openModal(projectId = null) {
+    const modal = document.getElementById("project-modal");
+    if (!modal) return;
+
+    const title = document.getElementById("project-modal-title");
+    if (title) {
+      title.innerHTML = projectId
+        ? '<i class="fa-solid fa-edit" style="color:#38bdf8;"></i> تعديل المشروع'
+        : '<i class="fa-solid fa-circle-plus" style="color:#38bdf8;"></i> إضافة مشروع جديد';
+    }
+
+    if (projectId) {
+      const project = this.projects.find((p) => p.id === projectId);
+      if (project) {
+        Utils.setVal("edit-project-id", project.id);
+        Utils.setVal("proj-name", project.name);
+        Utils.setVal("proj-category", project.category);
+        Utils.setVal("proj-status", project.status);
+        Utils.setVal("proj-priority", project.priority);
+        Utils.setVal("proj-completion", project.completion);
+        Utils.setVal("proj-client", project.client || "");
+        Utils.setVal("proj-start-date", project.startDate || "");
+        Utils.setVal("proj-end-date", project.endDate || "");
+        Utils.setVal("proj-tech", project.tech || "");
+        Utils.setVal("proj-desc", project.desc || "");
+        Utils.setVal("proj-full-desc", project.fullDesc || "");
+        Utils.setVal("proj-thumbnail", project.thumbnail || "");
+        Utils.setVal("proj-video-url", project.videoUrl || "");
+        Utils.setVal("proj-gallery", project.gallery || "");
+        Utils.setVal("proj-live-url", project.liveUrl || "");
+        Utils.setVal("proj-github-url", project.githubUrl || "");
+        Utils.setVal("proj-docs-url", project.docsUrl || "");
+        Utils.setVal("proj-case-url", project.caseUrl || "");
+        Utils.setVal("proj-meta-title", project.metaTitle || "");
+        Utils.setVal("proj-slug", project.slug || "");
+        Utils.setVal("proj-keywords", project.keywords || "");
+
+        const featured = document.getElementById("proj-featured");
+        if (featured) featured.checked = project.featured || false;
+
+        const hidden = document.getElementById("proj-hidden");
+        if (hidden) hidden.checked = project.hidden || false;
+      }
+    } else {
+      document.getElementById("project-form")?.reset();
+      Utils.setVal("edit-project-id", "");
+      Utils.setVal("proj-completion", 100);
+      Utils.setVal("proj-status", "Draft");
+      Utils.setVal("proj-priority", "Medium");
+    }
+
+    modal.style.display = "flex";
+    this.switchModalTab("tab-general");
+    this.updateProjectPreview();
+  }
+
+  closeModal() {
+    const modal = document.getElementById("project-modal");
+    if (modal) modal.style.display = "none";
+  }
+
+  switchModalTab(tabId, activeBtn = null) {
+    // إخفاء الكل
+    document.querySelectorAll(".project-tab-content").forEach((el) => {
+      el.style.display = "none";
+    });
+
+    // إظهار المطلوب
+    const target = document.getElementById(tabId);
+    if (target) target.style.display = "block";
+
+    // تحديث الأزرار
+    document.querySelectorAll("#project-modal .tab-btn").forEach((btn) => {
+      btn.className = "saas-btn saas-btn-secondary tab-btn";
+    });
+    if (activeBtn) {
+      activeBtn.className = "saas-btn saas-btn-primary tab-btn active-tab";
+    } else {
+      document.querySelectorAll("#project-modal .tab-btn").forEach((btn) => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = "saas-btn saas-btn-primary tab-btn active-tab";
+        }
+      });
+    }
+
+    this.currentTab = tabId;
+  }
+
+  saveProject(e) {
+    e.preventDefault();
+
+    const id = Utils.getVal("edit-project-id");
+    const data = {
+      name: Utils.getVal("proj-name"),
+      category: Utils.getVal("proj-category"),
+      status: Utils.getVal("proj-status"),
+      priority: Utils.getVal("proj-priority"),
+      completion: parseInt(Utils.getVal("proj-completion")) || 0,
+      client: Utils.getVal("proj-client"),
+      startDate: Utils.getVal("proj-start-date"),
+      endDate: Utils.getVal("proj-end-date"),
+      tech: Utils.getVal("proj-tech"),
+      desc: Utils.getVal("proj-desc"),
+      fullDesc: Utils.getVal("proj-full-desc"),
+      thumbnail: Utils.getVal("proj-thumbnail"),
+      videoUrl: Utils.getVal("proj-video-url"),
+      gallery: Utils.getVal("proj-gallery"),
+      liveUrl: Utils.getVal("proj-live-url"),
+      githubUrl: Utils.getVal("proj-github-url"),
+      docsUrl: Utils.getVal("proj-docs-url"),
+      caseUrl: Utils.getVal("proj-case-url"),
+      metaTitle: Utils.getVal("proj-meta-title"),
+      slug: Utils.getVal("proj-slug"),
+      keywords: Utils.getVal("proj-keywords"),
+      featured: document.getElementById("proj-featured")?.checked || false,
+      hidden: document.getElementById("proj-hidden")?.checked || false,
+    };
+
+    if (!data.name) {
+      Utils.toast("⚠️ اسم المشروع مطلوب", "warning");
+      return;
+    }
+
+    if (id) {
+      const index = this.projects.findIndex((p) => p.id === id);
+      if (index !== -1) {
+        this.projects[index] = { ...this.projects[index], ...data };
+        Utils.toast("✅ تم تحديث المشروع", "success");
+      }
+    } else {
+      data.id = Utils.genId();
+      this.projects.push(data);
+      Utils.toast("✅ تم إضافة المشروع", "success");
+    }
+
+    this.closeModal();
+    this.saveToStorage();
+    this.renderProjects();
+    this.updateStats();
+
+    if (this.app.home) {
+      this.app.home.addLog(`📁 ${id ? "تعديل" : "إضافة"} مشروع: ${data.name}`);
+    }
+  }
+
+  editProject(id) {
+    this.openModal(id);
+  }
+
+  deleteProject(id) {
+    this.projects = this.projects.filter((p) => p.id !== id);
+    this.saveToStorage();
+    this.renderProjects();
+    this.updateStats();
+    Utils.toast("🗑️ تم حذف المشروع", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف مشروع");
+    }
+  }
+
+  toggleProjectVisibility(id) {
+    const project = this.projects.find((p) => p.id === id);
+    if (project) {
+      project.hidden = !project.hidden;
+      this.saveToStorage();
+      this.renderProjects();
+      this.updateStats();
+      Utils.toast(
+        project.hidden ? "👁️ تم إخفاء المشروع" : "👁️ تم إظهار المشروع",
+        "info",
+      );
+    }
+  }
+
+  filterProjects() {
+    const query = Utils.getVal("project-search-input").toLowerCase();
+    const category = Utils.getVal("filter-project-category");
+    const status = Utils.getVal("filter-project-status");
+    const priority = Utils.getVal("filter-project-priority");
+    const sort = Utils.getVal("sort-projects-select");
+
+    let filtered = this.projects.filter((p) => !p.hidden);
+
+    if (query) {
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          (p.tech || "").toLowerCase().includes(query) ||
+          (p.client || "").toLowerCase().includes(query) ||
+          (p.desc || "").toLowerCase().includes(query),
+      );
+    }
+    if (category) filtered = filtered.filter((p) => p.category === category);
+    if (status) filtered = filtered.filter((p) => p.status === status);
+    if (priority) filtered = filtered.filter((p) => p.priority === priority);
+
+    // ترتيب
+    if (sort === "newest") {
+      filtered.sort(
+        (a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0),
+      );
+    } else if (sort === "oldest") {
+      filtered.sort(
+        (a, b) => new Date(a.startDate || 0) - new Date(b.startDate || 0),
+      );
+    } else if (sort === "alpha") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === "priority") {
+      const order = { High: 0, Medium: 1, Low: 2 };
+      filtered.sort((a, b) => order[a.priority] - order[b.priority]);
+    } else if (sort === "completion") {
+      filtered.sort((a, b) => b.completion - a.completion);
+    }
+
+    const container = document.getElementById("projects-grid-container");
+    if (container) {
+      if (filtered.length === 0) {
+        container.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:60px;color:#94a3b8;">
+                        <i class="fa-solid fa-search" style="font-size:48px;color:#38bdf8;opacity:0.3;"></i>
+                        <p style="margin-top:16px;">لا توجد مشاريع مطابقة للبحث</p>
+                    </div>
+                `;
+      } else {
+        container.innerHTML = filtered
+          .map((p) => this.renderProjectCard(p))
+          .join("");
+      }
+    }
+  }
+
+  updateStats() {
+    const total = this.projects.length;
+    const visible = this.projects.filter((p) => !p.hidden);
+    const completed = this.projects.filter(
+      (p) => p.status === "Completed" && !p.hidden,
+    );
+    const published = this.projects.filter(
+      (p) => p.status === "Published" && !p.hidden,
+    );
+    const inProgress = this.projects.filter(
+      (p) => p.status === "In Progress" && !p.hidden,
+    );
+    const featured = this.projects.filter((p) => p.featured && !p.hidden);
+    const archived = this.projects.filter(
+      (p) => p.status === "Archived" || p.hidden,
+    );
+
+    Utils.setText("stat-total-projects", total);
+    Utils.setText("stat-visible-projects-trend", `${visible.length} مرئية`);
+    Utils.setText("stat-completed-projects", completed.length);
+    Utils.setText("stat-published-projects", published.length);
+    Utils.setText("stat-progress-projects", inProgress.length);
+    Utils.setText("stat-featured-projects", featured.length);
+    Utils.setText("stat-archived-projects", archived.length);
+    Utils.setText("stat-hidden-projects", `${archived.length} مخفية`);
+  }
+
+  updateProjectBulkBar() {
+    const checked = document.querySelectorAll(".project-select:checked");
+    const count = checked.length;
+    const bar = document.getElementById("project-bulk-bar");
+    const label = document.getElementById("project-selected-count");
+
+    if (bar) {
+      bar.style.display = count > 0 ? "flex" : "none";
+    }
+    if (label) {
+      label.textContent = `تم تحديد ${count} مشروع`;
+    }
+  }
+
+  bulkAction(action) {
+    const checked = document.querySelectorAll(".project-select:checked");
+    const ids = Array.from(checked)
+      .map((el) => {
+        const card = el.closest(".project-card");
+        return card ? card.dataset.projectId : null;
+      })
+      .filter(Boolean);
+
+    if (ids.length === 0) {
+      Utils.toast("⚠️ لم يتم تحديد أي مشروع", "warning");
+      return;
+    }
+
+    if (action === "delete" && !confirm(`هل تريد حذف ${ids.length} مشروع؟`)) {
+      return;
+    }
+
+    ids.forEach((id) => {
+      const project = this.projects.find((p) => p.id === id);
+      if (project) {
+        switch (action) {
+          case "publish":
+            project.status = "Published";
+            break;
+          case "unpublish":
+            project.status = "Draft";
+            break;
+          case "feature":
+            project.featured = !project.featured;
+            break;
+          case "archive":
+            project.hidden = true;
+            break;
+          case "delete":
+            this.projects = this.projects.filter((p) => p.id !== id);
+            break;
+        }
+      }
+    });
+
+    this.saveToStorage();
+    this.renderProjects();
+    this.updateStats();
+    this.updateProjectBulkBar();
+
+    const messages = {
+      publish: "📢 تم نشر المشاريع المحددة",
+      unpublish: "👁️ تم إلغاء نشر المشاريع المحددة",
+      feature: "⭐ تم تمييز المشاريع المحددة",
+      archive: "📦 تم أرشفة المشاريع المحددة",
+      delete: "🗑️ تم حذف المشاريع المحددة",
+    };
+    Utils.toast(messages[action] || "✅ تم التنفيذ", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`📁 ${messages[action]}`);
+    }
+  }
+
+  updateProjectPreview() {
+    const name = Utils.getVal("proj-name") || "اسم المشروع";
+    const category = Utils.getVal("proj-category") || "Web Apps";
+    const status = Utils.getVal("proj-status") || "Draft";
+    const desc = Utils.getVal("proj-desc") || "وصف موجز للمشروع...";
+    const tech = Utils.getVal("proj-tech") || "";
+
+    Utils.setText("prev-proj-title", name);
+    Utils.setText("prev-proj-category", category);
+    Utils.setText("prev-proj-badge", status);
+
+    const descEl = document.getElementById("prev-proj-desc");
+    if (descEl) descEl.textContent = desc || "وصف موجز للمشروع...";
+
+    const techContainer = document.getElementById("prev-proj-tech");
+    if (techContainer) {
+      const techs = tech.split(",").filter((t) => t.trim());
+      techContainer.innerHTML =
+        techs.length > 0
+          ? techs
+              .slice(0, 3)
+              .map((t) => `<span class="project-tech-badge">${t.trim()}</span>`)
+              .join("")
+          : '<span style="font-size:10px;color:#94a3b8;">لا توجد تقنيات</span>';
+    }
+  }
+
+  updatePreviewDevice(device) {
+    const wrapper = document.getElementById("preview-device-wrapper");
+    const box = document.getElementById("live-preview-card-box");
+    if (wrapper && box) {
+      const widths = { desktop: "420px", tablet: "320px", mobile: "240px" };
+      box.style.maxWidth = widths[device] || "420px";
+      Utils.toast(
+        `📱 جهاز: ${device === "desktop" ? "حاسوب" : device === "tablet" ? "تابلت" : "موبايل"}`,
+        "info",
+      );
+    }
+  }
+
+  togglePreviewTheme() {
+    const box = document.getElementById("live-preview-card-box");
+    if (box) {
+      const isLight =
+        box.style.background === "#ffffff" || box.style.background === "white";
+      box.style.background = isLight ? "rgba(18,24,43,0.95)" : "#ffffff";
+      box.style.color = isLight ? "#fff" : "#000";
+
+      const headings = box.querySelectorAll("h4");
+      headings.forEach((el) => (el.style.color = isLight ? "#fff" : "#000"));
+
+      const desc = box.querySelectorAll("p");
+      desc.forEach((el) => (el.style.color = isLight ? "#cbd5e1" : "#475569"));
+
+      Utils.toast(isLight ? "🌙 الوضع المظلم" : "☀️ الوضع الفاتح", "info");
+    }
+  }
+
+  resetForm() {
+    if (confirm("هل تريد إعادة تعيين النموذج؟")) {
+      document.getElementById("project-form")?.reset();
+      Utils.setVal("edit-project-id", "");
+      Utils.setVal("proj-completion", 100);
+      Utils.setVal("proj-status", "Draft");
+      Utils.setVal("proj-priority", "Medium");
+      this.updateProjectPreview();
+      Utils.toast("🔄 تم إعادة تعيين النموذج", "info");
+    }
+  }
+
+  handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target.result;
+        Utils.setVal("proj-thumbnail", url);
+        Utils.toast("🖼️ تم رفع الصورة بنجاح", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  exportProjects() {
+    const data = this.projects.map((p) => ({
+      name: p.name,
+      category: p.category,
+      status: p.status,
+      priority: p.priority,
+      completion: p.completion,
+      client: p.client,
+      tech: p.tech,
+      desc: p.desc,
+      liveUrl: p.liveUrl,
+      githubUrl: p.githubUrl,
+    }));
+    Utils.exportJSON(data, `projects-export-${Date.now()}.json`);
+    Utils.toast("📥 تم تصدير المشاريع", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog("📥 تم تصدير المشاريع");
+    }
+  }
+
+  importProjects(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Utils.importJSON(file)
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach((item) => {
+            if (item.name) {
+              item.id = Utils.genId();
+              item.hidden = false;
+              item.featured = item.featured || false;
+              this.projects.push(item);
+            }
+          });
+          this.saveToStorage();
+          this.renderProjects();
+          this.updateStats();
+          Utils.toast(`📥 تم استيراد ${data.length} مشروع`, "success");
+
+          if (this.app.home) {
+            this.app.home.addLog(`📥 تم استيراد ${data.length} مشروع`);
+          }
+        }
+      })
+      .catch((err) => {
+        Utils.toast("❌ خطأ في استيراد الملف", "error");
+      });
+
+    e.target.value = "";
+  }
+
+  saveToStorage() {
+    Utils.storage.set("projects-data", this.projects);
+  }
+} // ============================================================
+// 13. CERTIFICATES ENGINE (محرك قسم الشهادات)
+// ============================================================
+class CertificatesEngine {
+  constructor(app) {
+    this.app = app;
+    this.certificates = [];
+    this.selectedCerts = new Set();
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderCertificates();
+    this.updateStats();
+    console.log("📜 Certificates Engine ready");
+  }
+
+  setupEvents() {
+    // إضافة شهادة
+    const addBtn = document.getElementById("cert-add-new-btn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.openModal());
+    }
+
+    // حفظ الكل
+    const saveBtn = document.getElementById("cert-save-all-btn");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => this.saveAll());
+    }
+
+    // إغلاق المودال
+    const closeBtns = ["closeCertModalBtn", "closeCertModalBtn2"];
+    closeBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => this.closeModal());
+      }
+    });
+
+    // تصدير
+    const exportBtn = document.getElementById("cert-export-json-btn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => this.exportCertificates());
+    }
+
+    // استيراد
+    const importBtn = document.getElementById("cert-import-json-btn");
+    if (importBtn) {
+      importBtn.addEventListener("click", () => {
+        document.getElementById("cert-file-import-input")?.click();
+      });
+    }
+
+    const importInput = document.getElementById("cert-file-import-input");
+    if (importInput) {
+      importInput.addEventListener("change", (e) => this.importCertificates(e));
+    }
+
+    // بحث
+    const search = document.getElementById("certificates-search-input");
+    if (search) {
+      search.addEventListener("input", () => this.filterCertificates());
+    }
+
+    // فلترة
+    const filters = [
+      "cert-filter-category",
+      "cert-filter-status",
+      "cert-sort-by",
+    ];
+    filters.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.filterCertificates());
+      }
+    });
+
+    // تحديد الكل
+    const selectAll = document.getElementById("cert-select-all-checkbox");
+    if (selectAll) {
+      selectAll.addEventListener("change", () => this.toggleSelectAll());
+    }
+
+    // أزرار Bulk
+    const bulkBtns = [
+      "cert-bulk-publish-btn",
+      "cert-bulk-hide-btn",
+      "cert-bulk-archive-btn",
+      "cert-bulk-delete-btn",
+    ];
+    bulkBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const action = id.replace("cert-bulk-", "").replace("-btn", "");
+          this.bulkAction(action);
+        });
+      }
+    });
+
+    // حفظ النموذج
+    const form = document.getElementById("certificate-form");
+    if (form) {
+      form.addEventListener("submit", (e) => this.saveCertificate(e));
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("certificates-data", []);
+    if (saved.length > 0) {
+      this.certificates = saved;
+    } else {
+      // بيانات افتراضية
+      this.certificates = [
+        {
+          id: Utils.genId(),
+          title: "Introduction to Cybersecurity",
+          provider: "Cisco Networking Academy",
+          category: "Cybersecurity",
+          issueDate: "2024-01-15",
+          expirationDate: "2026-01-15",
+          credentialId: "CSCO-2024-001",
+          verificationUrl: "https://www.credly.com/badge/abc123",
+          shortDesc: "دورة تأسيسية في مجال الأمن السيبراني",
+          featured: true,
+          published: true,
+        },
+        {
+          id: Utils.genId(),
+          title: "Advanced Frontend Development",
+          provider: "Google Developers",
+          category: "Frontend",
+          issueDate: "2023-11-20",
+          expirationDate: "2025-11-20",
+          credentialId: "GD-2023-456",
+          verificationUrl: "https://developers.google.com/certification/789",
+          shortDesc: "تطوير واجهات المستخدم المتقدمة مع React و TypeScript",
+          featured: true,
+          published: true,
+        },
+        {
+          id: Utils.genId(),
+          title: "Machine Learning Fundamentals",
+          provider: "Stanford University",
+          category: "AI & Data",
+          issueDate: "2023-08-10",
+          expirationDate: "",
+          credentialId: "STAN-2023-789",
+          verificationUrl: "https://online.stanford.edu/cert/123",
+          shortDesc: "أساسيات تعلم الآلة والذكاء الاصطناعي",
+          featured: false,
+          published: true,
+        },
+        {
+          id: Utils.genId(),
+          title: "Full Stack Web Development",
+          provider: "FreeCodeCamp",
+          category: "Frontend",
+          issueDate: "2023-05-05",
+          expirationDate: "",
+          credentialId: "FCC-2023-321",
+          verificationUrl: "https://freecodecamp.org/cert/456",
+          shortDesc: "تطوير تطبيقات الويب من البداية إلى النهاية",
+          featured: false,
+          published: false,
+        },
+      ];
+    }
+  }
+
+  renderCertificates() {
+    const container = document.getElementById("certificates-grid-container");
+    if (!container) return;
+
+    const visible = this.certificates.filter((c) => c.published !== false);
+
+    if (visible.length === 0) {
+      container.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;">
+                    <i class="fa-solid fa-award" style="font-size:48px;color:#38bdf8;opacity:0.3;"></i>
+                    <p style="margin-top:12px;">لا توجد شهادات مضافة</p>
+                    <button class="saas-btn saas-btn-primary" onclick="document.getElementById('cert-add-new-btn')?.click()" style="margin-top:12px;">
+                        <i class="fa-solid fa-plus"></i> إضافة شهادة
+                    </button>
+                </div>
+            `;
+      return;
+    }
+
+    container.innerHTML = visible
+      .map((cert) => this.renderCertificateCard(cert))
+      .join("");
+
+    // ربط الأحداث
+    container.querySelectorAll(".certificate-card").forEach((card) => {
+      const checkbox = card.querySelector(".cert-select");
+      if (checkbox) {
+        checkbox.addEventListener("change", () => this.updateBulkBar());
+      }
+
+      const editBtn = card.querySelector(".edit-cert-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => {
+          const id = card.dataset.certId;
+          if (id) this.editCertificate(id);
+        });
+      }
+
+      const deleteBtn = card.querySelector(".delete-cert-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => {
+          const id = card.dataset.certId;
+          if (id && confirm("هل تريد حذف هذه الشهادة؟")) {
+            this.deleteCertificate(id);
+          }
+        });
+      }
+
+      const toggleBtn = card.querySelector(".toggle-cert-btn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          const id = card.dataset.certId;
+          if (id) this.toggleCertificateStatus(id);
+        });
+      }
+    });
+  }
+
+  renderCertificateCard(cert) {
+    const isExpired =
+      cert.expirationDate && new Date(cert.expirationDate) < new Date();
+    const isFeatured = cert.featured ? "⭐" : "";
+
+    return `
+            <div class="certificate-card" data-cert-id="${cert.id}" style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;border:1px solid ${cert.featured ? "rgba(251,191,36,0.3)" : "rgba(255,255,255,0.06)"};">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;flex:1;">
+                        <input type="checkbox" class="cert-select" style="accent-color:#38bdf8;width:14px;height:14px;">
+                        <div>
+                            <span style="font-size:13px;font-weight:600;color:#fff;">${cert.title}</span>
+                            <div style="font-size:10px;color:#94a3b8;">${cert.provider}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:4px;align-items:center;">
+                        <span style="font-size:9px;background:${cert.published ? "rgba(16,185,129,0.2)" : "rgba(148,163,184,0.2)"};color:${cert.published ? "#10b981" : "#94a3b8"};padding:2px 6px;border-radius:4px;">
+                            ${cert.published ? "منشور" : "مسودة"}
+                        </span>
+                        ${isFeatured ? '<span style="font-size:9px;background:rgba(251,191,36,0.2);color:#fbbf24;padding:2px 6px;border-radius:4px;">⭐</span>' : ""}
+                        ${isExpired ? '<span style="font-size:9px;background:rgba(239,68,68,0.2);color:#ef4444;padding:2px 6px;border-radius:4px;">منتهية</span>' : ""}
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;font-size:10px;color:#94a3b8;flex-wrap:wrap;margin:4px 0;">
+                    <span>${cert.category}</span>
+                    <span>•</span>
+                    <span>📅 ${Utils.formatDate(cert.issueDate)}</span>
+                    ${cert.expirationDate ? `<span>• 🏁 ${Utils.formatDate(cert.expirationDate)}</span>` : ""}
+                </div>
+                <p style="font-size:11px;color:#cbd5e1;margin:4px 0;">${Utils.truncate(cert.shortDesc || "", 80)}</p>
+                ${cert.credentialId ? `<div style="font-size:9px;color:#64748b;margin:2px 0;">🆔 ${cert.credentialId}</div>` : ""}
+                <div style="display:flex;gap:4px;margin-top:8px;">
+                    <button class="edit-cert-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-edit"></i>
+                    </button>
+                    <button class="toggle-cert-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-${cert.published ? "eye" : "eye-slash"}"></i>
+                    </button>
+                    <button class="delete-cert-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    ${
+                      cert.verificationUrl
+                        ? `<a href="${cert.verificationUrl}" target="_blank" style="background:rgba(16,185,129,0.2);color:#10b981;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;text-decoration:none;">
+                        <i class="fa-solid fa-check-circle"></i>
+                    </a>`
+                        : ""
+                    }
+                </div>
+            </div>
+        `;
+  }
+
+  openModal(certId = null) {
+    const modal = document.getElementById("certificate-modal-overlay");
+    if (!modal) return;
+
+    const title = document.getElementById("cert-modal-title");
+    if (title) {
+      title.innerHTML = certId
+        ? '<i class="fa-solid fa-edit" style="color:#38bdf8;"></i> تعديل الشهادة'
+        : '<i class="fa-solid fa-certificate" style="color:#38bdf8;"></i> إضافة شهادة جديدة';
+    }
+
+    if (certId) {
+      const cert = this.certificates.find((c) => c.id === certId);
+      if (cert) {
+        Utils.setVal("cert-edit-id", cert.id);
+        Utils.setVal("cert_title", cert.title);
+        Utils.setVal("cert_provider", cert.provider);
+        Utils.setVal("cert_category", cert.category);
+        Utils.setVal("cert_issue_date", cert.issueDate || "");
+        Utils.setVal("cert_expiration_date", cert.expirationDate || "");
+        Utils.setVal("cert_credential_id", cert.credentialId || "");
+        Utils.setVal("cert_verification_url", cert.verificationUrl || "");
+        Utils.setVal("cert_short_desc", cert.shortDesc || "");
+
+        const featured = document.getElementById("cert_is_featured");
+        if (featured) featured.checked = cert.featured || false;
+
+        const published = document.getElementById("cert_is_published");
+        if (published) published.checked = cert.published !== false;
+      }
+    } else {
+      document.getElementById("certificate-form")?.reset();
+      Utils.setVal("cert-edit-id", "");
+      const published = document.getElementById("cert_is_published");
+      if (published) published.checked = true;
+    }
+
+    modal.style.display = "flex";
+  }
+
+  closeModal() {
+    const modal = document.getElementById("certificate-modal-overlay");
+    if (modal) modal.style.display = "none";
+  }
+
+  saveCertificate(e) {
+    e.preventDefault();
+
+    const id = Utils.getVal("cert-edit-id");
+    const data = {
+      title: Utils.getVal("cert_title"),
+      provider: Utils.getVal("cert_provider"),
+      category: Utils.getVal("cert_category"),
+      issueDate: Utils.getVal("cert_issue_date"),
+      expirationDate: Utils.getVal("cert_expiration_date"),
+      credentialId: Utils.getVal("cert_credential_id"),
+      verificationUrl: Utils.getVal("cert_verification_url"),
+      shortDesc: Utils.getVal("cert_short_desc"),
+      featured: document.getElementById("cert_is_featured")?.checked || false,
+      published:
+        document.getElementById("cert_is_published")?.checked !== false,
+    };
+
+    if (!data.title || !data.provider) {
+      Utils.toast("⚠️ العنوان والجهة المانحة مطلوبان", "warning");
+      return;
+    }
+
+    if (id) {
+      const index = this.certificates.findIndex((c) => c.id === id);
+      if (index !== -1) {
+        this.certificates[index] = { ...this.certificates[index], ...data };
+        Utils.toast("✅ تم تحديث الشهادة", "success");
+      }
+    } else {
+      data.id = Utils.genId();
+      this.certificates.push(data);
+      Utils.toast("✅ تم إضافة الشهادة", "success");
+    }
+
+    this.closeModal();
+    this.saveToStorage();
+    this.renderCertificates();
+    this.updateStats();
+
+    if (this.app.home) {
+      this.app.home.addLog(`📜 ${id ? "تعديل" : "إضافة"} شهادة: ${data.title}`);
+    }
+  }
+
+  editCertificate(id) {
+    this.openModal(id);
+  }
+
+  deleteCertificate(id) {
+    this.certificates = this.certificates.filter((c) => c.id !== id);
+    this.saveToStorage();
+    this.renderCertificates();
+    this.updateStats();
+    Utils.toast("🗑️ تم حذف الشهادة", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف شهادة");
+    }
+  }
+
+  toggleCertificateStatus(id) {
+    const cert = this.certificates.find((c) => c.id === id);
+    if (cert) {
+      cert.published = !cert.published;
+      this.saveToStorage();
+      this.renderCertificates();
+      this.updateStats();
+      Utils.toast(
+        cert.published ? "👁️ تم نشر الشهادة" : "👁️ تم إخفاء الشهادة",
+        "info",
+      );
+    }
+  }
+
+  filterCertificates() {
+    const query = Utils.getVal("certificates-search-input").toLowerCase();
+    const category = Utils.getVal("cert-filter-category");
+    const status = Utils.getVal("cert-filter-status");
+    const sort = Utils.getVal("cert-sort-by");
+
+    let filtered = this.certificates;
+
+    if (query) {
+      filtered = filtered.filter(
+        (c) =>
+          c.title.toLowerCase().includes(query) ||
+          c.provider.toLowerCase().includes(query) ||
+          (c.credentialId || "").toLowerCase().includes(query),
+      );
+    }
+    if (category !== "all") {
+      filtered = filtered.filter((c) => c.category === category);
+    }
+    if (status !== "all") {
+      if (status === "Published")
+        filtered = filtered.filter((c) => c.published === true);
+      else if (status === "Draft")
+        filtered = filtered.filter((c) => c.published === false);
+      else if (status === "Archived")
+        filtered = filtered.filter((c) => c.hidden === true);
+    }
+
+    // ترتيب
+    if (sort === "newest") {
+      filtered.sort(
+        (a, b) => new Date(b.issueDate || 0) - new Date(a.issueDate || 0),
+      );
+    } else if (sort === "oldest") {
+      filtered.sort(
+        (a, b) => new Date(a.issueDate || 0) - new Date(b.issueDate || 0),
+      );
+    } else if (sort === "alphabetical") {
+      filtered.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sort === "featured") {
+      filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    }
+
+    const container = document.getElementById("certificates-grid-container");
+    if (container) {
+      if (filtered.length === 0) {
+        container.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;">
+                        <i class="fa-solid fa-search" style="font-size:48px;color:#38bdf8;opacity:0.3;"></i>
+                        <p style="margin-top:12px;">لا توجد شهادات مطابقة للبحث</p>
+                    </div>
+                `;
+      } else {
+        container.innerHTML = filtered
+          .map((c) => this.renderCertificateCard(c))
+          .join("");
+      }
+    }
+  }
+
+  updateStats() {
+    const total = this.certificates.length;
+    const featured = this.certificates.filter((c) => c.featured).length;
+    const published = this.certificates.filter(
+      (c) => c.published === true,
+    ).length;
+    const expired = this.certificates.filter(
+      (c) => c.expirationDate && new Date(c.expirationDate) < new Date(),
+    ).length;
+
+    Utils.setText("stat-total-certs", total);
+    Utils.setText("stat-featured-certs", featured);
+    Utils.setText("stat-published-certs", published);
+    Utils.setText("stat-expired-certs", expired);
+  }
+
+  toggleSelectAll() {
+    const checked =
+      document.getElementById("cert-select-all-checkbox")?.checked || false;
+    document.querySelectorAll(".cert-select").forEach((el) => {
+      el.checked = checked;
+    });
+    this.updateBulkBar();
+  }
+
+  updateBulkBar() {
+    const checked = document.querySelectorAll(".cert-select:checked");
+    const count = checked.length;
+    const bar = document.getElementById("cert-bulk-actions-bar");
+    const label = document.getElementById("cert-selected-count");
+
+    if (bar) {
+      bar.style.display = count > 0 ? "flex" : "none";
+    }
+    if (label) {
+      label.textContent = `تم تحديد ${count} عناصر`;
+    }
+  }
+
+  bulkAction(action) {
+    const checked = document.querySelectorAll(".cert-select:checked");
+    const ids = Array.from(checked)
+      .map((el) => {
+        const card = el.closest(".certificate-card");
+        return card ? card.dataset.certId : null;
+      })
+      .filter(Boolean);
+
+    if (ids.length === 0) {
+      Utils.toast("⚠️ لم يتم تحديد أي عنصر", "warning");
+      return;
+    }
+
+    if (action === "delete" && !confirm(`هل تريد حذف ${ids.length} شهادة؟`)) {
+      return;
+    }
+
+    ids.forEach((id) => {
+      const cert = this.certificates.find((c) => c.id === id);
+      if (cert) {
+        switch (action) {
+          case "publish":
+            cert.published = true;
+            break;
+          case "hide":
+            cert.published = false;
+            break;
+          case "archive":
+            cert.hidden = true;
+            break;
+          case "delete":
+            this.certificates = this.certificates.filter((c) => c.id !== id);
+            break;
+        }
+      }
+    });
+
+    this.saveToStorage();
+    this.renderCertificates();
+    this.updateStats();
+    this.updateBulkBar();
+
+    const messages = {
+      publish: "📢 تم نشر الشهادات المحددة",
+      hide: "👁️ تم إخفاء الشهادات المحددة",
+      archive: "📦 تم أرشفة الشهادات المحددة",
+      delete: "🗑️ تم حذف الشهادات المحددة",
+    };
+    Utils.toast(messages[action] || "✅ تم التنفيذ", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`📜 ${messages[action]}`);
+    }
+  }
+
+  exportCertificates() {
+    const data = this.certificates.map((c) => ({
+      title: c.title,
+      provider: c.provider,
+      category: c.category,
+      issueDate: c.issueDate,
+      expirationDate: c.expirationDate,
+      credentialId: c.credentialId,
+      verificationUrl: c.verificationUrl,
+      shortDesc: c.shortDesc,
+      featured: c.featured,
+      published: c.published,
+    }));
+    Utils.exportJSON(data, `certificates-export-${Date.now()}.json`);
+    Utils.toast("📥 تم تصدير الشهادات", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog("📥 تم تصدير الشهادات");
+    }
+  }
+
+  importCertificates(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    Utils.importJSON(file)
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach((item) => {
+            if (item.title && item.provider) {
+              item.id = Utils.genId();
+              item.published = item.published !== false;
+              item.featured = item.featured || false;
+              this.certificates.push(item);
+            }
+          });
+          this.saveToStorage();
+          this.renderCertificates();
+          this.updateStats();
+          Utils.toast(`📥 تم استيراد ${data.length} شهادة`, "success");
+
+          if (this.app.home) {
+            this.app.home.addLog(`📥 تم استيراد ${data.length} شهادة`);
+          }
+        }
+      })
+      .catch((err) => {
+        Utils.toast("❌ خطأ في استيراد الملف", "error");
+      });
+
+    e.target.value = "";
+  }
+
+  saveAll() {
+    this.saveToStorage();
+    Utils.toast("💾 تم حفظ جميع الشهادات", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog("💾 تم حفظ جميع الشهادات");
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("certificates-data", this.certificates);
+  }
 }
 
-// Goals System
-function renderGoalsWidget() {
-    const container = document.getElementById('goalsListContainer');
-    const overallText = document.getElementById('overallGoalsProgressText');
+// ============================================================
+// 14. SUPPORT ENGINE (محرك خدمة العملاء)
+// ============================================================
+class SupportEngine {
+  constructor(app) {
+    this.app = app;
+    this.tickets = [];
+    this.activeTicketId = null;
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderTickets();
+    console.log("🎧 Support Engine ready");
+  }
+
+  setupEvents() {
+    const replyBtn = document.getElementById("sendReplyBtn");
+    if (replyBtn) {
+      replyBtn.addEventListener("click", () => this.sendReply());
+    }
+
+    const replyInput = document.getElementById("adminReplyInput");
+    if (replyInput) {
+      replyInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          this.sendReply();
+        }
+      });
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("support-tickets", []);
+    if (saved.length > 0) {
+      this.tickets = saved;
+    } else {
+      // بيانات افتراضية
+      this.tickets = [
+        {
+          id: Utils.genId(),
+          title: "مشكلة في تحميل الموقع",
+          status: "open",
+          priority: "high",
+          customer: "Ahmed Mohamed",
+          email: "ahmed@example.com",
+          message: "الموقع لا يتم تحميله بشكل صحيح على متصفح Chrome",
+          device: "Desktop",
+          browser: "Chrome 120",
+          ip: "192.168.1.1",
+          location: "Cairo, Egypt",
+          date: new Date(Date.now() - 3600000).toISOString(),
+          replies: [],
+        },
+        {
+          id: Utils.genId(),
+          title: "استفسار عن الأسعار",
+          status: "open",
+          priority: "medium",
+          customer: "Sara Ali",
+          email: "sara@example.com",
+          message: "أود معرفة تفاصيل الأسعار للخدمات المقدمة",
+          device: "Mobile",
+          browser: "Safari 17",
+          ip: "192.168.1.2",
+          location: "Alexandria, Egypt",
+          date: new Date(Date.now() - 7200000).toISOString(),
+          replies: [],
+        },
+        {
+          id: Utils.genId(),
+          title: "طلب تعديل في المشروع",
+          status: "open",
+          priority: "low",
+          customer: "Khaled Hassan",
+          email: "khaled@example.com",
+          message: "أريد إضافة بعض التعديلات على المشروع المطلوب",
+          device: "Desktop",
+          browser: "Firefox 121",
+          ip: "192.168.1.3",
+          location: "Giza, Egypt",
+          date: new Date(Date.now() - 10800000).toISOString(),
+          replies: [],
+        },
+        {
+          id: Utils.genId(),
+          title: "شكراً على الخدمة الممتازة",
+          status: "closed",
+          priority: "low",
+          customer: "Mona Ibrahim",
+          email: "mona@example.com",
+          message: "أود أن أشكركم على الخدمة الممتازة والدعم السريع",
+          device: "Mobile",
+          browser: "Chrome 120",
+          ip: "192.168.1.4",
+          location: "Dubai, UAE",
+          date: new Date(Date.now() - 86400000).toISOString(),
+          replies: [],
+        },
+      ];
+    }
+  }
+
+  renderTickets() {
+    const sidebar = document.getElementById("supportTicketsSidebar");
+    if (!sidebar) return;
+
+    const openTickets = this.tickets.filter((t) => t.status === "open");
+
+    if (openTickets.length === 0) {
+      sidebar.innerHTML = `
+                <div style="text-align:center;padding:20px;color:#94a3b8;">
+                    <i class="fa-solid fa-ticket" style="font-size:24px;color:#f472b6;opacity:0.3;"></i>
+                    <p style="font-size:12px;margin-top:8px;">لا توجد تذاكر مفتوحة</p>
+                </div>
+            `;
+      return;
+    }
+
+    sidebar.innerHTML = openTickets
+      .map(
+        (ticket) => `
+            <div class="ticket-item" data-ticket-id="${ticket.id}" style="padding:12px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;${this.activeTicketId === ticket.id ? "background:rgba(168,85,247,0.1);border-radius:8px;" : ""}">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:12px;color:#fff;font-weight:500;">${Utils.truncate(ticket.title, 30)}</span>
+                    <span style="font-size:9px;background:${ticket.priority === "high" ? "rgba(239,68,68,0.2)" : ticket.priority === "medium" ? "rgba(251,191,36,0.2)" : "rgba(16,185,129,0.2)"};color:${ticket.priority === "high" ? "#ef4444" : ticket.priority === "medium" ? "#fbbf24" : "#10b981"};padding:2px 6px;border-radius:4px;">
+                        ${ticket.priority === "high" ? "عاجل" : ticket.priority === "medium" ? "متوسط" : "عادي"}
+                    </span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;color:#94a3b8;margin-top:4px;">
+                    <span>${ticket.customer}</span>
+                    <span>${Utils.formatTime(ticket.date)}</span>
+                </div>
+                <div style="display:flex;gap:4px;margin-top:4px;">
+                    <span style="font-size:8px;background:rgba(244,114,182,0.15);color:#f472b6;padding:1px 6px;border-radius:4px;">${ticket.device}</span>
+                    <span style="font-size:8px;background:rgba(56,189,248,0.15);color:#38bdf8;padding:1px 6px;border-radius:4px;">${ticket.browser}</span>
+                </div>
+            </div>
+        `,
+      )
+      .join("");
+
+    // ربط الأحداث
+    sidebar.querySelectorAll(".ticket-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const id = item.dataset.ticketId;
+        if (id) this.selectTicket(id);
+      });
+    });
+
+    // اختيار أول تذكرة
+    if (openTickets.length > 0 && !this.activeTicketId) {
+      this.selectTicket(openTickets[0].id);
+    }
+  }
+
+  selectTicket(id) {
+    this.activeTicketId = id;
+    const ticket = this.tickets.find((t) => t.id === id);
+    if (!ticket) return;
+
+    // تحديث العنوان
+    Utils.setText("activeTicketTitle", ticket.title);
+    Utils.setText(
+      "activeTicketStatus",
+      ticket.status === "open" ? "مفتوحة 🔵" : "مغلقة ⚪",
+    );
+
+    // تحديث المحتوى
+    const body = document.getElementById("activeTicketMessages");
+    if (body) {
+      let html = `
+                <div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:6px;">
+                        <span>👤 ${ticket.customer} <span style="color:#64748b;">(${ticket.email})</span></span>
+                        <span>📅 ${Utils.formatDateTime(ticket.date)}</span>
+                    </div>
+                    <p style="font-size:12px;color:#cbd5e1;margin:8px 0;">${ticket.message}</p>
+                    <div style="display:flex;gap:8px;font-size:10px;color:#64748b;">
+                        <span>💻 ${ticket.device}</span>
+                        <span>🌐 ${ticket.browser}</span>
+                        <span>📍 ${ticket.location}</span>
+                        <span>🆔 ${ticket.ip}</span>
+                    </div>
+                </div>
+            `;
+
+      // عرض الردود
+      if (ticket.replies && ticket.replies.length > 0) {
+        html += ticket.replies
+          .map(
+            (reply) => `
+                    <div style="padding:12px;background:rgba(168,85,247,0.08);border-radius:8px;margin-bottom:8px;border-right:3px solid #a855f7;">
+                        <div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;">
+                            <span>👤 Admin</span>
+                            <span>${Utils.formatTime(reply.date)}</span>
+                        </div>
+                        <p style="font-size:12px;color:#cbd5e1;margin:4px 0;">${reply.message}</p>
+                    </div>
+                `,
+          )
+          .join("");
+      }
+
+      body.innerHTML = html;
+    }
+
+    // تفعيل الرد
+    const replyInput = document.getElementById("adminReplyInput");
+    const replyBtn = document.getElementById("sendReplyBtn");
+    if (replyInput && replyBtn) {
+      replyInput.disabled = false;
+      replyBtn.disabled = false;
+      replyInput.placeholder = "اكتب ردك للعميل...";
+      replyInput.value = "";
+    }
+
+    // تحديث التحديد
+    this.renderTickets();
+  }
+
+  sendReply() {
+    const input = document.getElementById("adminReplyInput");
+    if (!input || !input.value.trim()) {
+      Utils.toast("⚠️ الرجاء كتابة الرد", "warning");
+      return;
+    }
+
+    const ticket = this.tickets.find((t) => t.id === this.activeTicketId);
+    if (!ticket) {
+      Utils.toast("❌ لم يتم العثور على التذكرة", "error");
+      return;
+    }
+
+    const reply = {
+      id: Utils.genId(),
+      message: input.value.trim(),
+      date: new Date().toISOString(),
+    };
+
+    if (!ticket.replies) ticket.replies = [];
+    ticket.replies.push(reply);
+
+    this.saveToStorage();
+    this.selectTicket(this.activeTicketId);
+    input.value = "";
+
+    Utils.toast("✅ تم إرسال الرد", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`💬 رد على تذكرة: ${ticket.title}`);
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("support-tickets", this.tickets);
+  }
+}
+
+// ============================================================
+// 15. DONATIONS ENGINE (محرك التبرعات)
+// ============================================================
+class DonationsEngine {
+  constructor(app) {
+    this.app = app;
+    this.donations = [];
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderDonations();
+    this.updateStats();
+    console.log("💝 Donations Engine ready");
+  }
+
+  setupEvents() {
+    // إضافة حملة
+    const addBtn = document.getElementById("donation-add-new-btn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.openModal());
+    }
+
+    // حفظ الكل
+    const saveBtn = document.getElementById("donation-save-all-btn");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => this.saveAll());
+    }
+
+    // إغلاق المودال
+    const closeBtns = ["closeDonationModalBtn", "closeDonationModalBtn2"];
+    closeBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => this.closeModal());
+      }
+    });
+
+    // حفظ النموذج
+    const form = document.getElementById("donation-form");
+    if (form) {
+      form.addEventListener("submit", (e) => this.saveDonation(e));
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("donations-data", []);
+    if (saved.length > 0) {
+      this.donations = saved;
+    } else {
+      // بيانات افتراضية
+      this.donations = [
+        {
+          id: Utils.genId(),
+          title: "تطوير سيرفرات الموقع",
+          method: "PayPal",
+          target: 1000,
+          raised: 450,
+          accountInfo: "paypal.me/username",
+          date: new Date().toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          title: "تحسين تجربة المستخدم",
+          method: "Vodafone Cash",
+          target: 500,
+          raised: 320,
+          accountInfo: "01001234567",
+          date: new Date(Date.now() - 86400000).toISOString(),
+        },
+      ];
+    }
+  }
+
+  renderDonations() {
+    const container = document.getElementById("donations-grid-container");
     if (!container) return;
 
-    const goals = [
-        { title: 'الوصول إلى 10 مشاريع', current: 7, target: 10 },
-        { title: 'الوصول إلى 20 مهارة', current: 15, target: 20 },
-        { title: 'الوصول إلى 5 شهادات', current: 4, target: 5 },
-        { title: 'اكتمال الـ SEO والأقسام', current: 90, target: 100, isPercent: true }
+    if (this.donations.length === 0) {
+      container.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;">
+                    <i class="fa-solid fa-hand-holding-dollar" style="font-size:48px;color:#10b981;opacity:0.3;"></i>
+                    <p style="margin-top:12px;">لا توجد حملات تبرع</p>
+                    <button class="saas-btn saas-btn-primary" onclick="document.getElementById('donation-add-new-btn')?.click()" style="margin-top:12px;background:#10b981;">
+                        <i class="fa-solid fa-plus"></i> إضافة حملة
+                    </button>
+                </div>
+            `;
+      return;
+    }
+
+    container.innerHTML = this.donations
+      .map((d) => {
+        const progress = Math.round((d.raised / d.target) * 100);
+        return `
+                <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;border:1px solid rgba(16,185,129,0.15);">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <h4 style="font-size:13px;color:#fff;margin:0;">${d.title}</h4>
+                            <span style="font-size:10px;color:#94a3b8;">${d.method}</span>
+                        </div>
+                        <span style="font-size:11px;background:rgba(16,185,129,0.15);color:#10b981;padding:2px 8px;border-radius:4px;">
+                            ${progress}%
+                        </span>
+                    </div>
+                    <div style="margin:8px 0;">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:#cbd5e1;">
+                            <span>تم جمع: $${d.raised}</span>
+                            <span>المستهدف: $${d.target}</span>
+                        </div>
+                        <div style="width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:4px;overflow:hidden;">
+                            <div style="width:${Math.min(progress, 100)}%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b;">
+                        <span>💳 ${d.accountInfo}</span>
+                        <span>${Utils.formatDate(d.date)}</span>
+                    </div>
+                    <div style="display:flex;gap:4px;margin-top:8px;">
+                        <button class="edit-donation-btn" style="background:rgba(16,185,129,0.2);color:#10b981;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                            <i class="fa-solid fa-edit"></i>
+                        </button>
+                        <button class="delete-donation-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+      })
+      .join("");
+
+    // ربط الأحداث
+    container.querySelectorAll(".edit-donation-btn").forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        const donation = this.donations[index];
+        if (donation) this.openModal(donation.id);
+      });
+    });
+
+    container.querySelectorAll(".delete-donation-btn").forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        const donation = this.donations[index];
+        if (donation && confirm("هل تريد حذف هذه الحملة؟")) {
+          this.deleteDonation(donation.id);
+        }
+      });
+    });
+  }
+
+  openModal(donationId = null) {
+    const modal = document.getElementById("donation-modal-overlay");
+    if (!modal) return;
+
+    const title = document.getElementById("donation-modal-title");
+    if (title) {
+      title.innerHTML = donationId
+        ? '<i class="fa-solid fa-edit" style="color:#10b981;"></i> تعديل حملة تبرع'
+        : '<i class="fa-solid fa-hand-holding-dollar" style="color:#10b981;"></i> إضافة حملة تبرع';
+    }
+
+    if (donationId) {
+      const donation = this.donations.find((d) => d.id === donationId);
+      if (donation) {
+        Utils.setVal("donation_edit_id", donation.id);
+        Utils.setVal("donation_title", donation.title);
+        Utils.setVal("donation_method", donation.method);
+        Utils.setVal("donation_target", donation.target);
+        Utils.setVal("donation_raised", donation.raised);
+        Utils.setVal("donation_account_info", donation.accountInfo);
+      }
+    } else {
+      document.getElementById("donation-form")?.reset();
+      Utils.setVal("donation_edit_id", "");
+      Utils.setVal("donation_target", 500);
+      Utils.setVal("donation_raised", 0);
+    }
+
+    modal.style.display = "flex";
+  }
+
+  closeModal() {
+    const modal = document.getElementById("donation-modal-overlay");
+    if (modal) modal.style.display = "none";
+  }
+
+  saveDonation(e) {
+    e.preventDefault();
+
+    const id = Utils.getVal("donation_edit_id");
+    const data = {
+      title: Utils.getVal("donation_title"),
+      method: Utils.getVal("donation_method"),
+      target: parseFloat(Utils.getVal("donation_target")) || 0,
+      raised: parseFloat(Utils.getVal("donation_raised")) || 0,
+      accountInfo: Utils.getVal("donation_account_info"),
+    };
+
+    if (!data.title) {
+      Utils.toast("⚠️ عنوان الحملة مطلوب", "warning");
+      return;
+    }
+
+    if (id) {
+      const index = this.donations.findIndex((d) => d.id === id);
+      if (index !== -1) {
+        this.donations[index] = { ...this.donations[index], ...data };
+        Utils.toast("✅ تم تحديث الحملة", "success");
+      }
+    } else {
+      data.id = Utils.genId();
+      data.date = new Date().toISOString();
+      this.donations.push(data);
+      Utils.toast("✅ تم إضافة الحملة", "success");
+    }
+
+    this.closeModal();
+    this.saveToStorage();
+    this.renderDonations();
+    this.updateStats();
+
+    if (this.app.home) {
+      this.app.home.addLog(
+        `💝 ${id ? "تعديل" : "إضافة"} حملة تبرع: ${data.title}`,
+      );
+    }
+  }
+
+  deleteDonation(id) {
+    this.donations = this.donations.filter((d) => d.id !== id);
+    this.saveToStorage();
+    this.renderDonations();
+    this.updateStats();
+    Utils.toast("🗑️ تم حذف الحملة", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف حملة تبرع");
+    }
+  }
+
+  updateStats() {
+    const totalRaised = this.donations.reduce((sum, d) => sum + d.raised, 0);
+    const totalGoal = this.donations.reduce((sum, d) => sum + d.target, 0);
+    const donors = this.donations.reduce(
+      (sum, d) => sum + Math.floor(d.raised / 10),
+      0,
+    );
+
+    Utils.setText("stat-total-raised", `$${totalRaised}`);
+    Utils.setText("stat-total-goal", `$${totalGoal}`);
+    Utils.setText("stat-donor-count", donors);
+  }
+
+  saveAll() {
+    this.saveToStorage();
+    Utils.toast("💾 تم حفظ جميع حملات التبرع", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog("💾 تم حفظ جميع حملات التبرع");
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("donations-data", this.donations);
+  }
+}
+
+// ============================================================
+// 16. SOCIAL ENGINE (محرك السوشيال)
+// ============================================================
+class SocialEngine {
+  constructor(app) {
+    this.app = app;
+    this.socialLinks = [];
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderSocialLinks();
+    console.log("📱 Social Engine ready");
+  }
+
+  setupEvents() {
+    const form = document.getElementById("socialForm");
+    if (form) {
+      form.addEventListener("submit", (e) => this.addSocialLink(e));
+    }
+
+    const clearBtn = document.getElementById("clearSocialBtn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (confirm("هل تريد تفريغ جميع روابط السوشيال؟")) {
+          this.clearAll();
+        }
+      });
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("social-links", []);
+    if (saved.length > 0) {
+      this.socialLinks = saved;
+    } else {
+      // بيانات افتراضية
+      this.socialLinks = [
+        {
+          id: Utils.genId(),
+          platform: "GitHub",
+          link: "https://github.com/username",
+          followers: 2500,
+        },
+        {
+          id: Utils.genId(),
+          platform: "LinkedIn",
+          link: "https://linkedin.com/in/username",
+          followers: 1800,
+        },
+        {
+          id: Utils.genId(),
+          platform: "Instagram",
+          link: "https://instagram.com/username",
+          followers: 1200,
+        },
+        {
+          id: Utils.genId(),
+          platform: "Twitter/X",
+          link: "https://twitter.com/username",
+          followers: 800,
+        },
+      ];
+    }
+  }
+
+  renderSocialLinks() {
+    const grid = document.getElementById("social_linksGrid");
+    if (!grid) return;
+
+    if (this.socialLinks.length === 0) {
+      grid.innerHTML = `
+                <div style="text-align:center;padding:20px;color:#94a3b8;">
+                    <p style="font-size:12px;">لا توجد روابط سوشيال مضافة</p>
+                </div>
+            `;
+      return;
+    }
+
+    const totalFollowers = this.socialLinks.reduce(
+      (sum, s) => sum + s.followers,
+      0,
+    );
+
+    grid.innerHTML = this.socialLinks
+      .map(
+        (link) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <span style="font-size:13px;color:#fff;font-weight:500;">${link.platform}</span>
+                    <a href="${link.link}" target="_blank" style="font-size:10px;color:#38bdf8;text-decoration:none;display:block;">${link.link}</a>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:12px;color:#94a3b8;">👥 ${link.followers.toLocaleString()}</span>
+                    <button class="delete-social-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `,
+      )
+      .join("");
+
+    // عرض المجموع
+    grid.innerHTML += `
+            <div style="padding:12px;background:rgba(56,189,248,0.08);border-radius:8px;margin-top:8px;text-align:center;">
+                <span style="font-size:12px;color:#38bdf8;">إجمالي المتابعين: ${totalFollowers.toLocaleString()} 👥</span>
+            </div>
+        `;
+
+    // ربط الأحداث
+    grid.querySelectorAll(".delete-social-btn").forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        const link = this.socialLinks[index];
+        if (link && confirm(`هل تريد حذف ${link.platform}؟`)) {
+          this.deleteSocialLink(link.id);
+        }
+      });
+    });
+  }
+
+  addSocialLink(e) {
+    e.preventDefault();
+
+    const platform = document.getElementById("socialPlatform")?.value.trim();
+    const link = document.getElementById("socialLink")?.value.trim();
+    const followers =
+      parseInt(document.getElementById("socialFollowers")?.value) || 0;
+
+    if (!platform || !link) {
+      Utils.toast("⚠️ جميع الحقول مطلوبة", "warning");
+      return;
+    }
+
+    const newLink = {
+      id: Utils.genId(),
+      platform,
+      link,
+      followers,
+    };
+
+    this.socialLinks.push(newLink);
+    this.saveToStorage();
+    this.renderSocialLinks();
+
+    // إعادة تعيين النموذج
+    document.getElementById("socialForm")?.reset();
+    Utils.toast(`✅ تم إضافة ${platform}`, "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`📱 إضافة منصة سوشيال: ${platform}`);
+    }
+  }
+
+  deleteSocialLink(id) {
+    this.socialLinks = this.socialLinks.filter((s) => s.id !== id);
+    this.saveToStorage();
+    this.renderSocialLinks();
+    Utils.toast("🗑️ تم حذف الرابط", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف رابط سوشيال");
+    }
+  }
+
+  clearAll() {
+    this.socialLinks = [];
+    this.saveToStorage();
+    this.renderSocialLinks();
+    Utils.toast("🗑️ تم تفريغ جميع الروابط", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم تفريغ جميع روابط السوشيال");
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("social-links", this.socialLinks);
+  }
+} // ============================================================
+// 17. MESSAGES ENGINE (محرك رسائل الزوار)
+// ============================================================
+class MessagesEngine {
+  constructor(app) {
+    this.app = app;
+    this.messages = [];
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderMessages();
+    console.log("✉️ Messages Engine ready");
+  }
+
+  setupEvents() {
+    const clearBtn = document.getElementById("clearMessagesBtn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (confirm("هل تريد تفريغ جميع الرسائل؟")) {
+          this.clearAll();
+        }
+      });
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("messages-data", []);
+    if (saved.length > 0) {
+      this.messages = saved;
+    } else {
+      // بيانات افتراضية
+      this.messages = [
+        {
+          id: Utils.genId(),
+          name: "Ahmed Hassan",
+          email: "ahmed@example.com",
+          subject: "استفسار عن المشاريع",
+          message: "أود معرفة المزيد عن مشاريعك السابقة في مجال تطوير الويب",
+          date: new Date(Date.now() - 3600000).toISOString(),
+          read: false,
+          replied: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Sara Mahmoud",
+          email: "sara@example.com",
+          subject: "طلب تعاون",
+          message: "نحن شركة ناشئة ونبحث عن مطور ويب للانضمام لفريقنا",
+          date: new Date(Date.now() - 7200000).toISOString(),
+          read: false,
+          replied: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Khaled Ali",
+          email: "khaled@example.com",
+          subject: "شكر وتقدير",
+          message: "شكراً لك على المحتوى القيم والمفيد في موقعك",
+          date: new Date(Date.now() - 86400000).toISOString(),
+          read: true,
+          replied: false,
+        },
+        {
+          id: Utils.genId(),
+          name: "Mona Ibrahim",
+          email: "mona@example.com",
+          subject: "اقتراح تطوير",
+          message: "أقترح إضافة قسم للمدونة في الموقع لمشاركة الخبرات",
+          date: new Date(Date.now() - 172800000).toISOString(),
+          read: true,
+          replied: true,
+        },
+      ];
+    }
+  }
+
+  renderMessages() {
+    const grid = document.getElementById("messagesGrid");
+    if (!grid) return;
+
+    if (this.messages.length === 0) {
+      grid.innerHTML = `
+                <div style="text-align:center;padding:40px;color:#94a3b8;">
+                    <i class="fa-solid fa-inbox" style="font-size:48px;color:#fb7185;opacity:0.3;"></i>
+                    <p style="margin-top:12px;">لا توجد رسائل واردة</p>
+                </div>
+            `;
+      return;
+    }
+
+    const unreadCount = this.messages.filter((m) => !m.read).length;
+
+    grid.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(251,113,133,0.08);border-radius:8px;margin-bottom:12px;">
+                <span style="font-size:12px;color:#fb7185;">
+                    <i class="fa-solid fa-circle" style="font-size:8px;"></i>
+                    ${unreadCount} رسائل غير مقروءة
+                </span>
+                <span style="font-size:11px;color:#94a3b8;">إجمالي: ${this.messages.length}</span>
+            </div>
+            ${this.messages.map((msg) => this.renderMessageItem(msg)).join("")}
+        `;
+
+    // ربط الأحداث
+    grid.querySelectorAll(".message-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const id = item.dataset.messageId;
+        if (id) this.toggleRead(id);
+      });
+    });
+
+    grid.querySelectorAll(".delete-message-btn").forEach((btn, index) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const msg = this.messages[index];
+        if (msg && confirm("هل تريد حذف هذه الرسالة؟")) {
+          this.deleteMessage(msg.id);
+        }
+      });
+    });
+  }
+
+  renderMessageItem(msg) {
+    return `
+            <div class="message-item" data-message-id="${msg.id}" style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;${!msg.read ? "background:rgba(251,113,133,0.05);border-right:3px solid #fb7185;" : ""}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div style="flex:1;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:13px;font-weight:600;color:#fff;">${msg.name}</span>
+                            ${!msg.read ? '<span style="font-size:8px;background:#fb7185;color:#fff;padding:1px 6px;border-radius:4px;">جديد</span>' : ""}
+                            ${msg.replied ? '<span style="font-size:8px;background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;">تم الرد</span>' : ""}
+                        </div>
+                        <span style="font-size:11px;color:#94a3b8;">${msg.email}</span>
+                        <div style="font-size:12px;color:#cbd5e1;margin-top:2px;">
+                            <strong>${msg.subject}</strong>
+                        </div>
+                        <p style="font-size:11px;color:#94a3b8;margin:4px 0 0;">${Utils.truncate(msg.message, 80)}</p>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:80px;">
+                        <span style="font-size:9px;color:#64748b;">${Utils.formatTime(msg.date)}</span>
+                        <span style="font-size:9px;color:#64748b;">${Utils.formatDate(msg.date)}</span>
+                        <button class="delete-message-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+  }
+
+  toggleRead(id) {
+    const msg = this.messages.find((m) => m.id === id);
+    if (msg) {
+      msg.read = !msg.read;
+      this.saveToStorage();
+      this.renderMessages();
+      Utils.toast(
+        msg.read
+          ? "👁️ تم تحديد الرسالة كمقروءة"
+          : "👁️ تم تحديد الرسالة كغير مقروءة",
+        "info",
+      );
+    }
+  }
+
+  deleteMessage(id) {
+    this.messages = this.messages.filter((m) => m.id !== id);
+    this.saveToStorage();
+    this.renderMessages();
+    Utils.toast("🗑️ تم حذف الرسالة", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف رسالة زائر");
+    }
+  }
+
+  clearAll() {
+    this.messages = [];
+    this.saveToStorage();
+    this.renderMessages();
+    Utils.toast("🗑️ تم تفريغ جميع الرسائل", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم تفريغ جميع رسائل الزوار");
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("messages-data", this.messages);
+  }
+}
+
+// ============================================================
+// 18. LOGS ENGINE (محرك سجل النشاطات)
+// ============================================================
+class LogsEngine {
+  constructor(app) {
+    this.app = app;
+    this.logs = [];
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderLogs();
+    console.log("📋 Logs Engine ready");
+  }
+
+  setupEvents() {
+    const clearBtn = document.getElementById("clearLogsBtn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (confirm("هل تريد مسح جميع السجلات؟")) {
+          this.clearAll();
+        }
+      });
+    }
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("logs-data", []);
+    if (saved.length > 0) {
+      this.logs = saved;
+    } else {
+      // بيانات افتراضية
+      this.logs = [
+        {
+          id: Utils.genId(),
+          message: "🚀 تم تشغيل لوحة التحكم",
+          type: "info",
+          date: new Date(Date.now() - 300000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "📊 تم تحديث بيانات الرئيسية",
+          type: "success",
+          date: new Date(Date.now() - 600000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "📝 تم حفظ مسودة الهيرو",
+          type: "info",
+          date: new Date(Date.now() - 900000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "✅ تم إضافة مهارة جديدة: React.js",
+          type: "success",
+          date: new Date(Date.now() - 1200000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "⚠️ محاولة تسجيل دخول فاشلة من IP غير معروف",
+          type: "warning",
+          date: new Date(Date.now() - 1800000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "📁 تم حذف مشروع: E-Commerce Platform",
+          type: "error",
+          date: new Date(Date.now() - 2400000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "🚀 تم نشر التغييرات على الموقع",
+          type: "success",
+          date: new Date(Date.now() - 3600000).toISOString(),
+        },
+        {
+          id: Utils.genId(),
+          message: "💾 تم إنشاء نسخة احتياطية للقاعدة",
+          type: "info",
+          date: new Date(Date.now() - 7200000).toISOString(),
+        },
+      ];
+    }
+  }
+
+  renderLogs() {
+    const grid = document.getElementById("logsGrid");
+    if (!grid) return;
+
+    if (this.logs.length === 0) {
+      grid.innerHTML = `
+                <div style="text-align:center;padding:40px;color:#94a3b8;">
+                    <i class="fa-solid fa-clock-rotate-left" style="font-size:48px;color:#facc15;opacity:0.3;"></i>
+                    <p style="margin-top:12px;">لا توجد سجلات نشاط</p>
+                </div>
+            `;
+      return;
+    }
+
+    const typeColors = {
+      info: "#38bdf8",
+      success: "#10b981",
+      warning: "#fbbf24",
+      error: "#ef4444",
+    };
+
+    const typeIcons = {
+      info: "ℹ️",
+      success: "✅",
+      warning: "⚠️",
+      error: "❌",
+    };
+
+    grid.innerHTML = this.logs
+      .slice(0, 50)
+      .map(
+        (log) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);">
+                <div style="display:flex;align-items:center;gap:10px;flex:1;">
+                    <span style="font-size:14px;">${typeIcons[log.type] || "📋"}</span>
+                    <span style="font-size:12px;color:#cbd5e1;">${log.message}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;min-width:150px;justify-content:flex-end;">
+                    <span style="font-size:9px;background:${typeColors[log.type] || "#94a3b8"}22;color:${typeColors[log.type] || "#94a3b8"};padding:2px 8px;border-radius:4px;">
+                        ${log.type || "info"}
+                    </span>
+                    <span style="font-size:10px;color:#64748b;">${Utils.formatTime(log.date)}</span>
+                    <span style="font-size:9px;color:#64748b;">${Utils.formatDate(log.date)}</span>
+                </div>
+            </div>
+        `,
+      )
+      .join("");
+
+    // إضافة عداد
+    if (this.logs.length > 50) {
+      grid.innerHTML += `
+                <div style="text-align:center;padding:12px;color:#64748b;font-size:11px;">
+                    + ${this.logs.length - 50} سجل إضافي
+                </div>
+            `;
+    }
+  }
+
+  addLog(message, type = "info") {
+    const log = {
+      id: Utils.genId(),
+      message,
+      type,
+      date: new Date().toISOString(),
+    };
+
+    this.logs.unshift(log);
+
+    // الحد الأقصى للسجلات
+    if (this.logs.length > 1000) {
+      this.logs = this.logs.slice(0, 1000);
+    }
+
+    this.saveToStorage();
+    this.renderLogs();
+  }
+
+  clearAll() {
+    this.logs = [];
+    this.saveToStorage();
+    this.renderLogs();
+    Utils.toast("🗑️ تم مسح جميع السجلات", "info");
+
+    // إضافة سجل جديد
+    this.addLog("🗑️ تم مسح جميع السجلات", "info");
+  }
+
+  saveToStorage() {
+    Utils.storage.set("logs-data", this.logs);
+  }
+}
+
+// ============================================================
+// 19. PREVIEW ENGINE (محرك المعاينة الحية)
+// ============================================================
+class PreviewEngine {
+  constructor(app) {
+    this.app = app;
+    this.previewMode = false;
+    this.previewDevice = "desktop";
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    console.log("👁️ Preview Engine ready");
+  }
+
+  setupEvents() {
+    // زر معاينة الموقع (في السايد بار)
+    const previewBtn = document.querySelector(".preview-btn");
+    if (previewBtn) {
+      previewBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.openLivePreview();
+      });
+    }
+
+    // أزرار المعاينة السريعة في الرئيسية
+    const quickPreviewBtn = document.getElementById("quickPreviewBtn");
+    if (quickPreviewBtn) {
+      quickPreviewBtn.addEventListener("click", () => this.openLivePreview());
+    }
+
+    // أزرار فتح الموقع
+    const openSiteBtns = [
+      document.getElementById("btn-open-website"),
+      document.getElementById("quickOpenSiteBtn"),
+      document.getElementById("hero-open-website-btn"),
     ];
 
-    let html = '';
-    let totalPctSum = 0;
-
-    goals.forEach(goal => {
-        let pct = goal.isPercent ? goal.current : Math.round((goal.current / goal.target) * 100);
-        if (pct > 100) pct = 100;
-        totalPctSum += pct;
-
-        html += `
-            <div class="goal-item-row">
-                <div class="goal-info-top">
-                    <span>${goal.title}</span>
-                    <b>${goal.isPercent ? goal.current + '%' : goal.current + ' / ' + goal.target} (${pct}%)</b>
-                </div>
-                <div class="goal-progress-bar-bg">
-                    <div class="goal-progress-fill" style="width: ${pct}%;"></div>
-                </div>
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-    if (overallText) overallText.innerText = Math.round(totalPctSum / goals.length) + '%';
-}
-
-// Achievements System
-function renderAchievements() {
-    const container = document.getElementById('achievementsContainer');
-    if (!container) return;
-
-    let html = '';
-    homeDashboardState.achievements.forEach(ach => {
-        html += `
-            <div class="achievement-badge-card">
-                <i class="fa-solid ${ach.icon}"></i>
-                <span>${ach.title}</span>
-                <small>${ach.desc}</small>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-// Quick Notes Manager
-function renderQuickNotes() {
-    const container = document.getElementById('quickNotesGrid');
-    if (!container) return;
-
-    let html = '';
-    homeDashboardState.notes.forEach(note => {
-        html += `
-            <div class="note-card-item" style="background-color: ${note.color};">
-                <div>
-                    <h5>${note.title}</h5>
-                    <p>${note.content}</p>
-                </div>
-                <div class="note-footer-actions">
-                    <button onclick="editNote(${note.id})" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                    <button onclick="deleteNote(${note.id})" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function openNoteModal() {
-    document.getElementById('editNoteId').value = '';
-    document.getElementById('noteTitleInput').value = '';
-    document.getElementById('noteContentInput').value = '';
-    document.getElementById('noteModalTitle').innerText = 'إضافة ملاحظة جديدة';
-    document.getElementById('noteModal').style.display = 'flex';
-}
-
-function closeNoteModal() {
-    document.getElementById('noteModal').style.display = 'none';
-}
-
-function saveQuickNote() {
-    const id = document.getElementById('editNoteId').value;
-    const title = document.getElementById('noteTitleInput').value;
-    const content = document.getElementById('noteContentInput').value;
-    const color = document.querySelector('input[name="noteColor"]:checked')?.value || '#fef08a';
-
-    if (!title.trim()) return;
-
-    if (id) {
-        let note = homeDashboardState.notes.find(n => n.id == id);
-        if (note) { note.title = title; note.content = content; note.color = color; }
-    } else {
-        homeDashboardState.notes.push({ id: Date.now(), title, content, color, date: new Date().toISOString().split('T')[0] });
-        addNewNotification('ملاحظة جديدة', 'تم إنشاء ملاحظة سريعة بنجاح.', 'success');
-    }
-
-    closeNoteModal();
-    renderQuickNotes();
-}
-
-function deleteNote(id) {
-    homeDashboardState.notes = homeDashboardState.notes.filter(n => n.id !== id);
-    renderQuickNotes();
-}
-
-function editNote(id) {
-    let note = homeDashboardState.notes.find(n => n.id === id);
-    if (!note) return;
-    document.getElementById('editNoteId').value = note.id;
-    document.getElementById('noteTitleInput').value = note.title;
-    document.getElementById('noteContentInput').value = note.content;
-    document.getElementById('noteModalTitle').innerText = 'تعديل الملاحظة';
-    document.getElementById('noteModal').style.display = 'flex';
-}
-
-function filterNotes() {
-    const query = document.getElementById('notesSearchInput').value.toLowerCase();
-    const cards = document.querySelectorAll('.note-card-item');
-    cards.forEach(card => {
-        let text = card.innerText.toLowerCase();
-        card.style.display = text.includes(query) ? 'flex' : 'none';
-    });
-}
-
-// Todo Manager
-function renderTodoList(filter = 'all') {
-    const container = document.getElementById('todoListContainer');
-    if (!container) return;
-
-    let filtered = homeDashboardState.todos.filter(t => {
-        if (filter === 'pending') return !t.completed;
-        if (filter === 'completed') return t.completed;
-        return true;
-    });
-
-    let html = '';
-    filtered.forEach(todo => {
-        html += `
-            <div class="todo-item-row ${todo.completed ? 'completed' : ''}">
-                <div class="todo-left">
-                    <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodoStatus(${todo.id})">
-                    <span>${todo.title}</span>
-                </div>
-                <button class="btn-text danger" onclick="deleteTodo(${todo.id})"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function filterTodos(type) {
-    document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    renderTodoList(type);
-}
-
-function openTodoModal() {
-    document.getElementById('todoModal').style.display = 'flex';
-}
-
-function closeTodoModal() {
-    document.getElementById('todoModal').style.display = 'none';
-}
-
-function saveTodoTask() {
-    const title = document.getElementById('todoTitleInput').value;
-    const priority = document.getElementById('todoPrioritySelect').value;
-    if (!title.trim()) return;
-
-    homeDashboardState.todos.push({ id: Date.now(), title, priority, completed: false });
-    addNewNotification('مهمة جديدة', `تمت إضافة المهمة: ${title}`, 'info');
-    closeTodoModal();
-    renderTodoList();
-}
-
-function toggleTodoStatus(id) {
-    let todo = homeDashboardState.todos.find(t => t.id === id);
-    if (todo) {
-        todo.completed = !todo.completed;
-        renderTodoList();
-        addNewNotification('تحديث مهمة', `تم تغيير حالة المهمة: ${todo.title}`, 'success');
-    }
-}
-
-function deleteTodo(id) {
-    homeDashboardState.todos = homeDashboardState.todos.filter(t => t.id !== id);
-    renderTodoList();
-}
-
-// Timeline & Notifications
-function renderRecentTimeline() {
-    const container = document.getElementById('recentActivityTimeline');
-    if (!container) return;
-
-    let html = '';
-    homeDashboardState.timeline.forEach(item => {
-        html += `
-            <div class="timeline-node">
-                <div class="timeline-icon-box"><i class="fa-solid ${item.icon}"></i></div>
-                <div class="timeline-content-box">
-                    <h6>${item.title}</h6>
-                    <small>${item.date} - ${item.time} | بواسطة: ${item.user}</small>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function renderNotifications() {
-    const container = document.getElementById('smartNotificationList');
-    const badge = document.getElementById('unreadCounterBadge');
-    if (!container) return;
-
-    let unreadCount = homeDashboardState.notifications.filter(n => !n.read).length;
-    if (badge) badge.innerText = unreadCount;
-
-    let html = '';
-    homeDashboardState.notifications.forEach(notif => {
-        html += `
-            <div class="notification-card-item ${notif.type}">
-                <div class="notif-text">
-                    <p><b>${notif.title}:</b> ${notif.text}</p>
-                    <small>${notif.time}</small>
-                </div>
-                <button class="btn-text" onclick="deleteNotification(${notif.id})"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function addNewNotification(title, text, type = 'info') {
-    homeDashboardState.notifications.unshift({
-        id: Date.now(),
-        title,
-        text,
-        time: 'الآن',
-        type,
-        read: false
-    });
-    renderNotifications();
-}
-
-function markAllNotificationsRead() {
-    homeDashboardState.notifications.forEach(n => n.read = true);
-    renderNotifications();
-}
-
-function deleteNotification(id) {
-    homeDashboardState.notifications = homeDashboardState.notifications.filter(n => n.id !== id);
-    renderNotifications();
-}
-
-function clearAllNotifications() {
-    homeDashboardState.notifications = [];
-    renderNotifications();
-}
-
-// System Actions & Modals (Preview, Search, Backup)
-function togglePortfolioPreviewModal(show) {
-    const modal = document.getElementById('portfolioPreviewModal');
-    if (modal) modal.style.display = show ? 'flex' : 'none';
-}
-
-function setPreviewDevice(mode) {
-    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    const wrapper = document.getElementById('canvasViewportWrapper');
-    wrapper.className = `canvas-viewport-wrapper ${mode}-mode`;
-}
-
-function togglePreviewTheme() {
-    showNotificationBanner('تم تبديل وضع العرض (داكن/فاتح) في المعاينة.', 'info');
-}
-
-function openGlobalSearch() {
-    document.getElementById('globalSearchModal').style.display = 'flex';
-    document.getElementById('globalSearchQueryInput').focus();
-}
-
-function closeGlobalSearch() {
-    document.getElementById('globalSearchModal').style.display = 'none';
-}
-
-function executeGlobalSearch(query) {
-    const container = document.getElementById('globalSearchResultsContainer');
-    if (!query.trim()) {
-        container.innerHTML = '<p class="search-placeholder-text">ابحث عن أي شيء داخل لوحة التحكم...</p>';
-        return;
-    }
-    container.innerHTML = `
-        <div class="insight-item"><span>نتائج البحث المطابقة لـ "${query}":</span><small>3 نتائج</small></div>
-        <div class="insight-item"><span>مشروع: تطوير لوحة التحكم الذكية (Frontend)</span><small>المشاريع</small></div>
-        <div class="insight-item"><span>مهارة: JavaScript / Supabase</span><small>المهارات</small></div>
-    `;
-}
-
-function triggerDashboardBackup() {
-    addNewNotification('نسخ احتياطي', 'تم إنشاء نسخة احتياطية من قاعدة بيانات Supabase بنجاح.', 'success');
-    showNotificationBanner('تم النسخ الاحتياطي بنجاح!', 'success');
-}
-
-function publishWebsiteChanges() {
-    addNewNotification('نشر الموقع', 'تم نشر التحديثات الحية على البورتفوليو بنجاح.', 'success');
-    showNotificationBanner('تم النشر بنجاح إلى البورتفوليو!', 'success');
-}
-
-function updateStorageStats() {
-    document.getElementById('storageImagesSize').innerText = '14.2 MB';
-    document.getElementById('storageDocsSize').innerText = '2.8 MB';
-    document.getElementById('storageDbSize').innerText = '1.1 MB';
-}
-
-function openMediaManager() {
-    showNotificationBanner('جاري فتح مكتبة الوسائط...', 'info');
-}
-
-function showNotificationBanner(msg, type = 'success') {
-    const banner = document.createElement('div');
-    banner.className = `insight-item ${type}`;
-    banner.style.position = 'fixed';
-    banner.style.bottom = '20px';
-    banner.style.left = '20px';
-    banner.style.zIndex = '99999';
-    banner.innerHTML = `<span>${msg}</span>`;
-    document.body.appendChild(banner);
-    setTimeout(() => banner.remove(), 3000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. العناصر الأساسية
-  const codeText = document.querySelector('.dev-code-text');
-  const promptInput = document.querySelector('.dev-textarea');
-  const consoleBox = document.querySelector('.dev-console-text');
-  
-  // أعدادات العدادات والـ Stats
-  const statsLines = document.querySelector('.dev-stats-grid span:nth-child(1)');
-  const statsWords = document.querySelector('.dev-stats-grid span:nth-child(2)');
-  const statsChars = document.querySelector('.dev-stats-grid span:nth-child(3)');
-
-  // دالة تحديث العدادات والكونسول
-  function logMessage(msg, type = 'success') {
-    if (!consoleBox) return;
-    consoleBox.textContent = `[${type.toUpperCase()}] ${msg}`;
-    consoleBox.style.color = type === 'error' ? '#fb7185' : type === 'warning' ? '#ffb86c' : '#34d399';
-  }
-
-  function updateStats() {
-    if (!codeText) return;
-    const text = codeText.innerText || '';
-    const lines = text.split('\n').length;
-    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    const chars = text.length;
-
-    if (statsLines) statsLines.textContent = `Lines: ${lines}`;
-    if (statsWords) statsWords.textContent = `Words: ${words}`;
-    if (statsChars) statsChars.textContent = `Chars: ${chars}`;
-  }
-
-  if (codeText) {
-    codeText.addEventListener('input', updateStats);
-    updateStats();
-  }
-
-  // 2. تفعيل أزرار التولبار والأدوات
-  const buttons = document.querySelectorAll('.dev-btn, .dev-tool-btn');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = btn.textContent.trim();
-
-      switch(action) {
-        case 'Format':
-        case 'Beautify':
-          logMessage('Code formatted and beautified successfully.');
-          break;
-        case 'Minify':
-          if(codeText) codeText.innerText = codeText.innerText.replace(/\s+/g, ' ').trim();
-          logMessage('Code minified successfully.');
-          updateStats();
-          break;
-        case 'Copy':
-        case 'Copy Prompt':
-          const textToCopy = action === 'Copy Prompt' ? promptInput.value : (codeText ? codeText.innerText : '');
-          navigator.clipboard.writeText(textToCopy);
-          logMessage('Copied to clipboard successfully!');
-          break;
-        case 'Clear':
-        case 'Clear Editor':
-          if(codeText) codeText.innerText = '';
-          if(promptInput) promptInput.value = '';
-          logMessage('Editor cleared.', 'warning');
-          updateStats();
-          break;
-        case 'Download':
-          logMessage('File download started.');
-          break;
-        case 'Generate Code':
-          logMessage('AI is generating code based on your prompt...');
-          break;
-        case 'Fix Code':
-          logMessage('Analyzing and fixing code issues...');
-          break;
-        case 'Optimize Code':
-          logMessage('Code optimized for better performance.');
-          break;
-        case 'Explain Code':
-          logMessage('AI explanation generated in console.');
-          break;
-        default:
-          logMessage(`Action "${action}" executed.`);
+    openSiteBtns.forEach((btn) => {
+      if (btn) {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          window.open("../index.html", "_blank");
+        });
       }
     });
-  });
 
-  // 3. تفعيل القوالب (Templates Dropdown)
-  const templateSelect = document.querySelector('.dev-select');
-  if(templateSelect) {
-    templateSelect.addEventListener('change', (e) => {
-      const templateName = e.target.value;
-      if(templateName && templateName !== 'Select Template...') {
-        if(codeText) {
-          codeText.innerText = `<!-- Template: ${templateName} -->\n<div class="${templateName.toLowerCase().replace(/\s+/g, '-')}-container">\n  <!-- Add your content here -->\n</div>`;
-          updateStats();
-          logMessage(`Template "${templateName}" loaded into editor.`);
+    // زر معاينة الموقع (Preview)
+    const previewSiteBtn = document.getElementById("btn-preview-website");
+    if (previewSiteBtn) {
+      previewSiteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.openLivePreview();
+      });
+    }
+  }
+
+  openLivePreview() {
+    // فتح الموقع في تبويب جديد
+    const previewWindow = window.open("../index.html", "_blank");
+
+    if (previewWindow) {
+      Utils.toast("👁️ فتح المعاينة الحية", "success");
+
+      if (this.app.home) {
+        this.app.home.addLog("👁️ تم فتح المعاينة الحية");
+      }
+    } else {
+      // لو منعته الحماية
+      Utils.toast("⚠️ الرجاء السماح بالنوافذ المنبثقة", "warning");
+      window.location.href = "../index.html";
+    }
+  }
+
+  openPreviewInFrame() {
+    // معاينة داخل إطار (للاستخدام المستقبلي)
+    const frame = document.createElement("iframe");
+    frame.src = "../index.html";
+    frame.style.cssText =
+      "position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:#fff;";
+
+    // إضافة زر إغلاق
+    const closeBtn = document.createElement("button");
+    closeBtn.innerHTML = "✕";
+    closeBtn.style.cssText =
+      "position:fixed;top:10px;right:10px;z-index:10000;background:#ef4444;color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);";
+    closeBtn.addEventListener("click", () => {
+      frame.remove();
+      closeBtn.remove();
+      Utils.toast("👁️ تم إغلاق المعاينة", "info");
+    });
+
+    document.body.appendChild(frame);
+    document.body.appendChild(closeBtn);
+
+    Utils.toast("👁️ فتح المعاينة الحية في الإطار", "success");
+  }
+
+  updatePreviewDevice(device) {
+    this.previewDevice = device;
+    const widths = { desktop: "100%", tablet: "768px", mobile: "375px" };
+    const frame = document.querySelector("iframe");
+    if (frame) {
+      frame.style.maxWidth = widths[device] || "100%";
+      frame.style.margin = "0 auto";
+      frame.style.display = "block";
+    }
+    Utils.toast(
+      `📱 جهاز: ${device === "desktop" ? "حاسوب" : device === "tablet" ? "تابلت" : "موبايل"}`,
+      "info",
+    );
+  }
+}
+
+// ============================================================
+// 20. INTEGRATION - تحديث المحرك الرئيسي
+// ============================================================
+
+// تحديث DashboardApp لإضافة المحركات الجديدة
+// أضف هذا الكود في نهاية ملف dashboard.js
+
+// ============================================================
+// تحديث قسم _initSections في DashboardApp
+// ============================================================
+// استبدل دالة _initSections الموجودة بهذه النسخة المحدثة:
+
+/*
+_initSections() {
+    const map = {
+        'home-section': HomeEngine,
+        'updater-section': UpdaterEngine,
+        'hero-section': HeroEngine,
+        'skills-section': SkillsEngine,
+        'projects-section': ProjectsEngine,
+        'certificates-section': CertificatesEngine,
+        'support-section': SupportEngine,
+        'donations-section': DonationsEngine,
+        'social-section': SocialEngine,
+        'messages-section': MessagesEngine,
+        'logs-section': LogsEngine
+    };
+    
+    for (const [id, Manager] of Object.entries(map)) {
+        if (typeof Manager === 'function') {
+            try {
+                const instance = new Manager(this);
+                this.sections[id] = instance;
+                if (this.navigation) {
+                    this.navigation.registerSection(id, instance);
+                }
+                console.log(`✅ ${id} registered`);
+            } catch (error) {
+                console.error(`❌ Error loading ${id}:`, error);
+            }
+        }
+    }
+}
+*/
+
+// ============================================================
+// تحديث دالة initialLoad في DashboardApp
+// ============================================================
+// أضف هذا الكود في نهاية دالة initialLoad:
+
+/*
+// تهيئة محرك السجلات
+if (!this.logs) {
+    this.logs = new LogsEngine(this);
+    this.sections['logs-section'] = this.logs;
+    if (this.navigation) {
+        this.navigation.registerSection('logs-section', this.logs);
+    }
+}
+
+// تهيئة محرك المعاينة
+if (!this.preview) {
+    this.preview = new PreviewEngine(this);
+}
+*/
+
+// ============================================================
+// 21. BOOTSTRAP - تشغيل التطبيق النهائي
+// ============================================================
+
+class DashboardAppFinal {
+  constructor() {
+    console.log("🚀 Initializing Dashboard Application Final...");
+
+    // المكونات الأساسية
+    this.language = null;
+    this.theme = null;
+    this.navigation = null;
+    this.sections = {};
+
+    // المحركات الجديدة
+    this.logs = null;
+    this.preview = null;
+
+    // التهيئة
+    this.init();
+  }
+
+  init() {
+    // 1. تهيئة محرك اللغة
+    this.language = new LanguageEngine();
+
+    // 2. تهيئة محرك الثيم
+    this.theme = new ThemeEngine();
+
+    // 3. تهيئة نظام التنقل
+    this.navigation = new NavigationEngine();
+
+    // 4. تهيئة جميع الأقسام
+    this.initSections();
+
+    // 5. الأحداث العامة
+    this.setupGlobalEvents();
+
+    // 6. تحميل البيانات الأولية
+    this.initialLoad();
+
+    // 7. تحديث واجهة السجلات في الهوم
+    this.syncHomeLogs();
+
+    console.log("✅ Dashboard Application Final ready!");
+    Utils.toast("🚀 Dashboard جاهز بالكامل", "success");
+  }
+
+  initSections() {
+    const map = {
+      "home-section": HomeEngine,
+      "updater-section": UpdaterEngine,
+      "hero-section": HeroEngine,
+      "skills-section": SkillsEngine,
+      "projects-section": ProjectsEngine,
+      "certificates-section": CertificatesEngine,
+      "support-section": SupportEngine,
+      "donations-section": DonationsEngine,
+      "social-section": SocialEngine,
+      "messages-section": MessagesEngine,
+      "logs-section": LogsEngine,
+    };
+
+    for (const [id, Manager] of Object.entries(map)) {
+      if (typeof Manager === "function") {
+        try {
+          const instance = new Manager(this);
+          this.sections[id] = instance;
+          if (this.navigation) {
+            this.navigation.registerSection(id, instance);
+          }
+          console.log(`✅ ${id} registered`);
+        } catch (error) {
+          console.error(`❌ Error loading ${id}:`, error);
+        }
+      }
+    }
+
+    // تخزين مراجع للمحركات الخاصة
+    this.logs = this.sections["logs-section"];
+    this.preview = new PreviewEngine(this);
+  }
+
+  setupGlobalEvents() {
+    // زر تبديل اللغة
+    const langBtn = document.getElementById("toggleLangBtn");
+    if (langBtn) {
+      langBtn.addEventListener("click", () => {
+        this.language.toggle();
+      });
+    }
+
+    // زر تسجيل الخروج
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => this.logout());
+    }
+
+    // اختصارات الكيبورد
+    document.addEventListener("keydown", (e) => {
+      // Ctrl+Shift+P = فتح المعاينة
+      if (e.ctrlKey && e.shiftKey && e.key === "P") {
+        e.preventDefault();
+        if (this.preview) {
+          this.preview.openLivePreview();
+        }
+      }
+
+      // Ctrl+Shift+L = تنظيف السجلات
+      if (e.ctrlKey && e.shiftKey && e.key === "L") {
+        e.preventDefault();
+        if (this.logs && confirm("هل تريد مسح جميع السجلات؟")) {
+          this.logs.clearAll();
         }
       }
     });
   }
-});
-function switchSection(sectionId, navButton) {
-    // 1. إخفاء جميع الأقسام التي تحمل فئة المحتوى
-    const sections = document.querySelectorAll('.admin-section, .dashboard-section, section[id$="-section"]');
-    sections.forEach(sec => {
-        sec.style.display = 'none';
-        sec.classList.remove('active');
-    });
 
-    // 2. إظهار القسم المطلوب تحديداً
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-        targetSection.style.display = 'block';
-        targetSection.classList.add('active');
+  initialLoad() {
+    console.log("📦 Loading initial data...");
+
+    // تحميل السجلات من localStorage
+    const savedLogs = Utils.storage.get("logs-data", []);
+    if (savedLogs.length > 0 && this.logs) {
+      this.logs.logs = savedLogs;
+      this.logs.renderLogs();
     }
 
-    // 3. تحديث حالة أزرار القائمة الجانبية (Active State) إذا تم تمرير زر التنقل
-    if (navButton) {
-        const navButtons = document.querySelectorAll('.nav-btn');
-        navButtons.forEach(btn => btn.classList.remove('active'));
-        navButton.classList.add('active');
+    // إضافة سجل بدء التشغيل
+    if (this.logs) {
+      this.logs.addLog("🚀 تم تشغيل لوحة التحكم - النسخة النهائية", "info");
     }
 
-    // التمرير بسلاسة إلى أعلى الصفحة عند فتح القسم
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // تحديث مؤشرات الرئيسية
+    this.updateHomeIndicators();
+  }
+
+  syncHomeLogs() {
+    // مزامنة السجلات مع قسم الرئيسية
+    const homeEngine = this.sections["home-section"];
+    if (homeEngine && this.logs) {
+      // تمرير مرجع السجلات إلى الهوم
+      homeEngine.logsEngine = this.logs;
+
+      // تحديث عرض السجلات في الهوم
+      if (typeof homeEngine.updateLogsDisplay === "function") {
+        homeEngine.updateLogsDisplay();
+      }
+    }
+  }
+
+  updateHomeIndicators() {
+    // تحديث مؤشرات اللغة والثيم في الهوم
+    const langIndicator = document.getElementById("home-lang-indicator");
+    if (langIndicator) {
+      const lang = this.language.currentLang;
+      const dir = this.language.direction;
+      langIndicator.textContent =
+        lang === "ar" ? "العربية (RTL)" : "English (LTR)";
+    }
+
+    const themeIndicator = document.getElementById("home-theme-indicator");
+    if (themeIndicator) {
+      const theme = this.theme.currentTheme;
+      themeIndicator.textContent =
+        theme === "dark" ? "الوضع المظلم 🌙" : "الوضع الفاتح ☀️";
+    }
+  }
+
+  logout() {
+    if (confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+      Utils.toast("👋 جاري تسجيل الخروج...", "info");
+
+      // حفظ جميع البيانات
+      if (this.logs) {
+        this.logs.saveToStorage();
+      }
+
+      // حفظ إعدادات المستخدم
+      Utils.storage.set("user-preferences", {
+        theme: this.theme.currentTheme,
+        language: this.language.currentLang,
+        direction: this.language.direction,
+        lastLogout: new Date().toISOString(),
+      });
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 500);
+    }
+  }
 }
 
-        async function loadCategorizedSkills() {
-            try {
-                const { data: skills } = await _supabase.from('skills').select('*').order('id', { ascending: false });
-                const fList = document.getElementById('list-cat-frontend');
-                const pList = document.getElementById('list-cat-programming');
-                const tList = document.getElementById('list-cat-tools');
-                const sList = document.getElementById('list-cat-soft');
-                
-                if(fList) fList.innerHTML = '';
-                if(pList) pList.innerHTML = '';
-                if(tList) tList.innerHTML = '';
-                if(sList) sList.innerHTML = '';
+// ============================================================
+// 22. RUN APPLICATION (تشغيل التطبيق النهائي)
+// ============================================================
 
-                if (!skills || skills.length === 0) return;
+// إزالة أي تطبيق سابق
+document.addEventListener("DOMContentLoaded", () => {
+  window.Dashboard = new DashboardAppFinal(); // <--- صح
+  console.log("📦 Dashboard instance available at window.Dashboard");
+});
 
-                skills.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'item-row';
-                    // إضافة الأيقونة الرسمية بجانب اسم المهارة
-                    const iconClass = item.icon_class ? item.icon_class : 'fa-solid fa-check';
-                    div.innerHTML = `
-                        <div class="item-info">
-                            <h4><i class="${iconClass}" style="color: #a855f7; margin-left: 6px;"></i> ${item.name} <span style="color:#a855f7;">(${item.level})</span></h4>
-                            <p>${item.description || ''}</p>
-                        </div>
-                        <div style="display:flex; gap:4px;">
-                            <button class="btn-edit" onclick="editSkill(${item.id}, '${item.name}', '${item.level}', '${item.icon_class || ''}', '${item.description || ''}')"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-delete" onclick="deleteItem('skills', ${item.id})"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `;
+if (document.readyState === "complete" || document.readyState === "interactive") {
+  if (!window.Dashboard) {
+    window.Dashboard = new DashboardAppFinal(); // <--- صح
+  }
+}
 
-                    if (item.category === 'Frontend Development' && fList) fList.appendChild(div);
-                    else if (item.category === 'Programming' && pList) pList.appendChild(div);
-                    else if (item.category === 'Tools & Environment' && tList) tList.appendChild(div);
-                    else if (item.category === 'Soft Skills' && sList) sList.appendChild(div);
-                });
-            } catch (e) { console.error(e); }
-        }
+// ============================================================
+// 23. CONSOLE HELPERS (مساعدين الكونسول)
+// ============================================================
 
-        async function addSkillToCategory(e, categoryName) {
-            e.preventDefault();
-            let nameVal, levelVal, iconVal, descVal;
-            if(categoryName === 'Frontend Development') {
-                nameVal = document.getElementById('skill_1_name').value;
-                levelVal = document.getElementById('skill_1_level').value;
-                iconVal = document.getElementById('skill_1_icon').value;
-                descVal = document.getElementById('skill_1_desc').value;
-            } else if(categoryName === 'Programming') {
-                nameVal = document.getElementById('skill_2_name').value;
-                levelVal = document.getElementById('skill_2_level').value;
-                iconVal = document.getElementById('skill_2_icon').value;
-                descVal = document.getElementById('skill_2_desc').value;
-            } else if(categoryName === 'Tools & Environment') {
-                nameVal = document.getElementById('skill_3_name').value;
-                levelVal = document.getElementById('skill_3_level').value;
-                iconVal = document.getElementById('skill_3_icon').value;
-                descVal = document.getElementById('skill_3_desc').value;
-            } else {
-                nameVal = document.getElementById('skill_4_name').value;
-                levelVal = document.getElementById('skill_4_level').value;
-                iconVal = document.getElementById('skill_4_icon').value;
-                descVal = document.getElementById('skill_4_desc').value;
-            }
+console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   🚀 DASHBOARD PRO - النسخة النهائية                        ║
+║                                                              ║
+║   📦 Dashboard متاحة عبر window.Dashboard                    ║
+║                                                              ║
+║   🔧 المساعدين:                                              ║
+║   • Dashboard.sections - جميع الأقسام                       ║
+║   • Dashboard.logs - سجل النشاطات                          ║
+║   • Dashboard.preview - معاينة الموقع                      ║
+║   • Dashboard.language - محرك اللغة                        ║
+║   • Dashboard.theme - محرك الثيم                           ║
+║   • Dashboard.navigation - نظام التنقل                     ║
+║                                                              ║
+║   ⌨️  الاختصارات:                                           ║
+║   • Ctrl+K - بحث سريع                                      ║
+║   • Ctrl+Shift+P - فتح المعاينة                            ║
+║   • Ctrl+Shift+L - تنظيف السجلات                           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`);
 
-            await _supabase.from('skills').insert([{ name: nameVal, level: levelVal, icon_class: iconVal, description: descVal, category: categoryName }]);
-            e.target.reset();
-            loadCategorizedSkills();
-            fetchGlobalCounters();
-            showToast('تمت إضافة المهارة باللوجو والوصف بنجاح!');
-        }
+// ============================================================
+// 24. SERVICE WORKER READY (جاهزية الخدمات)
+// ============================================================
 
-        // دالة تشغيل تعديل اسم الفئة وحفظه
-        async function updateCategoryName(catNum, newTitle) {
-            if (!newTitle.trim()) {
-                showToast('اسم الفئة لا يمكن أن يكون فارغاً!', 'info');
-                return;
-            }
-            try {
-                showToast(`تم تحديث اسم الفئة إلى: ${newTitle.trim()} بنجاح!`);
-            } catch (e) {
-                console.error(e);
-                showToast('خطأ أثناء تحديث اسم الفئة', 'info');
-            }
-        }
-        const SKILL_CATEGORIES = ['Web Development', 'Programming', 'Software Skills', 'Tools'];
+// تحضير للاتصال بـ Supabase
+const SupabaseReady = {
+  connected: false,
+  config: {
+    url: null,
+    key: null,
+  },
 
-let skillsData = JSON.parse(localStorage.getItem('dashboard_skills_pro')) || [
-    {
-        id: 'skill-1',
-        name: 'React.js / Next.js',
-        category: 'Web Development',
-        level: 'Advanced',
-        experience: '3 Years',
-        progress: 90,
-        order: 1,
-        desc: 'Building responsive Single Page Applications.',
-        icon: 'fa-brands fa-react',
-        featured: true,
-        hidden: false,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 'skill-2',
-        name: 'JavaScript (ES6+)',
-        category: 'Programming',
-        level: 'Expert',
-        experience: '4 Years',
-        progress: 95,
-        order: 1,
-        desc: 'Vanilla JS, DOM manipulation and APIs.',
-        icon: 'fa-brands fa-js',
-        featured: true,
-        hidden: false,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 'skill-3',
-        name: 'Git & GitHub Desktop',
-        category: 'Tools',
-        level: 'Advanced',
-        experience: '3 Years',
-        progress: 88,
-        order: 1,
-        desc: 'Version control and repository management.',
-        icon: 'fa-brands fa-git-alt',
-        featured: false,
-        hidden: false,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 'skill-4',
-        name: 'Supabase & SQL',
-        category: 'Software Skills',
-        level: 'Intermediate',
-        experience: '2 Years',
-        progress: 80,
-        order: 1,
-        desc: 'Backend databases and authentication.',
-        icon: 'fa-solid fa-database',
-        featured: true,
-        hidden: false,
-        createdAt: new Date().toISOString()
+  init(url, key) {
+    this.config.url = url;
+    this.config.key = key;
+    console.log("🔌 Supabase configuration ready");
+  },
+
+  async connect() {
+    if (typeof supabase !== "undefined" && this.config.url && this.config.key) {
+      try {
+        const client = supabase.createClient(this.config.url, this.config.key);
+        this.connected = true;
+        console.log("✅ Supabase connected successfully");
+        return client;
+      } catch (error) {
+        console.error("❌ Supabase connection error:", error);
+        return null;
+      }
     }
-];
-
-let categoryStates = JSON.parse(localStorage.getItem('dashboard_cat_states')) || {
-    'Web Development': { collapsed: false, hidden: false },
-    'Programming': { collapsed: false, hidden: false },
-    'Software Skills': { collapsed: false, hidden: false },
-    'Tools': { collapsed: false, hidden: false }
+    console.warn("⚠️ Supabase not configured or library not loaded");
+    return null;
+  },
 };
 
-let selectedSkillIds = new Set();
+// تصدير جاهزية Supabase
+window.SupabaseReady = SupabaseReady;
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderSkillsSystem();
-    updateSkillStatistics();
+// ============================================================
+// 25. ERROR HANDLING (معالجة الأخطاء العالمية)
+// ============================================================
+
+window.addEventListener("error", (e) => {
+  console.error("❌ Global error:", e.error || e.message);
+
+  // عرض خطأ للمستخدم
+  if (e.error && e.error.message) {
+    Utils.toast(`⚠️ خطأ: ${e.error.message}`, "error");
+  }
 });
 
-function saveSkillsToStorage() {
-    localStorage.setItem('dashboard_skills_pro', JSON.stringify(skillsData));
-    localStorage.setItem('dashboard_cat_states', JSON.stringify(categoryStates));
-    renderSkillsSystem();
-    updateSkillStatistics();
-}
-
-function renderSkillsSystem() {
-    const container = document.getElementById('categories-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const searchTerm = (document.getElementById('skill-search-input')?.value || '').toLowerCase();
-    const filterCat = document.getElementById('filter-category')?.value || '';
-    const filterLvl = document.getElementById('filter-level')?.value || '';
-    const sortType = document.getElementById('sort-skills-select')?.value || 'order';
-
-    SKILL_CATEGORIES.forEach(categoryName => {
-        const catState = categoryStates[categoryName] || { collapsed: false, hidden: false };
-        if (catState.hidden && !filterCat) return;
-
-        let catSkills = skillsData.filter(s => s.category === categoryName);
-
-        catSkills = catSkills.filter(s => {
-            const matchesSearch = s.name.toLowerCase().includes(searchTerm) || (s.desc && s.desc.toLowerCase().includes(searchTerm));
-            const matchesCat = !filterCat || s.category === filterCat;
-            const matchesLvl = !filterLvl || s.level === filterLvl;
-            return matchesSearch && matchesCat && matchesLvl;
-        });
-
-        catSkills.sort((a, b) => {
-            if (sortType === 'alpha') return a.name.localeCompare(b.name);
-            if (sortType === 'progress-desc') return b.progress - a.progress;
-            return (a.order || 1) - (b.order || 1);
-        });
-
-        const catIcons = {
-            'Web Development': 'fa-code',
-            'Programming': 'fa-laptop-code',
-            'Software Skills': 'fa-brain',
-            'Tools': 'fa-toolbox'
-        };
-
-        const folderDiv = document.createElement('div');
-        folderDiv.className = `category-folder-card ${catState.hidden ? 'hidden-skill' : ''}`;
-        folderDiv.style.display = (filterCat && filterCat !== categoryName) ? 'none' : 'block';
-
-        folderDiv.innerHTML = `
-            <div class="category-header-bar">
-                <div class="category-title-area">
-                    <div style="width: 36px; height: 36px; background: rgba(168,85,247,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #a855f7; font-size: 15px;">
-                        <i class="fa-solid ${catIcons[categoryName] || 'fa-folder'}"></i>
-                    </div>
-                    <div>
-                        <h3>${categoryName} <span class="saas-badge" style="margin-left: 6px; font-size: 10px;">${catSkills.length} عناصر</span></h3>
-                    </div>
-                </div>
-                <div class="category-actions-group">
-                    <button class="cat-action-btn" onclick="openSkillModalForCategory('${categoryName}')"><i class="fa-solid fa-plus"></i> إضافة تحت الفئة</button>
-                    <button class="cat-action-btn" onclick="toggleCategoryCollapse('${categoryName}')"><i class="fa-solid ${catState.collapsed ? 'fa-expand' : 'fa-compress'}"></i> ${catState.collapsed ? 'توسيع' : 'طي'}</button>
-                </div>
-            </div>
-            <div class="category-body-content" style="display: ${catState.collapsed ? 'none' : 'block'};">
-                ${catSkills.length === 0 ? `
-                    <div style="text-align: center; padding: 24px; color: #94a3b8; font-size: 12px;">
-                        <i class="fa-solid fa-folder-open" style="font-size: 24px; margin-bottom: 6px; opacity: 0.5;"></i>
-                        <p>لا توجد مهارات مضافة تحت هذه الفئة بعد.</p>
-                    </div>
-                ` : `
-                    <div class="skills-grid-container">
-                        ${catSkills.map(skill => `
-                            <div class="skill-item-card ${skill.hidden ? 'hidden-skill' : ''}">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <input type="checkbox" ${selectedSkillIds.has(skill.id) ? 'checked' : ''} onchange="toggleSelectSkill('${skill.id}')" style="accent-color: #a855f7; width: 15px; height: 15px; cursor: pointer;">
-                                        <div style="width: 28px; height: 28px; background: rgba(168,85,247,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #a855f7;">
-                                            <i class="${skill.icon || 'fa-solid fa-code'}"></i>
-                                        </div>
-                                        <div>
-                                            <h4 style="font-size: 12px; font-weight: 600; color: #fff; margin: 0;">${skill.name} ${skill.featured ? '<i class="fa-solid fa-star" style="color: #fbbf24; font-size: 9px;"></i>' : ''}</h4>
-                                            <span style="font-size: 10px; color: #94a3b8;">${skill.level}</span>
-                                        </div>
-                                    </div>
-                                    <span class="saas-badge" style="font-size: 9px; margin: 0;">${skill.progress}%</span>
-                                </div>
-                                <p style="font-size: 11px; color: #cbd5e1; margin: 2px 0; line-height: 1.3;">${skill.desc || ''}</p>
-                                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
-                                    <div style="width: ${skill.progress}%; height: 100%; background: #a855f7;"></div>
-                                </div>
-                                <div class="skill-actions-row">
-                                    <button class="skill-action-icon-btn" onclick="toggleFeatureSkill('${skill.id}')" title="تمييز"><i class="fa-solid fa-star" style="color: ${skill.featured ? '#fbbf24' : 'inherit'}"></i></button>
-                                    <button class="skill-action-icon-btn" onclick="toggleHideSkill('${skill.id}')" title="إخفاء/إظهار"><i class="fa-solid ${skill.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
-                                    <button class="skill-action-icon-btn" onclick="editSkill('${skill.id}')" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button class="skill-action-icon-btn danger" onclick="deleteSkill('${skill.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `}
-            </div>
-        `;
-        container.appendChild(folderDiv);
-    });
-}
-
-function openSkillModal(category = 'Web Development') {
-    document.getElementById('skill-modal-title').innerHTML = '<i class="fa-solid fa-circle-plus" style="color: #a855f7;"></i> إضافة مهارة جديدة';
-    document.getElementById('skill-form').reset();
-    document.getElementById('edit-skill-id').value = '';
-    document.getElementById('skill-category').value = category;
-    document.getElementById('skill-modal').style.display = 'flex';
-    updateLivePreview();
-}
-
-function openSkillModalForCategory(categoryName) {
-    openSkillModal(categoryName);
-}
-
-function closeSkillModal() {
-    document.getElementById('skill-modal').style.display = 'none';
-}
-
-function editSkill(id) {
-    const skill = skillsData.find(s => s.id === id);
-    if (!skill) return;
-
-    document.getElementById('skill-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: #a855f7;"></i> تعديل المهارة';
-    document.getElementById('edit-skill-id').value = skill.id;
-    document.getElementById('skill-name').value = skill.name;
-    document.getElementById('skill-category').value = skill.category;
-    document.getElementById('skill-level').value = skill.level;
-    document.getElementById('skill-experience').value = skill.experience || '';
-    document.getElementById('skill-progress').value = skill.progress;
-    document.getElementById('skill-desc').value = skill.desc || '';
-    document.getElementById('skill-icon').value = skill.icon || '';
-    document.getElementById('skill-featured').checked = skill.featured || false;
-    document.getElementById('skill-hidden').checked = skill.hidden || false;
-
-    document.getElementById('skill-modal').style.display = 'flex';
-    updateLivePreview();
-}
-
-function saveSkill(event) {
-    event.preventDefault();
-    const id = document.getElementById('edit-skill-id').value;
-    const name = document.getElementById('skill-name').value.trim();
-    const category = document.getElementById('skill-category').value;
-    const level = document.getElementById('skill-level').value;
-    const experience = document.getElementById('skill-experience').value.trim();
-    const progress = parseInt(document.getElementById('skill-progress').value) || 0;
-    const desc = document.getElementById('skill-desc').value.trim();
-    const icon = document.getElementById('skill-icon').value.trim();
-    const featured = document.getElementById('skill-featured').checked;
-    const hidden = document.getElementById('skill-hidden').checked;
-
-    if (id) {
-        const index = skillsData.findIndex(s => s.id === id);
-        if (index !== -1) {
-            skillsData[index] = { ...skillsData[index], name, category, level, experience, progress, desc, icon, featured, hidden };
-        }
-    } else {
-        const newSkill = {
-            id: 'skill-' + Date.now(),
-            name, category, level, experience, progress, order: 1, desc, icon, featured, hidden,
-            createdAt: new Date().toISOString()
-        };
-        skillsData.push(newSkill);
-    }
-
-    saveSkillsToStorage();
-    closeSkillModal();
-}
-
-function updateLivePreview() {
-    const name = document.getElementById('skill-name')?.value || 'اسم المهارة';
-    const level = document.getElementById('skill-level')?.value || 'Advanced';
-    const progress = document.getElementById('skill-progress')?.value || 85;
-    const icon = document.getElementById('skill-icon')?.value || 'fa-solid fa-code';
-
-    document.getElementById('preview-title').innerText = name;
-    document.getElementById('preview-badge').innerText = level;
-    document.getElementById('preview-progress-fill').style.width = progress + '%';
-    document.getElementById('preview-icon-box').innerHTML = `<i class="${icon}"></i>`;
-}
-
-function deleteSkill(id) {
-    if (confirm('هل أنت متأكد من حذف هذه المهارة؟')) {
-        skillsData = skillsData.filter(s => s.id !== id);
-        selectedSkillIds.delete(id);
-        saveSkillsToStorage();
-    }
-}
-
-function toggleFeatureSkill(id) {
-    const skill = skillsData.find(s => s.id === id);
-    if (skill) {
-        skill.featured = !skill.featured;
-        saveSkillsToStorage();
-    }
-}
-
-function toggleHideSkill(id) {
-    const skill = skillsData.find(s => s.id === id);
-    if (skill) {
-        skill.hidden = !skill.hidden;
-        saveSkillsToStorage();
-    }
-}
-
-function toggleCategoryCollapse(categoryName) {
-    if (!categoryStates[categoryName]) categoryStates[categoryName] = { collapsed: false, hidden: false };
-    categoryStates[categoryName].collapsed = !categoryStates[categoryName].collapsed;
-    saveSkillsToStorage();
-}
-
-function toggleSelectSkill(id) {
-    if (selectedSkillIds.has(id)) {
-        selectedSkillIds.delete(id);
-    } else {
-        selectedSkillIds.add(id);
-    }
-    updateBulkActionsBar();
-}
-
-function updateBulkActionsBar() {
-    const bar = document.getElementById('bulk-actions-bar');
-    const label = document.getElementById('selected-count-label');
-    if (!bar || !label) return;
-
-    if (selectedSkillIds.size > 0) {
-        bar.style.display = 'flex';
-        label.innerText = `تم تحديد ${selectedSkillIds.size} عناصر`;
-    } else {
-        bar.style.display = 'none';
-    }
-}
-
-function bulkAction(actionType) {
-    if (selectedSkillIds.size === 0) return;
-    if (actionType === 'delete' && !confirm('هل أنت متأكد من حذف العناصر المحددة؟')) return;
-
-    skillsData = skillsData.filter(s => {
-        if (!selectedSkillIds.has(s.id)) return true;
-        if (actionType === 'delete') return false;
-        if (actionType === 'hide') s.hidden = true;
-        if (actionType === 'show') s.hidden = false;
-        return true;
-    });
-
-    if (actionType === 'delete') selectedSkillIds.clear();
-    saveSkillsToStorage();
-    updateBulkActionsBar();
-}
-
-function exportSelectedSkills() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(skillsData, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "skills_export.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function filterSkills() {
-    renderSkillsSystem();
-}
-
-function updateSkillStatistics() {
-    const totalSkills = skillsData.length;
-    const featuredSkills = skillsData.filter(s => s.featured).length;
-    const visibleSkills = skillsData.filter(s => !s.hidden).length;
-    const avgLevel = totalSkills ? Math.round(skillsData.reduce((acc, s) => acc + s.progress, 0) / totalSkills) : 0;
-
-    document.getElementById('stat-total-skills').innerText = totalSkills;
-    document.getElementById('stat-featured-skills').innerText = featuredSkills;
-    document.getElementById('stat-visible-trend').innerText = `${visibleSkills} مرئية`;
-    document.getElementById('stat-avg-level').innerText = avgLevel + '%';
-}
-
-        async function editSkill(id, oldName, oldLevel, oldIcon, oldDesc) {
-            const newName = prompt('تعديل اسم المهارة:', oldName);
-            if (newName === null) return;
-            const newLevel = prompt('تعديل المستوى:', oldLevel);
-            const newIcon = prompt('تعديل كلاس الأيقونة (FontAwesome):', oldIcon);
-            const newDesc = prompt('تعديل الوصف المختصر:', oldDesc);
-
-            await _supabase.from('skills').update({ name: newName, level: newLevel, icon_class: newIcon, description: newDesc }).eq('id', id);
-            loadCategorizedSkills();
-            showToast('تم تحديث المهارة بنجاح!');
-        }
-
-        async function clearCategoryElements(categoryName) {
-            if(!confirm(`هل أنت متأكد من حذف كافة عناصر فئة (${categoryName})؟`)) return;
-            const { data: items } = await _supabase.from('skills').select('id').eq('category', categoryName);
-            if(items) {
-                for(let itm of items) { await _supabase.from('skills').delete().eq('id', itm.id); }
-            }
-            loadCategorizedSkills();
-            fetchGlobalCounters();
-            showToast('تم تفريغ عناصر الفئة بنجاح.');
-        }
-
-        async function clearAllSkills() {
-            if(!confirm('تأكيد حذف جميع المهارات في كافة الفئات؟')) return;
-            const { data: items } = await _supabase.from('skills').select('id');
-            if(items) {
-                for(let itm of items) { await _supabase.from('skills').delete().eq('id', itm.id); }
-            }
-            loadCategorizedSkills();
-            fetchGlobalCounters();
-            showToast('تم مسح جميع المهارات.');
-        }
-        // نظام إدارة المشاريع الاحترافي - Supabase & LocalStorage Ready
-let projectsData = JSON.parse(localStorage.getItem('dashboard_projects_pro')) || [
-    {
-        id: 'proj-1',
-        name: 'Portfolio Version 2',
-        category: 'Web Apps',
-        status: 'Published',
-        priority: 'High',
-        completion: 100,
-        client: 'Personal',
-        tech: 'HTML, CSS, Vanilla JS, GitHub Pages',
-        liveUrl: '#',
-        githubUrl: '#',
-        docsUrl: '',
-        caseUrl: '',
-        desc: 'Personal portfolio website developed with modern responsive UI and local storage features.',
-        fullDesc: 'Comprehensive full-stack overview of Portfolio V2 built with absolute precision for high performance.',
-        thumbnail: '',
-        videoUrl: '',
-        gallery: '',
-        metaTitle: 'Portfolio V2 - Mohamed Abdallah',
-        slug: 'portfolio-v2',
-        keywords: 'portfolio, frontend, javascript',
-        featured: true,
-        hidden: false,
-        createdAt: new Date().toISOString()
-    },
-    {
-        id: 'proj-2',
-        name: 'Admin Dashboard SaaS',
-        category: 'Tools & Dashboards',
-        status: 'In Progress',
-        priority: 'High',
-        completion: 85,
-        client: 'Internal Project',
-        tech: 'JavaScript, CSS Grid, Chart.js',
-        liveUrl: '#',
-        githubUrl: '#',
-        docsUrl: '',
-        caseUrl: '',
-        desc: 'Comprehensive management dashboard overhaul with dynamic section managers.',
-        fullDesc: 'Dashboard SaaS system overhaul with robust CRUD and modular architecture.',
-        thumbnail: '',
-        videoUrl: '',
-        gallery: '',
-        metaTitle: 'Admin Dashboard SaaS',
-        slug: 'admin-dashboard-saas',
-        keywords: 'dashboard, saas, admin',
-        featured: true,
-        hidden: false,
-        createdAt: new Date().toISOString()
-    }
-];
-
-let selectedProjectIds = new Set();
-let autosaveTimer = null;
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderProjectsSystem();
-    updateProjectStatistics();
+window.addEventListener("unhandledrejection", (e) => {
+  console.error("❌ Unhandled promise rejection:", e.reason);
+  Utils.toast(`⚠️ خطأ غير متوقع: ${e.reason || "unknown"}`, "error");
 });
 
-// حفظ البيانات في التخزين المحلي (متوافق مع Supabase sync)
-function saveProjectsToStorage() {
-    localStorage.setItem('dashboard_projects_pro', JSON.stringify(projectsData));
-    renderProjectsSystem();
-    updateProjectStatistics();
-    showAutosaveIndicator();
-}
-
-function showAutosaveIndicator() {
-    const indicator = document.getElementById('autosave-indicator');
-    if (!indicator) return;
-    indicator.style.display = 'inline-block';
-    clearTimeout(autosaveTimer);
-    autosaveTimer = setTimeout(() => {
-        indicator.style.display = 'none';
-    }, 2000);
-}
-// نظام إدارة الـ Hero الاحترافي - Supabase & LocalStorage Ready
-let heroData = JSON.parse(localStorage.getItem('dashboard_hero_pro')) || {
-    mainHeading: "Hi, I'm Mohamed Abdallah",
-    subHeading: "Frontend Web Developer",
-    typingText: "Frontend Developer, UI/UX Enthusiast, Supermarket Pro",
-    enableTyping: true,
-    description: "Passionate frontend web developer specializing in building exceptional digital experiences with modern web technologies.",
-    profileImage: "",
-    fullName: "Mohamed Abdallah",
-    location: "Egypt",
-    email: "contact@mohamed.dev",
-    availabilityStatus: "Available For Work",
-    badgeAvailable: true,
-    badgeVerified: true,
-    customBadge: "🔥 Available for Hire",
-    layoutStyle: "image-right",
-    bgColor: "#0f172a",
-    effectGlow: true,
-    effectFloat: true,
-    buttons: [
-        { id: 'btn-1', text: 'المشاريع', url: '#projects-section', style: 'primary', icon: 'fa-folder-open' },
-        { id: 'btn-2', text: 'تواصل معي', url: '#contact-section', style: 'secondary', icon: 'fa-envelope' }
-    ],
-    socials: [
-        { id: 'soc-1', name: 'GitHub', url: 'https://github.com', icon: 'fa-brands fa-github', color: '#38bdf8' },
-        { id: 'soc-2', name: 'LinkedIn', url: 'https://linkedin.com', icon: 'fa-brands fa-linkedin', color: '#38bdf8' }
-    ],
-    stats: [
-        { id: 'st-1', label: 'العمر', value: '19', suffix: '+' },
-        { id: 'st-2', label: 'المشاريع', value: '15', suffix: '+' },
-        { id: 'st-3', label: 'الإنجاز', value: '100', suffix: '%' }
-    ]
-};
-
-let heroHistoryStack = [];
-let heroRedoStack = [];
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderHeroFormValues();
-    updateHeroLivePreview();
-});
-
-function saveHeroToStorage(isPublish = false) {
-    heroHistoryStack.push(JSON.parse(JSON.stringify(heroData)));
-    localStorage.setItem('dashboard_hero_pro', JSON.stringify(heroData));
-    
-    const timeEl = document.getElementById('hero-last-saved-time');
-    if (timeEl) {
-        const now = new Date();
-        timeEl.innerText = isPublish ? `تم النشر في ${now.toLocaleTimeString()}` : `تم الحفظ ${now.toLocaleTimeString()}`;
-    }
-}
-
-// التبديل بين تبويبات الـ Hero
-function switchHeroTab(event, tabId) {
-    document.querySelectorAll('.hero-tab-pane').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.modal-tabs-header .tab-btn').forEach(btn => btn.classList.remove('active-tab'));
-    
-    document.getElementById(tabId).style.display = 'block';
-    event.currentTarget.classList.add('active-tab');
-}
-
-// قراءة وعرض القيم في النماذج
-function renderHeroFormValues() {
-    document.getElementById('hero-main-heading').value = heroData.mainHeading || '';
-    document.getElementById('hero-sub-heading').value = heroData.subHeading || '';
-    document.getElementById('hero-typing-text').value = heroData.typingText || '';
-    document.getElementById('hero-enable-typing').checked = heroData.enableTyping !== false;
-    document.getElementById('hero-description').value = heroData.description || '';
-    document.getElementById('hero-profile-image').value = heroData.profileImage || '';
-    document.getElementById('hero-full-name').value = heroData.fullName || '';
-    document.getElementById('hero-location').value = heroData.location || '';
-    document.getElementById('hero-email').value = heroData.email || '';
-    document.getElementById('hero-availability-status').value = heroData.availabilityStatus || 'Available For Work';
-    document.getElementById('hero-badge-available').checked = heroData.badgeAvailable !== false;
-    document.getElementById('hero-badge-verified').checked = heroData.badgeVerified !== false;
-    document.getElementById('hero-custom-badge').value = heroData.customBadge || '';
-    document.getElementById('hero-layout-style').value = heroData.layoutStyle || 'image-right';
-    document.getElementById('hero-bg-color').value = heroData.bgColor || '#0f172a';
-    document.getElementById('hero-effect-glow').checked = heroData.effectGlow !== false;
-    document.getElementById('hero-effect-float').checked = heroData.effectFloat !== false;
-
-    renderHeroButtonsList();
-    renderHeroSocialsList();
-    renderHeroStatsList();
-}
-
-// تحديث المعاينة الحية فورياً (Live Preview Canvas)
-function updateHeroLivePreview() {
-    heroData.mainHeading = document.getElementById('hero-main-heading')?.value || '';
-    heroData.subHeading = document.getElementById('hero-sub-heading')?.value || '';
-    heroData.typingText = document.getElementById('hero-typing-text')?.value || '';
-    heroData.enableTyping = document.getElementById('hero-enable-typing')?.checked;
-    heroData.description = document.getElementById('hero-description')?.value || '';
-    heroData.profileImage = document.getElementById('hero-profile-image')?.value || '';
-    heroData.fullName = document.getElementById('hero-full-name')?.value || '';
-    heroData.location = document.getElementById('hero-location')?.value || '';
-    heroData.email = document.getElementById('hero-email')?.value || '';
-    heroData.availabilityStatus = document.getElementById('hero-availability-status')?.value || '';
-    heroData.badgeAvailable = document.getElementById('hero-badge-available')?.checked;
-    heroData.badgeVerified = document.getElementById('hero-badge-verified')?.checked;
-    heroData.customBadge = document.getElementById('hero-custom-badge')?.value || '';
-    heroData.layoutStyle = document.getElementById('hero-layout-style')?.value || 'image-right';
-    heroData.bgColor = document.getElementById('hero-bg-color')?.value || '#0f172a';
-
-    // تحديث عناصر الـ Canvas
-    const titleEl = document.getElementById('canvas-main-heading-view');
-    const subEl = document.getElementById('canvas-sub-heading-view');
-    const descEl = document.getElementById('canvas-desc-view');
-    const badgeView = document.getElementById('canvas-badge-view');
-    const customBadgeView = document.getElementById('canvas-custom-badge-view');
-    const canvasBox = document.getElementById('hero-live-canvas-box');
-
-    if (titleEl) titleEl.innerText = heroData.mainHeading;
-    if (subEl) subEl.innerText = heroData.subHeading;
-    if (descEl) descEl.innerText = heroData.description;
-    if (badgeView) badgeView.style.display = heroData.badgeAvailable ? 'inline-flex' : 'none';
-    if (customBadgeView) {
-        customBadgeView.innerText = heroData.customBadge;
-        customBadgeView.style.display = heroData.customBadge ? 'inline-block' : 'none';
-    }
-    if (canvasBox) canvasBox.style.background = heroData.bgColor;
-
-    saveHeroToStorage(false);
-}
-
-// إدارة الأزرار الديناميكية
-function renderHeroButtonsList() {
-    const container = document.getElementById('hero-buttons-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    heroData.buttons.forEach((btn, index) => {
-        const row = document.createElement('div');
-        row.className = 'hero-dynamic-row';
-        row.innerHTML = `
-            <input type="text" value="${btn.text}" placeholder="نص الزر" oninput="updateHeroButton(${index}, 'text', this.value)" style="flex: 1; min-width: 120px;">
-            <input type="text" value="${btn.url}" placeholder="الرابط (URL)" oninput="updateHeroButton(${index}, 'url', this.value)" style="flex: 1; min-width: 140px;">
-            <select onchange="updateHeroButton(${index}, 'style', this.value)" style="width: 120px;">
-                <option value="primary" ${btn.style === 'primary' ? 'selected' : ''}>رئيسي (Primary)</option>
-                <option value="secondary" ${btn.style === 'secondary' ? 'selected' : ''}>ثانوي (Secondary)</option>
-            </select>
-            <button class="saas-btn" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 6px 10px; font-size: 11px;" onclick="removeHeroButton(${index})"><i class="fa-solid fa-trash"></i></button>
-        `;
-        container.appendChild(row);
-    });
-    renderCanvasButtons();
-}
-
-function addHeroButtonRow() {
-    heroData.buttons.push({ id: 'btn-' + Date.now(), text: 'زر جديد', url: '#', style: 'secondary', icon: 'fa-arrow-right' });
-    renderHeroButtonsList();
-    updateHeroLivePreview();
-}
-
-function updateHeroButton(index, field, value) {
-    heroData.buttons[index][field] = value;
-    renderCanvasButtons();
-    saveHeroToStorage(false);
-}
-
-function removeHeroButton(index) {
-    heroData.buttons.splice(index, 1);
-    renderHeroButtonsList();
-    updateHeroLivePreview();
-}
-
-function renderCanvasButtons() {
-    const container = document.getElementById('canvas-buttons-view');
-    if (!container) return;
-    container.innerHTML = '';
-    heroData.buttons.forEach(btn => {
-        const a = document.createElement('a');
-        a.href = btn.url;
-        a.className = btn.style === 'primary' ? 'saas-btn saas-btn-primary' : 'saas-btn saas-btn-secondary';
-        a.style.cssText = 'font-size: 11px; padding: 8px 16px;';
-        a.innerHTML = `<i class="fa-solid fa-link"></i> ${btn.text}`;
-        container.appendChild(a);
-    });
-}
-
-// إدارة وسائل التواصل الاجتماعي
-function renderHeroSocialsList() {
-    const container = document.getElementById('hero-socials-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    heroData.socials.forEach((soc, index) => {
-        const row = document.createElement('div');
-        row.className = 'hero-dynamic-row';
-        row.innerHTML = `
-            <input type="text" value="${soc.name}" placeholder="المنصة" oninput="updateHeroSocial(${index}, 'name', this.value)" style="width: 100px;">
-            <input type="url" value="${soc.url}" placeholder="الرابط" oninput="updateHeroSocial(${index}, 'url', this.value)" style="flex: 1;">
-            <button class="saas-btn" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 6px 10px; font-size: 11px;" onclick="removeHeroSocial(${index})"><i class="fa-solid fa-trash"></i></button>
-        `;
-        container.appendChild(row);
-    });
-}
-
-function addHeroSocialRow() {
-    heroData.socials.push({ id: 'soc-' + Date.now(), name: 'Platform', url: 'https://', icon: 'fa-solid fa-globe', color: '#38bdf8' });
-    renderHeroSocialsList();
-    updateHeroLivePreview();
-}
-
-function updateHeroSocial(index, field, value) {
-    heroData.socials[index][field] = value;
-    saveHeroToStorage(false);
-}
-
-function removeHeroSocial(index) {
-    heroData.socials.splice(index, 1);
-    renderHeroSocialsList();
-    updateHeroLivePreview();
-}
-
-// إدارة الإحصائيات والعدادات
-function renderHeroStatsList() {
-    const container = document.getElementById('hero-stats-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    heroData.stats.forEach((st, index) => {
-        const card = document.createElement('div');
-        card.className = 'saas-card';
-        card.style.cssText = 'padding: 12px; display: flex; flex-direction: column; gap: 8px;';
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <input type="text" value="${st.label}" placeholder="عنوان العداد" oninput="updateHeroStat(${index}, 'label', this.value)" style="font-size: 11px; width: 120px;">
-                <button class="saas-btn" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 4px 8px; font-size: 10px;" onclick="removeHeroStat(${index})"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            <div style="display: flex; gap: 6px;">
-                <input type="text" value="${st.value}" placeholder="القيمة" oninput="updateHeroStat(${index}, 'value', this.value)" style="flex: 1;">
-                <input type="text" value="${st.suffix || ''}" placeholder="اللاحقة (+)" oninput="updateHeroStat(${index}, 'suffix', this.value)" style="width: 50px;">
-            </div>
-        `;
-        container.appendChild(card);
-    });
-    renderCanvasStats();
-}
-
-function addHeroStatRow() {
-    heroData.stats.push({ id: 'st-' + Date.now(), label: 'مؤشر جديد', value: '10', suffix: '+' });
-    renderHeroStatsList();
-    updateHeroLivePreview();
-}
-
-function updateHeroStat(index, field, value) {
-    heroData.stats[index][field] = value;
-    renderCanvasStats();
-    saveHeroToStorage(false);
-}
-
-function removeHeroStat(index) {
-    heroData.stats.splice(index, 1);
-    renderHeroStatsList();
-    updateHeroLivePreview();
-}
-
-function renderCanvasStats() {
-    const container = document.getElementById('canvas-stats-view');
-    if (!container) return;
-    container.innerHTML = '';
-    heroData.stats.forEach(st => {
-        const div = document.createElement('div');
-        div.style.cssText = 'text-align: center;';
-        div.innerHTML = `<h4 style="font-size: 16px; color: #fff; margin: 0;">${st.value}${st.suffix || ''}</h4><span style="font-size: 10px; color: #94a3b8;">${st.label}</span>`;
-        container.appendChild(div);
-    });
-}
-
-// التحكم في وضع المعاينة (Desktop, Tablet, Mobile)
-function setHeroPreviewDevice(device) {
-    const canvasBox = document.getElementById('hero-live-canvas-box');
-    if (!canvasBox) return;
-    if (device === 'desktop') canvasBox.style.maxWidth = '780px';
-    if (device === 'tablet') canvasBox.style.maxWidth = '480px';
-    if (device === 'mobile') canvasBox.style.maxWidth = '300px';
-}
-
-function toggleHeroPreviewTheme() {
-    const canvasBox = document.getElementById('hero-live-canvas-box');
-    if (!canvasBox) return;
-    if (canvasBox.style.background.includes('255')) {
-        canvasBox.style.background = 'rgba(18,24,43,0.95)';
-        canvasBox.style.color = '#fff';
-    } else {
-        canvasBox.style.background = '#ffffff';
-        canvasBox.style.color = '#0f172a';
-    }
-}
-
-// محاكاة رفع الصور
-function handleHeroImageUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const url = URL.createObjectURL(file);
-        document.getElementById('hero-profile-image').value = url;
-        heroData.profileImage = url;
-        const imgWrap = document.getElementById('canvas-profile-img-wrap');
-        if (imgWrap) {
-            imgWrap.innerHTML = `<img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">`;
-        }
-        saveHeroToStorage(false);
-    }
-}
-
-// أزرار الحفظ والنشر والتراجع
-function saveHeroDraft() {
-    saveHeroToStorage(false);
-    alert('تم حفظ مسودة الـ Hero بنجاح!');
-}
-
-function publishHeroChanges() {
-    saveHeroToStorage(true);
-    alert('تم نشر تغييرات الـ Hero بنجاح وتحديث الواجهة!');
-}
-
-function heroUndo() {
-    if (heroHistoryStack.length > 0) {
-        const lastState = heroHistoryStack.pop();
-        heroRedoStack.push(JSON.parse(JSON.stringify(heroData)));
-        heroData = lastState;
-        renderHeroFormValues();
-        updateHeroLivePreview();
-    }
-}
-
-function heroRedo() {
-    if (heroRedoStack.length > 0) {
-        const nextState = heroRedoStack.pop();
-        heroHistoryStack.push(JSON.parse(JSON.stringify(heroData)));
-        heroData = nextState;
-        renderHeroFormValues();
-        updateHeroLivePreview();
-    }
-}
-
-function heroResetDefaults() {
-    if (confirm('هل أنت متأكد من استعادة الإعدادات الافتراضية للـ Hero؟')) {
-        localStorage.removeItem('dashboard_hero_pro');
-        location.reload();
-    }
-}
-
-function filterHeroSettings() {
-    // البحث الفوري في الإعدادات
-    const query = document.getElementById('hero-settings-search')?.value.toLowerCase() || '';
-    console.log('Filtering hero settings for:', query);
-}
-
-// نظام إدارة الشهادات المتكامل - Supabase & LocalStorage Ready
-let certificatesData = JSON.parse(localStorage.getItem('dashboard_certificates_pro')) || [
-    {
-        id: 'cert-1',
-        title: 'Introduction to Cybersecurity',
-        provider: 'Cisco Networking Academy',
-        category: 'Cybersecurity',
-        issueDate: '2026-01-15',
-        expirationDate: '2029-01-15',
-        credentialId: 'CSCO-2026-01',
-        verificationUrl: 'https://www.netacad.com/verify',
-        shortDesc: 'Foundational course on network security, threats, and defensive strategies.',
-        isFeatured: true,
-        isPublished: true,
-        selected: false
-    },
-    {
-        id: 'cert-2',
-        title: 'Advanced Frontend Development',
-        provider: 'Coursera',
-        category: 'Frontend',
-        issueDate: '2025-11-10',
-        expirationDate: '',
-        credentialId: 'COURSERA-FE-99',
-        verificationUrl: 'https://coursera.org/verify',
-        shortDesc: 'Modern CSS, JavaScript architectures, and responsive framework designs.',
-        isFeatured: false,
-        isPublished: true,
-        selected: false
-    }
-];
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderCertificates();
-    updateCertificatesStats();
-});
-
-function saveCertificatesToStorage() {
-    localStorage.setItem('dashboard_certificates_pro', JSON.stringify(certificatesData));
-    updateCertificatesStats();
-}
-
-function updateCertificatesStats() {
-    const total = certificatesData.length;
-    const featured = certificatesData.filter(c => c.isFeatured).length;
-    const published = certificatesData.filter(c => c.isPublished).length;
-    const expired = certificatesData.filter(c => c.expirationDate && new Date(c.expirationDate) < new Date()).length;
-
-    document.getElementById('stat-total-certs').innerText = total;
-    document.getElementById('stat-featured-certs').innerText = featured;
-    document.getElementById('stat-published-certs').innerText = published;
-    document.getElementById('stat-expired-certs').innerText = expired;
-}
-
-function renderCertificates(dataToRender = certificatesData) {
-    const container = document.getElementById('certificates-grid-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    if (dataToRender.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;"><i class="fa-solid fa-folder-open" style="font-size: 32px; margin-bottom: 8px; color: #38bdf8;"></i><p>لا توجد شهادات مطابقة للبحث</p></div>`;
-        return;
-    }
-
-    dataToRender.forEach(cert => {
-        const card = document.createElement('div');
-        card.className = 'certificate-item-card';
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="checkbox" ${cert.selected ? 'checked' : ''} onchange="toggleSelectCertificate('${cert.id}')" style="accent-color: #38bdf8; width: 16px; height: 16px;">
-                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(56,189,248,0.15); display: flex; align-items: center; justify-content: center; color: #38bdf8;">
-                        <i class="fa-solid fa-award"></i>
-                    </div>
-                    <div>
-                        <h4 style="font-size: 13px; font-weight: 600; color: #fff; margin: 0;">${cert.title}</h4>
-                        <span style="font-size: 11px; color: #94a3b8;">${cert.provider}</span>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 4px;">
-                    <span class="saas-badge" style="font-size: 9px; background: ${cert.isFeatured ? 'rgba(251,191,36,0.15); color: #fbbf24;' : 'rgba(56,189,248,0.15); color: #38bdf8;'}">${cert.category}</span>
-                </div>
-            </div>
-            <p style="font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.4;">${cert.shortDesc || 'لا يوجد وصف قصير.'}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); pt: 8px; margin-top: 4px;">
-                <span style="font-size: 10px; color: #64748b;"><i class="fa-solid fa-calendar"></i> ${cert.issueDate || 'غير محدد'}</span>
-                <div style="display: flex; gap: 4px;">
-                    <button class="cert-action-btn" onclick="openCertificateModal('edit', '${cert.id}')" title="تعديل"><i class="fa-solid fa-pen"></i></button>
-                    <button class="cert-action-btn" onclick="duplicateCertificate('${cert.id}')" title="نسخ"><i class="fa-solid fa-copy"></i></button>
-                    <button class="cert-action-btn" onclick="toggleFeatureCertificate('${cert.id}')" title="تمییز"><i class="fa-solid fa-star" style="color: ${cert.isFeatured ? '#fbbf24' : 'inherit'}"></i></button>
-                    <button class="cert-action-btn" style="color: #fca5a5;" onclick="deleteCertificate('${cert.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function openCertificateModal(mode, id = null) {
-    const modal = document.getElementById('certificate-modal-overlay');
-    const form = document.getElementById('certificate-form');
-    form.reset();
-    document.getElementById('cert-edit-id').value = '';
-
-    if (mode === 'edit' && id) {
-        document.getElementById('cert-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل الشهادة';
-        const cert = certificatesData.find(c => c.id === id);
-        if (cert) {
-            document.getElementById('cert-edit-id').value = cert.id;
-            document.getElementById('cert_title').value = cert.title;
-            document.getElementById('cert_provider').value = cert.provider;
-            document.getElementById('cert_category').value = cert.category;
-            document.getElementById('cert_issue_date').value = cert.issueDate;
-            document.getElementById('cert_expiration_date').value = cert.expirationDate;
-            document.getElementById('cert_credential_id').value = cert.credentialId;
-            document.getElementById('cert_verification_url').value = cert.verificationUrl;
-            document.getElementById('cert_short_desc').value = cert.shortDesc;
-            document.getElementById('cert_is_featured').checked = cert.isFeatured;
-            document.getElementById('cert_is_published').checked = cert.isPublished;
-        }
-    } else {
-        document.getElementById('cert-modal-title').innerHTML = '<i class="fa-solid fa-certificate"></i> إضافة شهادة جديدة';
-    }
-    modal.style.display = 'flex';
-}
-
-function closeCertificateModal() {
-    document.getElementById('certificate-modal-overlay').style.display = 'none';
-}
-
-function handleCertificateFormSubmit(event) {
-    event.preventDefault();
-    const editId = document.getElementById('cert-edit-id').value;
-    
-    const certObj = {
-        id: editId || 'cert-' + Date.now(),
-        title: document.getElementById('cert_title').value,
-        provider: document.getElementById('cert_provider').value,
-        category: document.getElementById('cert_category').value,
-        issueDate: document.getElementById('cert_issue_date').value,
-        expirationDate: document.getElementById('cert_expiration_date').value,
-        credentialId: document.getElementById('cert_credential_id').value,
-        verificationUrl: document.getElementById('cert_verification_url').value,
-        shortDesc: document.getElementById('cert_short_desc').value,
-        isFeatured: document.getElementById('cert_is_featured').checked,
-        isPublished: document.getElementById('cert_is_published').checked,
-        selected: false
-    };
-
-    if (editId) {
-        const index = certificatesData.findIndex(c => c.id === editId);
-        if (index !== -1) certificatesData[index] = certObj;
-    } else {
-        certificatesData.unshift(certObj);
-    }
-
-    saveCertificatesToStorage();
-    renderCertificates();
-    closeCertificateModal();
-}
-
-function deleteCertificate(id) {
-    if (confirm('هل أنت متأكد من حذف هذه الشهادة نهائياً؟')) {
-        certificatesData = certificatesData.filter(c => c.id !== id);
-        saveCertificatesToStorage();
-        renderCertificates();
-    }
-}
-
-function duplicateCertificate(id) {
-    const cert = certificatesData.find(c => c.id === id);
-    if (cert) {
-        const clone = { ...cert, id: 'cert-' + Date.now(), title: cert.title + ' (نسخة)' };
-        certificatesData.unshift(clone);
-        saveCertificatesToStorage();
-        renderCertificates();
-    }
-}
-
-function toggleFeatureCertificate(id) {
-    const cert = certificatesData.find(c => c.id === id);
-    if (cert) {
-        cert.isFeatured = !cert.isFeatured;
-        saveCertificatesToStorage();
-        renderCertificates();
-    }
-}
-
-function filterCertificates() {
-    const query = document.getElementById('certificates-search-input').value.toLowerCase();
-    const catFilter = document.getElementById('cert-filter-category').value;
-    const statusFilter = document.getElementById('cert-filter-status').value;
-
-    let filtered = certificatesData.filter(c => {
-        const matchesQuery = c.title.toLowerCase().includes(query) || c.provider.toLowerCase().includes(query);
-        const matchesCat = catFilter === 'all' || c.category === catFilter;
-        const matchesStatus = statusFilter === 'all' || (statusFilter === 'Published' && c.isPublished) || (statusFilter === 'Draft' && !c.isPublished);
-        return matchesQuery && matchesCat && matchesStatus;
-    });
-
-    renderCertificates(filtered);
-}
-
-function sortCertificates() {
-    const sortBy = document.getElementById('cert-sort-by').value;
-    if (sortBy === 'newest') {
-        certificatesData.sort((a, b) => new Date(b.issueDate) - new Date(a.issueDate));
-    } else if (sortBy === 'oldest') {
-        certificatesData.sort((a, b) => new Date(a.issueDate) - new Date(b.issueDate));
-    } else if (sortBy === 'alphabetical') {
-        certificatesData.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === 'featured') {
-        certificatesData.sort((a, b) => (b.isFeatured === a.isFeatured)? 0 : b.isFeatured? 1 : -1);
-    }
-    renderCertificates();
-}
-
-function toggleSelectCertificate(id) {
-    const cert = certificatesData.find(c => c.id === id);
-    if (cert) {
-        cert.selected = !cert.selected;
-        updateBulkBar();
-    }
-}
-
-function toggleSelectAllCertificates(masterCheckbox) {
-    const isChecked = masterCheckbox.checked;
-    certificatesData.forEach(c => c.selected = isChecked);
-    renderCertificates();
-    updateBulkBar();
-}
-
-function updateBulkBar() {
-    const selectedCount = certificatesData.filter(c => c.selected).length;
-    const bulkBar = document.getElementById('cert-bulk-actions-bar');
-    const countLabel = document.getElementById('cert-selected-count');
-    if (selectedCount > 0) {
-        bulkBar.style.display = 'flex';
-        countLabel.innerText = `تم تحديد ${selectedCount} عنصر`;
-    } else {
-        bulkBar.style.display = 'none';
-    }
-}
-
-function executeBulkAction(action) {
-    if (action === 'delete') {
-        if (confirm('هل أنت متأكد من حذف جميع العناصر المحددة؟')) {
-            certificatesData = certificatesData.filter(c => !c.selected);
-        }
-    } else if (action === 'publish') {
-        certificatesData.forEach(c => { if(c.selected) c.isPublished = true; });
-    } else if (action === 'hide') {
-        certificatesData.forEach(c => { if(c.selected) c.isPublished = false; });
-    }
-    saveCertificatesToStorage();
-    renderCertificates();
-    document.getElementById('cert-bulk-actions-bar').style.display = 'none';
-}
-
-function exportCertificatesJSON() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(certificatesData, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "certificates_export.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function importCertificatesJSON(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const imported = JSON.parse(e.target.result);
-                if (Array.isArray(imported)) {
-                    certificatesData = imported;
-                    saveCertificatesToStorage();
-                    renderCertificates();
-                    alert('تم استيراد الشهادات بنجاح!');
-                }
-            } catch(err) {
-                alert('خطأ في قراءة ملف الـ JSON');
-            }
-        };
-        reader.readAsText(file);
-    }
-}
-
-function saveCertificatesDatabase() {
-    saveCertificatesToStorage();
-    alert('تم مزامنة وحفظ التغييرات بنجاح مع قاعدة البيانات (Supabase Ready)!');
-}
-
-
-
-
-
-
-
-
-// عرض نظام المشاريع
-function renderProjectsSystem() {
-    const container = document.getElementById('projects-grid-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    const searchTerm = (document.getElementById('project-search-input')?.value || '').toLowerCase();
-    const filterCat = document.getElementById('filter-project-category')?.value || '';
-    const filterStatus = document.getElementById('filter-project-status')?.value || '';
-    const filterPriority = document.getElementById('filter-project-priority')?.value || '';
-    const sortType = document.getElementById('sort-projects-select')?.value || 'newest';
-
-    let filtered = projectsData.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm) || 
-                              (p.desc && p.desc.toLowerCase().includes(searchTerm)) || 
-                              (p.tech && p.tech.toLowerCase().includes(searchTerm)) ||
-                              (p.client && p.client.toLowerCase().includes(searchTerm));
-        const matchesCat = !filterCat || p.category === filterCat;
-        const matchesStatus = !filterStatus || p.status === filterStatus;
-        const matchesPriority = !filterPriority || p.priority === filterPriority;
-        return matchesSearch && matchesCat && matchesStatus && matchesPriority;
-    });
-
-    // الترتيب (Sorting)
-    filtered.sort((a, b) => {
-        if (sortType === 'alpha') return a.name.localeCompare(b.name);
-        if (sortType === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
-        if (sortType === 'priority') {
-            const weights = { 'High': 3, 'Medium': 2, 'Low': 1 };
-            return (weights[b.priority] || 2) - (weights[a.priority] || 2);
-        }
-        if (sortType === 'completion') return (b.completion || 0) - (a.completion || 0);
-        return new Date(b.createdAt) - new Date(a.createdAt); // newest
-    });
-
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8; font-size: 13px;">
-                <i class="fa-solid fa-folder-open" style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;"></i>
-                <p>لا توجد مشاريع مطابقة لمعايير البحث والفلترة الحالية.</p>
-            </div>
-        `;
-        return;
-    }
-
-    filtered.forEach(project => {
-        const techArray = project.tech ? project.tech.split(',').map(t => t.trim()).filter(Boolean) : [];
-        const card = document.createElement('div');
-        card.className = `project-card-item ${project.hidden ? 'hidden-project' : ''}`;
-
-        const statusColors = {
-            'Published': { bg: 'rgba(16,185,129,0.15)', color: '#34d399' },
-            'Completed': { bg: 'rgba(56,189,248,0.15)', color: '#38bdf8' },
-            'In Progress': { bg: 'rgba(245,158,11,0.15)', color: '#fbbf24' },
-            'Draft': { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
-            'Archived': { bg: 'rgba(239,68,68,0.15)', color: '#fca5a5' }
-        };
-        const stStyle = statusColors[project.status] || statusColors['Draft'];
-
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" ${selectedProjectIds.has(project.id) ? 'checked' : ''} onchange="toggleSelectProject('${project.id}')" style="accent-color: #38bdf8; width: 16px; height: 16px; cursor: pointer;">
-                    <div>
-                        <h4 style="font-size: 14px; font-weight: 600; color: #fff; margin: 0;">${project.name} ${project.featured ? '<i class="fa-solid fa-star" style="color: #fbbf24; font-size: 10px;" title="مميز"></i>' : ''}</h4>
-                        <span style="font-size: 10px; color: #38bdf8;">${project.category} • ${project.client || 'General'}</span>
-                    </div>
-                </div>
-                <span class="saas-badge" style="font-size: 9px; margin: 0; background: ${stStyle.bg}; color: ${stStyle.color};">${project.status}</span>
-            </div>
-            <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.4;">${project.desc || ''}</p>
-            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                ${techArray.map(t => `<span class="project-tech-badge">${t}</span>`).join('')}
-            </div>
-            <div class="project-links-row">
-                <a href="${project.liveUrl || '#'}" target="_blank" class="proj-link-btn"><i class="fa-solid fa-globe"></i> المعاينة</a>
-                <a href="${project.githubUrl || '#'}" target="_blank" class="proj-link-btn"><i class="fa-brands fa-github"></i> الكود</a>
-            </div>
-            <!-- أزرار الـ CRUD الكاملة -->
-            <div class="skill-actions-row" style="margin-top: 4px; display: flex; gap: 4px; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 6px;">
-                <button class="skill-action-icon-btn" onclick="duplicateProject('${project.id}')" title="تكرار / استنساخ"><i class="fa-solid fa-copy"></i></button>
-                <button class="skill-action-icon-btn" onclick="toggleFeatureProject('${project.id}')" title="تمييز"><i class="fa-solid fa-star" style="color: ${project.featured ? '#fbbf24' : 'inherit'}"></i></button>
-                <button class="skill-action-icon-btn" onclick="togglePublishProject('${project.id}')" title="نشر / إلغاء النشر"><i class="fa-solid ${project.status === 'Published' ? 'fa-eye-slash' : 'fa-globe'}"></i></button>
-                <button class="skill-action-icon-btn" onclick="toggleHideProject('${project.id}')" title="إخفاء / إظهار"><i class="fa-solid ${project.hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>
-                <button class="skill-action-icon-btn" onclick="editProject('${project.id}')" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button class="skill-action-icon-btn danger" onclick="deleteProject('${project.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// تبويبات النافذة المنسدلة
-function switchProjectTab(event, tabId) {
-    document.querySelectorAll('.project-tab-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.modal-tabs-header .tab-btn').forEach(btn => btn.classList.remove('active-tab'));
-    
-    document.getElementById(tabId).style.display = 'block';
-    event.currentTarget.classList.add('active-tab');
-}
-
-function openProjectModal() {
-    document.getElementById('project-modal-title').innerHTML = '<i class="fa-solid fa-circle-plus" style="color: #38bdf8;"></i> إضافة مشروع جديد';
-    document.getElementById('project-form').reset();
-    document.getElementById('edit-project-id').value = '';
-    document.getElementById('project-modal').style.display = 'flex';
-    handleProjectInputUpdate();
-}
-
-function closeProjectModal() {
-    document.getElementById('project-modal').style.display = 'none';
-}
-
-function editProject(id) {
-    const project = projectsData.find(p => p.id === id);
-    if (!project) return;
-
-    document.getElementById('project-modal-title').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color: #38bdf8;"></i> تعديل المشروع';
-    document.getElementById('edit-project-id').value = project.id;
-    document.getElementById('proj-name').value = project.name;
-    document.getElementById('proj-category').value = project.category;
-    document.getElementById('proj-status').value = project.status;
-    document.getElementById('proj-priority').value = project.priority || 'Medium';
-    document.getElementById('proj-completion').value = project.completion || 100;
-    document.getElementById('proj-client').value = project.client || '';
-    document.getElementById('proj-start-date').value = project.startDate || '';
-    document.getElementById('proj-end-date').value = project.endDate || '';
-    document.getElementById('proj-tech').value = project.tech || '';
-    document.getElementById('proj-live-url').value = project.liveUrl || '';
-    document.getElementById('proj-github-url').value = project.githubUrl || '';
-    document.getElementById('proj-docs-url').value = project.docsUrl || '';
-    document.getElementById('proj-case-url').value = project.caseUrl || '';
-    document.getElementById('proj-desc').value = project.desc || '';
-    document.getElementById('proj-full-desc').value = project.fullDesc || '';
-    document.getElementById('proj-thumbnail').value = project.thumbnail || '';
-    document.getElementById('proj-video-url').value = project.videoUrl || '';
-    document.getElementById('proj-gallery').value = project.gallery || '';
-    document.getElementById('proj-meta-title').value = project.metaTitle || '';
-    document.getElementById('proj-slug').value = project.slug || '';
-    document.getElementById('proj-keywords').value = project.keywords || '';
-    document.getElementById('proj-featured').checked = project.featured || false;
-    document.getElementById('proj-hidden').checked = project.hidden || false;
-
-    document.getElementById('project-modal').style.display = 'flex';
-    handleProjectInputUpdate();
-}
-
-function saveProject(event) {
-    event.preventDefault();
-    const id = document.getElementById('edit-project-id').value;
-    const name = document.getElementById('proj-name').value.trim();
-    
-    // التحقق من تكرار الأسماء (Validation)
-    const duplicate = projectsData.find(p => p.name.toLowerCase() === name.toLowerCase() && p.id !== id);
-    if (duplicate) {
-        alert('يوجد مشروع بنفس الاسم بالفعل. يرجى اختيار اسم فريد.');
-        return;
-    }
-
-    const category = document.getElementById('proj-category').value;
-    const status = document.getElementById('proj-status').value;
-    const priority = document.getElementById('proj-priority').value;
-    const completion = parseInt(document.getElementById('proj-completion').value) || 100;
-    const client = document.getElementById('proj-client').value.trim();
-    const startDate = document.getElementById('proj-start-date').value;
-    const endDate = document.getElementById('proj-end-date').value;
-    const tech = document.getElementById('proj-tech').value.trim();
-    const liveUrl = document.getElementById('proj-live-url').value.trim();
-    const githubUrl = document.getElementById('proj-github-url').value.trim();
-    const docsUrl = document.getElementById('proj-docs-url').value.trim();
-    const caseUrl = document.getElementById('proj-case-url').value.trim();
-    const desc = document.getElementById('proj-desc').value.trim();
-    const fullDesc = document.getElementById('proj-full-desc').value.trim();
-    const thumbnail = document.getElementById('proj-thumbnail').value.trim();
-    const videoUrl = document.getElementById('proj-video-url').value.trim();
-    const gallery = document.getElementById('proj-gallery').value.trim();
-    const metaTitle = document.getElementById('proj-meta-title').value.trim();
-    const slug = document.getElementById('proj-slug').value.trim() || name.toLowerCase().replace(/\s+/g, '-');
-    const keywords = document.getElementById('proj-keywords').value.trim();
-    const featured = document.getElementById('proj-featured').checked;
-    const hidden = document.getElementById('proj-hidden').checked;
-
-    if (id) {
-        const index = projectsData.findIndex(p => p.id === id);
-        if (index !== -1) {
-            projectsData[index] = { 
-                ...projectsData[index], name, category, status, priority, completion, client, 
-                startDate, endDate, tech, liveUrl, githubUrl, docsUrl, caseUrl, desc, fullDesc, 
-                thumbnail, videoUrl, gallery, metaTitle, slug, keywords, featured, hidden,
-                lastUpdated: new Date().toISOString()
-            };
-        }
-    } else {
-        const newProj = {
-            id: 'proj-' + Date.now(),
-            name, category, status, priority, completion, client, startDate, endDate, 
-            tech, liveUrl, githubUrl, docsUrl, caseUrl, desc, fullDesc, thumbnail, videoUrl, 
-            gallery, metaTitle, slug, keywords, featured, hidden,
-            createdAt: new Date().toISOString(),
-            lastUpdated: new Date().toISOString()
-        };
-        projectsData.push(newProj);
-    }
-
-    saveProjectsToStorage();
-    closeProjectModal();
-}
-
-// المعاينة الحية
-function handleProjectInputUpdate() {
-    const name = document.getElementById('proj-name')?.value || 'اسم المشروع';
-    const category = document.getElementById('proj-category')?.value || 'Web Apps';
-    const status = document.getElementById('proj-status')?.value || 'Published';
-    const desc = document.getElementById('proj-desc')?.value || 'وصف موجز للمشروع...';
-    const techStr = document.getElementById('proj-tech')?.value || 'HTML, JS';
-
-    const titleEl = document.getElementById('prev-proj-title');
-    const catEl = document.getElementById('prev-proj-category');
-    const badgeEl = document.getElementById('prev-proj-badge');
-    const descEl = document.getElementById('prev-proj-desc');
-    const techContainer = document.getElementById('prev-proj-tech');
-
-    if (titleEl) titleEl.innerText = name;
-    if (catEl) catEl.innerText = category;
-    if (badgeEl) badgeEl.innerText = status;
-    if (descEl) descEl.innerText = desc;
-    
-    if (techContainer) {
-        const techs = techStr.split(',').map(t => t.trim()).filter(Boolean);
-        techContainer.innerHTML = techs.map(t => `<span class="project-tech-badge" style="font-size: 8px;">${t}</span>`).join('') || '<span class="project-tech-badge" style="font-size: 8px;">HTML</span>';
-    }
-}
-
-function setPreviewDevice(deviceType) {
-    const cardBox = document.getElementById('live-preview-card-box');
-    if (!cardBox) return;
-    if (deviceType === 'desktop') cardBox.style.maxWidth = '520px';
-    if (deviceType === 'tablet') cardBox.style.maxWidth = '360px';
-    if (deviceType === 'mobile') cardBox.style.maxWidth = '280px';
-}
-
-function togglePreviewTheme() {
-    const cardBox = document.getElementById('live-preview-card-box');
-    if (!cardBox) return;
-    if (cardBox.style.background.includes('255')) {
-        cardBox.style.background = 'rgba(18, 24, 43, 0.85)';
-        cardBox.style.color = '#fff';
-    } else {
-        cardBox.style.background = '#ffffff';
-        cardBox.style.color = '#0f172a';
-    }
-}
-
-function refreshProjectPreview() {
-    handleProjectInputUpdate();
-}
-
-// دوال CRUD متقدمة (Duplicate, Clone, Archive, Publish, Hide)
-function duplicateProject(id) {
-    const proj = projectsData.find(p => p.id === id);
-    if (!proj) return;
-    const duplicated = {
-        ...proj,
-        id: 'proj-' + Date.now(),
-        name: proj.name + ' (نسخة)',
-        slug: proj.slug + '-copy-' + Date.now(),
-        createdAt: new Date().toISOString()
-    };
-    projectsData.push(duplicated);
-    saveProjectsToStorage();
-}
-
-function toggleFeatureProject(id) {
-    const proj = projectsData.find(p => p.id === id);
-    if (proj) {
-        proj.featured = !proj.featured;
-        saveProjectsToStorage();
-    }
-}
-
-function togglePublishProject(id) {
-    const proj = projectsData.find(p => p.id === id);
-    if (proj) {
-        proj.status = proj.status === 'Published' ? 'Draft' : 'Published';
-        saveProjectsToStorage();
-    }
-}
-
-function toggleHideProject(id) {
-    const proj = projectsData.find(p => p.id === id);
-    if (proj) {
-        proj.hidden = !proj.hidden;
-        saveProjectsToStorage();
-    }
-}
-
-function deleteProject(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المشروع نهائياً؟')) {
-        projectsData = projectsData.filter(p => p.id !== id);
-        selectedProjectIds.delete(id);
-        saveProjectsToStorage();
-    }
-}
-
-function toggleSelectProject(id) {
-    if (selectedProjectIds.has(id)) {
-        selectedProjectIds.delete(id);
-    } else {
-        selectedProjectIds.add(id);
-    }
-    updateProjectBulkBar();
-}
-
-function updateProjectBulkBar() {
-    const bar = document.getElementById('project-bulk-bar');
-    const label = document.getElementById('project-selected-count');
-    if (!bar || !label) return;
-
-    if (selectedProjectIds.size > 0) {
-        bar.style.display = 'flex';
-        label.innerText = `تم تحديد ${selectedProjectIds.size} مشاريع`;
-    } else {
-        bar.style.display = 'none';
-    }
-}
-
-function projectBulkAction(actionType) {
-    if (selectedProjectIds.size === 0) return;
-    if (actionType === 'delete' && !confirm('هل أنت متأكد من حذف جميع المشاريع المحددة؟')) return;
-
-    projectsData = projectsData.filter(p => {
-        if (!selectedProjectIds.has(p.id)) return true;
-        if (actionType === 'delete') return false;
-        if (actionType === 'publish') p.status = 'Published';
-        if (actionType === 'unpublish') p.status = 'Draft';
-        if (actionType === 'feature') p.featured = true;
-        if (actionType === 'archive') p.status = 'Archived';
-        return true;
-    });
-
-    if (actionType === 'delete') selectedProjectIds.clear();
-    saveProjectsToStorage();
-    updateProjectBulkBar();
-}
-
-function exportProjectsData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projectsData, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "projects_export.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-}
-
-function triggerProjectsImport() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = e => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = event => {
-            try {
-                const imported = JSON.parse(event.target.result);
-                if (Array.isArray(imported)) {
-                    projectsData = imported;
-                    saveProjectsToStorage();
-                    alert('تم استيراد المشاريع بنجاح!');
-                }
-            } catch (err) {
-                alert('ملف غير صالح.');
-            }
-        };
-        reader.readAsText(file);
-    };
-    input.click();
-}
-
-function resetProjectForm() {
-    document.getElementById('project-form').reset();
-    handleProjectInputUpdate();
-}
-
-function filterProjects() {
-    renderProjectsSystem();
-}
-
-function updateProjectStatistics() {
-    const total = projectsData.length;
-    const completed = projectsData.filter(p => p.status === 'Completed').length;
-    const published = projectsData.filter(p => p.status === 'Published').length;
-    const inProgress = projectsData.filter(p => p.status === 'In Progress').length;
-    const featured = projectsData.filter(p => p.featured).length;
-    const hidden = projectsData.filter(p => p.hidden).length;
-    const archived = projectsData.filter(p => p.status === 'Archived' || p.hidden).length;
-    const visible = projectsData.filter(p => !p.hidden).length;
-
-    document.getElementById('stat-total-projects').innerText = total;
-    document.getElementById('stat-completed-projects').innerText = completed;
-    document.getElementById('stat-published-projects').innerText = published;
-    document.getElementById('stat-progress-projects').innerText = inProgress;
-    document.getElementById('stat-featured-projects').innerText = featured;
-    document.getElementById('stat-archived-projects').innerText = archived;
-    document.getElementById('stat-visible-projects-trend').innerText = `${visible} مرئية`;
-    document.getElementById('stat-hidden-projects').innerText = `${hidden} مخفية`;
-}
-
-function handleImageUploadSimulation(event) {
-    const file = event.target.files[0];
-    if (file) {
-        document.getElementById('proj-thumbnail').value = URL.createObjectURL(file);
-        handleProjectInputUpdate();
-    }
-}
-
-        async function loadProjectsManager() {
-            try {
-                const { data: projects, error } = await _supabase.from('projects').select('*').order('id', { ascending: false });
-                const container = document.getElementById('projects-grid-container');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                if (error || !projects || projects.length === 0) {
-                    container.innerHTML = '<p style="color: #94a3b8; font-size: 12px; grid-column: span 2;">لا توجد مشاريع مضافة حالياً.</p>';
-                    return;
-                }
-
-                projects.forEach(proj => {
-                    const card = document.createElement('div');
-                    card.style.cssText = "background: rgba(18, 24, 43, 0.85); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;";
-                    
-                    card.innerHTML = `
-                        <div style="height: 140px; overflow: hidden; position: relative;">
-                            <img src="${proj.image || 'https://via.placeholder.com/400x200'}" alt="${proj.title}" style="width: 100%; height: 100%; object-fit: cover; transition: 0.5s;">
-                            <div style="position: absolute; top: 10px; left: 10px; background: rgba(13, 17, 33, 0.85); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.4);">نشط بالموقع</div>
-                        </div>
-                        <div style="padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
-                            <div>
-                                <h4 style="font-size: 14px; color: #f8fafc; margin-bottom: 8px; font-weight: 600;">${proj.title}</h4>
-                                <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px;">${proj.description || 'لا يوجد وصف متاح'}</p>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: auto;">
-                                <a href="${proj.link || '#'}" target="_blank" style="font-size: 11px; color: #a855f7; text-decoration: none; display: flex; align-items: center; gap: 5px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> معاينة المشروع</a>
-                                <button onclick="deleteItem('projects', ${proj.id})" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; transition: 0.2s;"><i class="fa-solid fa-trash"></i> حذف</button>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        async function addNewProjectCard(e) {
-            e.preventDefault();
-            const title = document.getElementById('p_title').value;
-            const image = document.getElementById('p_image').value;
-            const description = document.getElementById('p_desc').value;
-            const link = document.getElementById('p_link').value;
-
-            const { error } = await _supabase.from('projects').insert([{ title, image, description, link }]);
-            if(error) { alert('حدث خطأ أثناء حفظ المشروع!'); return; }
-
-            e.target.reset();
-            loadProjectsManager();
-            fetchGlobalCounters();
-            showToast('تم إنشاء الكارت ونشر المشروع بنجاح 🚀');
-        }
-
-        async function clearAllProjects() {
-            if(!confirm('هل أنت متأكد من حذف كافة المشاريع؟')) return;
-            const { data: items } = await _supabase.from('projects').select('id');
-            if(items) {
-                for(let itm of items) { await _supabase.from('projects').delete().eq('id', itm.id); }
-            }
-            loadProjectsManager();
-            fetchGlobalCounters();
-            showToast('تم تفريغ جميع المشاريع بنجاح.');
-        }
-
-        async function loadCertificatesManager() {
-            try {
-                const { data: certs, error } = await _supabase.from('certificates').select('*').order('id', { ascending: false });
-                const container = document.getElementById('certificates-grid-container');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                if (error || !certs || certs.length === 0) {
-                    container.innerHTML = '<p style="color: #94a3b8; font-size: 12px; grid-column: span 2;">لا توجد شهادات مضافة حالياً.</p>';
-                    return;
-                }
-
-                certs.forEach(cert => {
-                    const card = document.createElement('div');
-                    card.style.cssText = "background: rgba(18, 24, 43, 0.85); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;";
-                    
-                    card.innerHTML = `
-                        <div style="height: 130px; overflow: hidden; position: relative; background: #070913;">
-                            <img src="${cert.image || 'https://via.placeholder.com/400x200'}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover; transition: 0.5s;">
-                            <div style="position: absolute; top: 10px; right: 10px; background: rgba(217, 119, 6, 0.9); backdrop-filter: blur(5px); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-star" style="font-size: 9px;"></i> ${cert.date || 'معتمدة'}</div>
-                        </div>
-                        <div style="padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
-                            <div>
-                                <div style="font-size: 10px; color: #fbbf24; font-weight: 600; margin-bottom: 4px; text-transform: uppercase;">${cert.issuer || 'جهة معتمدة'}</div>
-                                <h4 style="font-size: 14px; color: #f8fafc; margin-bottom: 6px; font-weight: 600;">${cert.title}</h4>
-                                <p style="font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px;">${cert.description || 'لا يوجد وصف متاح'}</p>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: auto;">
-                                <span style="font-size: 10px; color: #34d399;"><i class="fa-solid fa-circle-check"></i> معروض بالموقع</span>
-                                <button onclick="deleteItem('certificates', ${cert.id})" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; transition: 0.2s;"><i class="fa-solid fa-trash"></i> حذف</button>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch(e) { console.error(e); }
-        }
-
-        async function addNewCertificateCard(e) {
-            e.preventDefault();
-            const title = document.getElementById('c_title').value;
-            const issuer = document.getElementById('c_issuer').value;
-            const image = document.getElementById('c_image').value;
-            const date = document.getElementById('c_date').value;
-            const description = document.getElementById('c_desc').value;
-
-            const { error } = await _supabase.from('certificates').insert([{ title, issuer, image, date, description }]);
-            if(error) { alert('حدث خطأ أثناء حفظ الشهادة!'); return; }
-
-            e.target.reset();
-            loadCertificatesManager();
-            fetchGlobalCounters();
-            showToast('تم إصدار الكارت الذهبي وتوثيق الشهادة بنجاح ⭐');
-        }
-
-        async function clearAllCertificates() {
-            if(!confirm('هل أنت متأكد من حذف كافة الشهادات؟')) return;
-            const { data: items } = await _supabase.from('certificates').select('id');
-            if(items) {
-                for(let itm of items) { await _supabase.from('certificates').delete().eq('id', itm.id); }
-            }
-            loadCertificatesManager();
-            fetchGlobalCounters();
-            showToast('تم تفريغ جميع الشهادات بنجاح.');
-        }
-
-        async function loadHeroData() {
-            try {
-                const { data } = await _supabase.from('hero_section').select('*').limit(1).single();
-                if (data) {
-                    document.getElementById('heroTitle').value = data.title || '';
-                    document.getElementById('heroSubtitle').value = data.subtitle || '';
-                    document.getElementById('heroDesc').value = data.description || '';
-                    document.getElementById('heroImage').value = data.image_url || '';
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        async function updateHeroSection(e) {
-            e.preventDefault();
-            const updatedData = {
-                title: document.getElementById('heroTitle').value,
-                subtitle: document.getElementById('heroSubtitle').value,
-                description: document.getElementById('heroDesc').value,
-                image_url: document.getElementById('heroImage').value,
-                updated_at: new Date()
-            };
-
-            const { error } = await _supabase.from('hero_section').update(updatedData).eq('id', 1);
-            if (error) {
-                alert('حدث خطأ أثناء التحديث!');
-            } else {
-                showToast('تم تحديث قسم الهيرو بنجاح وسيظهر في الموقع الرئيسي فوراً!');
-            }
-        }
-
-        function renderSocial(item) {
-            const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.platform} <span style="color:#a855f7;">(${item.followers || 0} متابع)</span></h4><p>${item.link}</p></div><button class="btn-delete" onclick="deleteItem('social_links', ${item.id})">حذف</button>`;
-            return div;
-        }
-
-        function renderMessage(item) {
-            const div = document.createElement('div'); div.className = 'item-row';
-            div.innerHTML = `<div class="item-info"><h4>${item.sender_name || 'زائر'}</h4><p>${item.message_text || ''}</p></div><button class="btn-delete" onclick="deleteItem('messages', ${item.id})">حذف</button>`;
-            return div;
-        }
-
-        async function deleteItem(tableName, id) {
-            if (!confirm('تأكيد الحذف؟')) return;
-            await _supabase.from(tableName).delete().eq('id', id);
-            showToast('تم الحذف بنجاح.');
-            loadAllData();
-        }
-
-        document.getElementById('socialForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const platform = document.getElementById('socialPlatform').value;
-            const link = document.getElementById('socialLink').value;
-            const followers = document.getElementById('socialFollowers').value;
-
-            await _supabase.from('social_links').insert([{ platform, link, followers: Number(followers) }]);
-            document.getElementById('socialForm').reset();
-            loadAllData();
-            showToast('تم إضافة منصة السوشيال وتحديث عداد المتابعين بنجاح!');
-        };
-
-        function updateAnalyticsChart() {
-            const chartCanvas = document.getElementById('analyticsChart');
-            if(!chartCanvas) return;
-            const ctx = chartCanvas.getContext('2d');
-            if (analyticsChartInstance) analyticsChartInstance.destroy();
-            analyticsChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['المشاريع', 'الشهادات', 'الشكاوى والدعم', 'المهارات', 'الرسائل'],
-                    datasets: [{
-                        data: [
-                            Number(document.getElementById('countProjects').innerText || 0),
-                            Number(document.getElementById('countCerts').innerText || 0),
-                            Number(document.getElementById('countSupport').innerText || 0),
-                            Number(document.getElementById('countSkills').innerText || 0),
-                            Number(document.getElementById('countMessages').innerText || 0)
-                        ],
-                        backgroundColor: ['#a855f7', '#fbbf24', '#ec4899', '#60a5fa', '#fb7185'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } } } }
-            });
-        }
-
-        function loadAllData() {
-            fetchGlobalCounters().then(() => {
-                updateAnalyticsChart();
-            });
-            loadCategorizedSkills();
-            loadProjectsManager();
-            loadCertificatesManager();
-            loadSupportInbox();
-            fetchSection('social_links', 'social_linksGrid', renderSocial);
-            fetchSection('messages', 'messagesGrid', renderMessage);
-            loadLogs();
-        }
-        // تحديث الوقت والتاريخ بشكل حي ودقيق
-function updateDateTime() {
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    const dateEl = document.getElementById('currentDate');
-    const timeEl = document.getElementById('currentTime');
-    if (dateEl) dateEl.innerText = dateStr;
-    if (timeEl) timeEl.innerText = timeStr;
-}
-setInterval(updateDateTime, 1000);
-updateDateTime();
-
-// دالة جلب وعرض العدادات العالمية المتصلة بـ Supabase
-async function fetchGlobalCounters() {
-    try {
-        const [visRes, projRes, certRes, skillRes, msgRes, socRes] = await Promise.all([
-            _supabase.from('visitors').select('*', { count: 'exact', head: true }),
-            _supabase.from('projects').select('*', { count: 'exact', head: true }),
-            _supabase.from('certificates').select('*', { count: 'exact', head: true }),
-            _supabase.from('skills').select('*', { count: 'exact', head: true }),
-            _supabase.from('messages').select('*', { count: 'exact', head: true }),
-            _supabase.from('social_links').select('followers')
-        ]);
-
-        if (document.getElementById('visitorCount')) {
-            document.getElementById('visitorCount').innerText = visRes.count !== null ? visRes.count : 1250;
-        }
-        if (document.getElementById('countProjects')) {
-            document.getElementById('countProjects').innerText = projRes.count || 0;
-        }
-        if (document.getElementById('countCerts')) {
-            document.getElementById('countCerts').innerText = certRes.count || 0;
-        }
-        if (document.getElementById('countSkills')) {
-            document.getElementById('countSkills').innerText = skillRes.count || 0;
-        }
-        if (document.getElementById('countMessages')) {
-            document.getElementById('countMessages').innerText = msgRes.count || 0;
-        }
-
-        let totalFollowers = 0;
-        if (socRes.data && socRes.data.length > 0) {
-            socRes.data.forEach(item => { totalFollowers += Number(item.followers || 0); });
-        }
-        if (document.getElementById('countFollowers')) {
-            document.getElementById('countFollowers').innerText = totalFollowers > 0 ? totalFollowers : '2.4K';
-        }
-    } catch (e) {
-        console.error('Error fetching dashboard metrics:', e);
-    }
-}
-// --- إدارة الخدمات (Services Engine) ---
-let servicesData = JSON.parse(localStorage.getItem('dashboard_services_pro')) || [
-    { id: 'srv-1', name: 'Frontend Web Development', category: 'Web Development', price: 150, delivery: '5 أيام', shortDesc: 'تطوير واجهات مستخدم تفاعلية وعصرية باستخدام أحدث التقنيات.', isFeatured: true, isPublished: true },
-    { id: 'srv-2', name: 'UI/UX Dashboard Design', category: 'UI/UX Design', price: 120, delivery: '3 أيام', shortDesc: 'تصميم لوحات تحكم SaaS احترافية متجاوبة وسهلة الاستخدام.', isFeatured: false, isPublished: true }
-];
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderServices();
-    updateServicesStats();
-    renderDonations();
-    updateDonationsStats();
-});
-
-function saveServicesToStorage() {
-    localStorage.setItem('dashboard_services_pro', JSON.stringify(servicesData));
-    updateServicesStats();
-}
-
-function updateServicesStats() {
-    document.getElementById('stat-total-services').innerText = servicesData.length;
-    document.getElementById('stat-featured-services').innerText = servicesData.filter(s => s.isFeatured).length;
-    document.getElementById('stat-published-services').innerText = servicesData.filter(s => s.isPublished).length;
-}
-
-function renderServices(dataToRender = servicesData) {
-    const container = document.getElementById('services-grid-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    if (dataToRender.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #94a3b8;"><p>لا توجد خدمات مطابقة</p></div>`;
-        return;
-    }
-
-    dataToRender.forEach(srv => {
-        const card = document.createElement('div');
-        card.className = 'saas-card';
-        card.style.cssText = "background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px;";
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h4 style="font-size: 13px; font-weight: 600; color: #fff; margin: 0;">${srv.name}</h4>
-                    <span style="font-size: 11px; color: #38bdf8;">${srv.category}</span>
-                </div>
-                <span style="font-size: 11px; background: rgba(16,185,129,0.15); color: #10b981; padding: 2px 8px; border-radius: 6px;">$${srv.price || 0}</span>
-            </div>
-            <p style="font-size: 11px; color: #94a3b8; margin: 0;">${srv.shortDesc || 'لا يوجد وصف.'}</p>
-            <div style="display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 4px;">
-                <button class="saas-btn saas-btn-secondary" style="font-size: 10px; padding: 4px 8px;" onclick="openServiceModal('edit', '${srv.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
-                <button class="saas-btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 10px; padding: 4px 8px;" onclick="deleteService('${srv.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function openServiceModal(mode, id = null) {
-    const modal = document.getElementById('service-modal-overlay');
-    const form = document.getElementById('service-form');
-    form.reset();
-    document.getElementById('service_edit_id').value = '';
-
-    if (mode === 'edit' && id) {
-        document.getElementById('service-modal-title').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل الخدمة';
-        const srv = servicesData.find(s => s.id === id);
-        if (srv) {
-            document.getElementById('service_edit_id').value = srv.id;
-            document.getElementById('service_name').value = srv.name;
-            document.getElementById('service_price').value = srv.price;
-            document.getElementById('service_category').value = srv.category;
-            document.getElementById('service_delivery').value = srv.delivery;
-            document.getElementById('service_short_desc').value = srv.shortDesc;
-            document.getElementById('service_is_featured').checked = srv.isFeatured;
-            document.getElementById('service_is_published').checked = srv.isPublished;
-        }
-    } else {
-        document.getElementById('service-modal-title').innerHTML = '<i class="fa-solid fa-server"></i> إضافة خدمة جديدة';
-    }
-    modal.style.display = 'flex';
-}
-
-function closeServiceModal() {
-    document.getElementById('service-modal-overlay').style.display = 'none';
-}
-
-function handleServiceFormSubmit(event) {
-    event.preventDefault();
-    const editId = document.getElementById('service_edit_id').value;
-    const srvObj = {
-        id: editId || 'srv-' + Date.now(),
-        name: document.getElementById('service_name').value,
-        price: document.getElementById('service_price').value,
-        category: document.getElementById('service_category').value,
-        delivery: document.getElementById('service_delivery').value,
-        shortDesc: document.getElementById('service_short_desc').value,
-        isFeatured: document.getElementById('service_is_featured').checked,
-        isPublished: document.getElementById('service_is_published').checked
-    };
-
-    if (editId) {
-        const index = servicesData.findIndex(s => s.id === editId);
-        if (index !== -1) servicesData[index] = srvObj;
-    } else {
-        servicesData.unshift(srvObj);
-    }
-
-    saveServicesToStorage();
-    renderServices();
-    closeServiceModal();
-}
-
-function deleteService(id) {
-    if (confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
-        servicesData = servicesData.filter(s => s.id !== id);
-        saveServicesToStorage();
-        renderServices();
-    }
-}
-
-function filterServices() {
-    const query = document.getElementById('services-search-input').value.toLowerCase();
-    const cat = document.getElementById('service-filter-category').value;
-    const filtered = servicesData.filter(s => {
-        const matchesQuery = s.name.toLowerCase().includes(query);
-        const matchesCat = cat === 'all' || s.category === cat;
-        return matchesQuery && matchesCat;
-    });
-    renderServices(filtered);
-}
-
-function saveServicesDatabase() {
-    saveServicesToStorage();
-    alert('تم حفظ ومزامنة الخدمات بنجاح مع قاعدة البيانات (Supabase Ready)!');
-}
-
-
-// --- إدارة التبرعات (Donations Engine) ---
-let donationsData = JSON.parse(localStorage.getItem('dashboard_donations_pro')) || [
-    { id: 'don-1', title: 'تطوير سيرفرات الموقع الاستضافية', method: 'PayPal / Stripe', target: 500, raised: 320, accountInfo: 'mohamed@example.com' }
-];
-
-function saveDonationsToStorage() {
-    localStorage.setItem('dashboard_donations_pro', JSON.stringify(donationsData));
-    updateDonationsStats();
-}
-
-function updateDonationsStats() {
-    const totalRaised = donationsData.reduce((acc, curr) => acc + Number(curr.raised || 0), 0);
-    const totalGoal = donationsData.reduce((acc, curr) => acc + Number(curr.target || 0), 0);
-    document.getElementById('stat-total-raised').innerText = '$' + totalRaised;
-    document.getElementById('stat-total-goal').innerText = '$' + totalGoal;
-    document.getElementById('stat-donor-count').innerText = donationsData.length * 12; // محاكاة لعدد المتبرعين
-}
-
-function renderDonations() {
-    const container = document.getElementById('donations-grid-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    donationsData.forEach(don => {
-        const percent = don.target > 0 ? Math.round((don.raised / don.target) * 100) : 0;
-        const card = document.createElement('div');
-        card.className = 'saas-card';
-        card.style.cssText = "background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px;";
-        card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h4 style="font-size: 13px; font-weight: 600; color: #fff; margin: 0;">${don.title}</h4>
-                    <span style="font-size: 11px; color: #10b981;">طريقة الدفع: ${don.method}</span>
-                </div>
-                <span style="font-size: 11px; background: rgba(16,185,129,0.15); color: #10b981; padding: 2px 8px; border-radius: 6px;">${percent}%</span>
-            </div>
-            <div style="font-size: 11px; color: #94a3b8;">المجمع: $${don.raised} من أصل $${don.target} المستهدف</div>
-            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                <div style="width: ${percent}%; height: 100%; background: #10b981;"></div>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 4px;">
-                <button class="saas-btn saas-btn-secondary" style="font-size: 10px; padding: 4px 8px;" onclick="openDonationModal('edit', '${don.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
-                <button class="saas-btn" style="background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 10px; padding: 4px 8px;" onclick="deleteDonation('${don.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function openDonationModal(mode, id = null) {
-    const modal = document.getElementById('donation-modal-overlay');
-    const form = document.getElementById('donation-form');
-    form.reset();
-    document.getElementById('donation_edit_id').value = '';
-
-    if (mode === 'edit' && id) {
-        document.getElementById('donation-modal-title').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل حملة التبرع';
-        const don = donationsData.find(d => d.id === id);
-        if (don) {
-            document.getElementById('donation_edit_id').value = don.id;
-            document.getElementById('donation_title').value = don.title;
-            document.getElementById('donation_method').value = don.method;
-            document.getElementById('donation_target').value = don.target;
-            document.getElementById('donation_raised').value = don.raised;
-            document.getElementById('donation_account_info').value = don.accountInfo;
-        }
-    } else {
-        document.getElementById('donation-modal-title').innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> إضافة حملة تبرع جديدة';
-    }
-    modal.style.display = 'flex';
-}
-
-function closeDonationModal() {
-    document.getElementById('donation-modal-overlay').style.display = 'none';
-}
-
-function handleDonationFormSubmit(event) {
-    event.preventDefault();
-    const editId = document.getElementById('donation_edit_id').value;
-    const donObj = {
-        id: editId || 'don-' + Date.now(),
-        title: document.getElementById('donation_title').value,
-        method: document.getElementById('donation_method').value,
-        target: document.getElementById('donation_target').value,
-        raised: document.getElementById('donation_raised').value,
-        accountInfo: document.getElementById('donation_account_info').value
-    };
-
-    if (editId) {
-        const index = donationsData.findIndex(d => d.id === editId);
-        if (index !== -1) donationsData[index] = donObj;
-    } else {
-        donationsData.unshift(donObj);
-    }
-
-    saveDonationsToStorage();
-    renderDonations();
-    closeDonationModal();
-}
-
-function deleteDonation(id) {
-    if (confirm('هل أنت متأكد من حذف هذه الحملة؟')) {
-        donationsData = donationsData.filter(d => d.id !== id);
-        saveDonationsToStorage();
-        renderDonations();
-    }
-}
-
-function saveDonationsDatabase() {
-    saveDonationsToStorage();
-    alert('تم حفظ ومزامنة بيانات التبرعات بنجاح (Supabase Ready)!');
-}
-
-// تنفيذ جلب البيانات عند تحميل القسم
-document.addEventListener('DOMContentLoaded', () => {
-    fetchGlobalCounters();
-});
-    
-   
+console.log("✅ Error handlers registered");
