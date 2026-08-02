@@ -382,11 +382,14 @@ body.dark-mode .glass-panel {
 /* ========================================================= */
 
 #home-section {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 24px;
     color: #f8fafc;
     padding-bottom: 40px;
+}
+#home-section.active {
+    display: flex;
 }
 
 .home-dashboard-container {
