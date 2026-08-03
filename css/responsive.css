@@ -5,221 +5,233 @@
 /* منع أي Overflow أفقي */
 html,
 body {
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* أي عنصر يلتزم بعرض الشاشة */
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* الصور والفيديوهات */
 img,
 video,
 svg {
-    max-width: 100%;
-    height: auto;
-    display: block;
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* الحاوية الأساسية */
 .container {
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: 16px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 16px;
 }
 
 /* ================================
    SMALL DEVICES (480px+)
 ================================ */
 @media (min-width: 480px) {
-    .container {
-        max-width: 460px;
-    }
+  .container {
+    max-width: 460px;
+  }
 }
 
 /* ================================
    TABLET (768px+)
 ================================ */
 @media (min-width: 768px) {
-    .container {
-        max-width: 720px;
-        padding-inline: 20px;
-    }
+  .container {
+    max-width: 720px;
+    padding-inline: 20px;
+  }
 
-    /* الأزرار ترجع Inline */
-    .btn {
-        width: auto;
-    }
+  /* الأزرار ترجع Inline */
+  .btn {
+    width: auto;
+  }
 
-    /* شبكات المشاريع والمهارات */
-    .projects-grid,
-    .skills-grid,
-    .certificates-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 24px;
-    }
+  /* شبكات المشاريع والمهارات */
+  .projects-grid,
+  .skills-grid,
+  .certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
 
-    /* Hero */
-    .hero__container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-        gap: 40px;
-    }
+  /* Hero */
+  .hero__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 40px;
+  }
 
-    .hero__content {
-        text-align: start;
-    }
+  .hero__content {
+    text-align: start;
+  }
 
-    .hero__buttons {
-        justify-content: flex-start;
-    }
+  .hero__buttons {
+    justify-content: flex-start;
+  }
 }
 
 /* ================================
    LAPTOP (1024px+)
 ================================ */
 @media (min-width: 1024px) {
-    .container {
-        max-width: 1140px;
-    }
+  .container {
+    max-width: 1140px;
+  }
 
-    .projects-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .projects-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
-    .skills-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .skills-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
-    .certificates-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .certificates-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 
-    .hero__container {
-        gap: 64px;
-    }
+  .hero__container {
+    gap: 64px;
+  }
 }
 
 /* ================================
    LARGE DESKTOP (1440px+)
 ================================ */
 @media (min-width: 1440px) {
-    .container {
-        max-width: 1320px;
-    }
+  .container {
+    max-width: 1320px;
+  }
 }
 /* للشاشات المتوسطة والتابلت */
 @media (max-width: 1024px) {
-    .container, .hero__container, .projects__grid {
-        padding: 0 1.5rem;
-    }
+  .container,
+  .hero__container,
+  .projects__grid {
+    padding: 0 1.5rem;
+  }
 }
 
 /* للشاشات الصغيرة والموبايل (أقل من 768 بكسل) */
 @media (max-width: 768px) {
-    /* تحويل أي شبكة كروت لعمود واحد فوق بعض */
-    .donation-card > div {
-        flex-direction: column !important;
-        align-items: center !important;
-    }
+  /* تحويل أي شبكة كروت لعمود واحد فوق بعض */
+  .donation-card > div {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
 
-    .hero__title {
-        font-size: 2rem !important;
-    }
+  .hero__title {
+    font-size: 2rem !important;
+  }
 
-    /* تصغير الهوامش عشان ميبقاش فيه مساحات فاضية مزعجة */
-    section {
-        padding: 3rem 1rem !important;
-    }
+  /* تصغير الهوامش عشان ميبقاش فيه مساحات فاضية مزعجة */
+  section {
+    padding: 3rem 1rem !important;
+  }
 }
 /* --- إصلاح وتجاوب سكشن الهيرو (Hero Section) --- */
 @media (max-width: 768px) {
-    /* تحويل محتوى الهيرو ليكون فوق بعضه (عمود واحد) */
-    .hero__container, 
-    .hero-content, 
-    .hero {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 2rem 1rem !important;
-    }
+  /* تحويل محتوى الهيرو ليكون فوق بعضه (عمود واحد) */
+  .hero__container,
+  .hero-content,
+  .hero {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 2rem 1rem !important;
+  }
 
-    /* تصغير حجم العنوان الرئيسي عشان ميبقاش عريض أوي ع الشاشة */
-    .hero__title, .hero h1 {
-        font-size: 2.2rem !important;
-        line-height: 1.3 !important;
-        word-wrap: break-word;
-    }
+  /* تصغير حجم العنوان الرئيسي عشان ميبقاش عريض أوي ع الشاشة */
+  .hero__title,
+  .hero h1 {
+    font-size: 2.2rem !important;
+    line-height: 1.3 !important;
+    word-wrap: break-word;
+  }
 
-    /* تصغير الوصف أو الـ Paragraph */
-    .hero__description, .hero p {
-        font-size: 1rem !important;
-        padding: 0 0.5rem;
-    }
+  /* تصغير الوصف أو الـ Paragraph */
+  .hero__description,
+  .hero p {
+    font-size: 1rem !important;
+    padding: 0 0.5rem;
+  }
 
-    /* تنسيق الأزرار تحت بعضها أو جنب بعض بمسافة مريحة وسلسة */
-    .hero__buttons, .hero-buttons {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 1rem !important;
-        width: 100% !important;
-        padding: 0 1rem;
-    }
+  /* تنسيق الأزرار تحت بعضها أو جنب بعض بمسافة مريحة وسلسة */
+  .hero__buttons,
+  .hero-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    padding: 0 1rem;
+  }
 
-    .hero__buttons a, .hero__buttons button {
-        width: 100% !important;
-        text-align: center;
-    }
+  .hero__buttons a,
+  .hero__buttons button {
+    width: 100% !important;
+    text-align: center;
+  }
 
-    /* لو فيه صورة في الهيرو، نظبط حجمها عشان ما تطلعش بره الشاشة */
-    .hero__image img, .hero-img img {
-        max-width: 240px !important;
-        height: auto !important;
-        margin-top: 1.5rem;
-    }
-}/* ترتيب سكشن الهيرو على الموبايل: الصورة فوق، والنص واللينكات تحت */
+  /* لو فيه صورة في الهيرو، نظبط حجمها عشان ما تطلعش بره الشاشة */
+  .hero__image img,
+  .hero-img img {
+    max-width: 240px !important;
+    height: auto !important;
+    margin-top: 1.5rem;
+  }
+} /* ترتيب سكشن الهيرو على الموبايل: الصورة فوق، والنص واللينكات تحت */
 @media (max-width: 768px) {
-    .hero__container, .hero {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-    }
+  .hero__container,
+  .hero {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
 
-    /* إجبار الصورة إنها تيجي في الأعلى أولاً */
-    .hero__image, .hero-img {
-        order: 1 !important;
-        margin-bottom: 1.5rem !important;
-    }
+  /* إجبار الصورة إنها تيجي في الأعلى أولاً */
+  .hero__image,
+  .hero-img {
+    order: 1 !important;
+    margin-bottom: 1.5rem !important;
+  }
 
-    /* العنوان والنص تحت الصورة */
-    .hero__content, .hero-text {
-        order: 2 !important;
-        width: 100% !important;
-    }
+  /* العنوان والنص تحت الصورة */
+  .hero__content,
+  .hero-text {
+    order: 2 !important;
+    width: 100% !important;
+  }
 
-    /* الأزرار واللينكات في الآخر */
-    .hero__buttons, .hero-buttons {
-        order: 3 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 0.8rem !important;
-        width: 100% !important;
-        margin-top: 1.5rem !important;
-    }
+  /* الأزرار واللينكات في الآخر */
+  .hero__buttons,
+  .hero-buttons {
+    order: 3 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+  }
 
-    .hero__buttons a, .hero__buttons button {
-        width: 100% !important;
-        text-align: center !important;
-    }
+  .hero__buttons a,
+  .hero__buttons button {
+    width: 100% !important;
+    text-align: center !important;
+  }
 }

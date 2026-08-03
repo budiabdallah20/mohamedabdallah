@@ -297,67 +297,508 @@ const Utils = {
 // ============================================================
 // 3. EVENT MANAGER (مدير الأحداث المركزي)
 // ============================================================
+// ============================================================
+// 3. EVENT MANAGER (مدير الأحداث المركزي)
+// ============================================================
 class EventManager {
   constructor() {
     this.listeners = new Map();
     this.delegations = new Map();
   }
+  
 
   // إضافة مستمع
   on(element, event, handler, options = {}) {
-    const el =
-      typeof element === "string" ? document.querySelector(element) : element;
-    if (!el) return;
+    const el = typeof element === "string" ? document.querySelector(element) : element;
+    if (!el) {
+      console.warn(`⚠️ Element not found for event: ${event}`);
+      return;
+    }
 
-    const key = `${event}-${el.id || el.className || "unknown"}`;
+    const key = `${event}-${el.id || el.className || el.tagName || 'unknown'}`;
     if (!this.listeners.has(key)) {
       this.listeners.set(key, []);
     }
-    this.listeners.get(key).push({ el, event, handler, options });
+    
+    const listener = { el, event, handler, options };
+    this.listeners.get(key).push(listener);
     el.addEventListener(event, handler, options);
+  }
+
+  // مستمع لمرة واحدة
+  once(element, event, handler, options = {}) {
+    const wrappedHandler = (e) => {
+      handler(e);
+      this.off(element, event, wrappedHandler);
+    };
+    this.on(element, event, wrappedHandler, { ...options, once: true });
   }
 
   // إزالة مستمع
   off(element, event, handler) {
-    const el =
-      typeof element === "string" ? document.querySelector(element) : element;
+    const el = typeof element === "string" ? document.querySelector(element) : element;
     if (!el) return;
 
     el.removeEventListener(event, handler);
 
-    const key = `${event}-${el.id || el.className || "unknown"}`;
+    const key = `${event}-${el.id || el.className || el.tagName || 'unknown'}`;
     if (this.listeners.has(key)) {
       const handlers = this.listeners
         .get(key)
         .filter((h) => h.handler !== handler);
-      this.listeners.set(key, handlers);
+      
+      if (handlers.length > 0) {
+        this.listeners.set(key, handlers);
+      } else {
+        this.listeners.delete(key);
+      }
+    }
+  }
+  setupEvents() {
+  const app = this.app;
+  const em = app.eventManager;
+  
+  // إضافة مهارة
+  em.on('#openSkillModalBtn', 'click', () => this.openModal());
+  
+  // إغلاق المودال
+  em.on('#closeSkillModalBtn', 'click', () => this.closeModal());
+  em.on('#cancelSkillBtn', 'click', () => this.closeModal());
+  
+  // بحث
+  em.on('#skill-search-input', 'input', () => this.filterSkills());
+  
+  // فلترة
+  ['filter-category', 'filter-level', 'sort-skills-select'].forEach(id => {
+    em.on(`#${id}`, 'change', () => this.filterSkills());
+  });
+  
+  // أزرار Bulk
+  ['bulkShowBtn', 'bulkHideBtn', 'bulkDeleteBtn'].forEach(id => {
+    em.on(`#${id}`, 'click', () => {
+      const action = id.replace('bulk', '').replace('Btn', '').toLowerCase();
+      this.bulkAction(action);
+    });
+  });
+  
+  // حفظ النموذج
+  em.on('#skill-form', 'submit', (e) => this.saveSkill(e));
+  
+  // معاينة حية
+  ['skill-name', 'skill-level', 'skill-progress', 'skill-icon'].forEach(id => {
+    em.on(`#${id}`, 'input', () => this.updatePreview());
+    em.on(`#${id}`, 'change', () => this.updatePreview());
+  });
+}
+
+  // تفويض الأحداث (Event Delegation)
+  delegate(selector, event, handler, options = {}) {
+    const key = `delegate-${selector}-${event}`;
+    
+    if (!this.delegations.has(key)) {
+      const wrappedHandler = (e) => {
+        const target = e.target.closest(selector);
+        if (target) {
+          handler(e, target);
+        }
+      };
+      
+      this.delegations.set(key, { 
+        selector, 
+        event, 
+        handler: wrappedHandler, 
+        options 
+      });
+      
+      document.addEventListener(event, wrappedHandler, options);
     }
   }
 
-  // تفويض الأحداث (Event Delegation)
-  delegate(selector, event, handler) {
-    if (!this.delegations.has(selector)) {
-      this.delegations.set(selector, []);
+  // إزالة تفويض حدث
+  removeDelegate(selector, event) {
+    const key = `delegate-${selector}-${event}`;
+    if (this.delegations.has(key)) {
+      const { handler, options } = this.delegations.get(key);
+      document.removeEventListener(event, handler, options);
+      this.delegations.delete(key);
     }
-    this.delegations.get(selector).push({ event, handler });
+  }
 
-    document.addEventListener(event, (e) => {
-      const target = e.target.closest(selector);
-      if (target) {
-        handler(e, target);
-      }
+  // إطلاق حدث مخصص
+  emit(element, event, detail = {}) {
+    const el = typeof element === "string" ? document.querySelector(element) : element;
+    if (!el) return;
+    
+    const customEvent = new CustomEvent(event, { 
+      detail, 
+      bubbles: true, 
+      cancelable: true 
     });
+    el.dispatchEvent(customEvent);
   }
 
   // تنظيف كل المستمعين
   clear() {
+    // إزالة المستمعات المباشرة
     this.listeners.forEach((listeners) => {
       listeners.forEach(({ el, event, handler, options }) => {
         el.removeEventListener(event, handler, options);
       });
     });
     this.listeners.clear();
+
+    // إزالة تفويضات الأحداث
+    this.delegations.forEach(({ event, handler, options }) => {
+      document.removeEventListener(event, handler, options);
+    });
     this.delegations.clear();
+  }
+
+  // الحصول على عدد المستمعات النشطة
+  getListenerCount() {
+    let count = 0;
+    this.listeners.forEach((listeners) => {
+      count += listeners.length;
+    });
+    return count + this.delegations.size;
+  }
+}
+// ============================================================
+// 4. BASE ENGINE (المحرك الأساسي للأقسام المتشابهة)
+// ============================================================
+class BaseEngine {
+  constructor(app, options = {}) {
+    this.app = app;
+    this.items = [];
+    this.storageKey = options.storageKey || 'base-data';
+    this.renderContainerId = options.containerId || 'base-container';
+    this.itemName = options.itemName || 'عنصر';
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.render();
+    this.updateStats();
+    console.log(`✅ ${this.constructor.name} ready`);
+  }
+render() {
+  const container = document.getElementById(this.renderContainerId);
+  if (!container) return;
+
+  // تجميع المهارات حسب الفئة
+  const grouped = {};
+  this.categories.forEach(cat => {
+    grouped[cat] = this.items.filter(s => s.category === cat && !s.hidden);
+  });
+
+  let html = '';
+  for (const [category, skills] of Object.entries(grouped)) {
+    const visibleSkills = skills.filter(s => !s.hidden);
+    if (visibleSkills.length === 0) continue;
+
+    html += `
+      <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+            <i class="fa-solid fa-folder-open"></i> ${category}
+          </h3>
+          <span style="font-size:11px;color:#94a3b8;">${visibleSkills.length} مهارة</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+          ${visibleSkills.map(skill => this.renderSkillCard(skill)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html || '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مضافة</p>';
+  
+  // استخدام Event Delegation بدلاً من مستمعات فردية
+  this.attachItemEvents(container);
+}
+  // ========================
+  // Load / Save
+  // ========================
+  loadData() {
+    const saved = Utils.storage.get(this.storageKey, []);
+    if (saved.length > 0) {
+      this.items = saved;
+    } else {
+      this.items = this.getDefaultData();
+    }
+  }
+
+  getDefaultData() {
+    return [];
+  }
+
+  saveToStorage() {
+    try {
+      Utils.storage.set(this.storageKey, this.items);
+    } catch (error) {
+      console.error(`❌ Error saving ${this.storageKey}:`, error);
+      Utils.toast(`⚠️ حدث خطأ في حفظ ${this.itemName}`, 'error');
+    }
+  }
+
+  // ========================
+  // Render
+  // ========================
+  render() {
+    const container = document.getElementById(this.renderContainerId);
+    if (!container) return;
+
+    const visible = this.items.filter(item => !item.hidden);
+    
+    if (visible.length === 0) {
+      container.innerHTML = this.getEmptyStateHTML();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    const wrapper = document.createElement('div');
+    wrapper.className = `${this.constructor.name.toLowerCase()}-grid`;
+    
+    visible.forEach(item => {
+      const card = this.createItemCard(item);
+      wrapper.appendChild(card);
+    });
+
+    fragment.appendChild(wrapper);
+    container.innerHTML = '';
+    container.appendChild(fragment);
+
+    this.attachItemEvents(container);
+  }
+
+  getEmptyStateHTML() {
+    return `
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:#94a3b8;">
+        <i class="fa-solid fa-${this.getEmptyIcon()}" style="font-size:48px;color:#38bdf8;opacity:0.3;"></i>
+        <p style="margin-top:16px;">لا توجد ${this.itemName} مضافة</p>
+        <button class="saas-btn saas-btn-primary" onclick="document.getElementById('${this.getAddButtonId()}')?.click()" style="margin-top:12px;">
+          <i class="fa-solid fa-plus"></i> إضافة ${this.itemName}
+        </button>
+      </div>
+    `;
+  }
+
+  getEmptyIcon() {
+    return 'folder-open';
+  }
+
+  getAddButtonId() {
+    return 'add-btn';
+  }
+
+  createItemCard(item) {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
+    const div = document.createElement('div');
+    div.className = 'base-item-card';
+    div.dataset.itemId = item.id;
+    div.innerHTML = `<p>${item.name || 'Unnamed'}</p>`;
+    return div;
+  }
+
+  attachItemEvents(container) {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
+  }
+
+  // ========================
+  // CRUD Operations
+  // ========================
+  openModal(itemId = null) {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
+    console.log('openModal not implemented');
+  }
+
+  closeModal() {
+    const modal = document.querySelector(`#${this.getModalId()}`);
+    if (modal) modal.style.display = 'none';
+  }
+
+  getModalId() {
+    return `${this.storageKey}-modal`;
+  }
+
+  saveItem(e, data, id = null) {
+    e.preventDefault();
+
+    if (!data.name) {
+      Utils.toast(`⚠️ اسم ${this.itemName} مطلوب`, 'warning');
+      return false;
+    }
+
+    if (id) {
+      // تعديل
+      const index = this.items.findIndex(item => item.id === id);
+      if (index !== -1) {
+        this.items[index] = { ...this.items[index], ...data };
+        Utils.toast(`✅ تم تحديث ${this.itemName}`, 'success');
+      }
+    } else {
+      // إضافة جديدة
+      data.id = Utils.genId();
+      this.items.push(data);
+      Utils.toast(`✅ تم إضافة ${this.itemName}`, 'success');
+    }
+
+    this.closeModal();
+    this.saveToStorage();
+    this.render();
+    this.updateStats();
+
+    // إضافة سجل
+    if (this.app.home) {
+      this.app.home.addLog(`📝 ${id ? 'تعديل' : 'إضافة'} ${this.itemName}: ${data.name}`);
+    }
+
+    return true;
+  }
+
+  deleteItem(id) {
+    if (!confirm(`هل تريد حذف هذا ${this.itemName}؟`)) return;
+
+    const item = this.items.find(item => item.id === id);
+    this.items = this.items.filter(item => item.id !== id);
+    this.saveToStorage();
+    this.render();
+    this.updateStats();
+    Utils.toast(`🗑️ تم حذف ${this.itemName}`, 'info');
+
+    if (this.app.home) {
+      this.app.home.addLog(`🗑️ تم حذف ${this.itemName}`);
+    }
+  }
+
+  toggleVisibility(id) {
+    const item = this.items.find(item => item.id === id);
+    if (item) {
+      item.hidden = !item.hidden;
+      this.saveToStorage();
+      this.render();
+      this.updateStats();
+      Utils.toast(
+        item.hidden ? `👁️ تم إخفاء ${this.itemName}` : `👁️ تم إظهار ${this.itemName}`,
+        'info'
+      );
+    }
+  }
+
+  // ========================
+  // Filter & Sort
+  // ========================
+  filterItems(items, query, filters = {}) {
+    let filtered = items.filter(item => !item.hidden);
+
+    if (query) {
+      filtered = filtered.filter(item => 
+        item.name?.toLowerCase().includes(query) ||
+        item.desc?.toLowerCase().includes(query)
+      );
+    }
+
+    for (const [key, value] of Object.entries(filters)) {
+      if (value && value !== 'all' && value !== '') {
+        filtered = filtered.filter(item => item[key] === value);
+      }
+    }
+
+    return filtered;
+  }
+
+  sortItems(items, sortKey, sortOrder = 'asc') {
+    const sorted = [...items];
+    
+    if (sortKey === 'alpha') {
+      sorted.sort((a, b) => a.name?.localeCompare(b.name || '') * (sortOrder === 'asc' ? 1 : -1));
+    } else if (sortKey === 'newest') {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.createdAt || a.date || 0);
+        const dateB = new Date(b.createdAt || b.date || 0);
+        return (dateB - dateA) * (sortOrder === 'asc' ? 1 : -1);
+      });
+    } else if (sortKey === 'progress-desc') {
+      sorted.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+    }
+
+    return sorted;
+  }
+
+  // ========================
+  // Bulk Actions
+  // ========================
+  getSelectedIds(selector) {
+    const checked = document.querySelectorAll(selector);
+    return Array.from(checked)
+      .map(el => {
+        const card = el.closest(`[data-item-id]`);
+        return card ? card.dataset.itemId : null;
+      })
+      .filter(Boolean);
+  }
+
+  bulkAction(action, selector, updateFn) {
+    const ids = this.getSelectedIds(selector);
+    
+    if (ids.length === 0) {
+      Utils.toast(`⚠️ لم يتم تحديد أي ${this.itemName}`, 'warning');
+      return;
+    }
+
+    if (action === 'delete' && !confirm(`هل تريد حذف ${ids.length} ${this.itemName}؟`)) {
+      return;
+    }
+
+    ids.forEach(id => {
+      const item = this.items.find(item => item.id === id);
+      if (item && updateFn) {
+        updateFn(item);
+      } else if (action === 'delete') {
+        this.items = this.items.filter(item => item.id !== id);
+      }
+    });
+
+    this.saveToStorage();
+    this.render();
+    this.updateStats();
+    this.updateBulkBar();
+
+    const messages = {
+      show: `👁️ تم إظهار ${this.itemName} المحددة`,
+      hide: `👁️ تم إخفاء ${this.itemName} المحددة`,
+      delete: `🗑️ تم حذف ${this.itemName} المحددة`,
+      publish: `📢 تم نشر ${this.itemName} المحددة`,
+      unpublish: `👁️ تم إلغاء نشر ${this.itemName} المحددة`,
+      feature: `⭐ تم تمييز ${this.itemName} المحددة`,
+      archive: `📦 تم أرشفة ${this.itemName} المحددة`,
+    };
+
+    Utils.toast(messages[action] || `✅ تم تنفيذ الإجراء على ${this.itemName} المحددة`, 'success');
+
+    if (this.app.home) {
+      this.app.home.addLog(`📝 ${messages[action] || `تم تنفيذ إجراء ${action}`}`);
+    }
+  }
+
+  updateBulkBar() {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
+  }
+
+  // ========================
+  // Stats
+  // ========================
+  updateStats() {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
+  }
+
+  // ========================
+  // Setup Events
+  // ========================
+  setupEvents() {
+    // يجب تجاوز هذه الدالة في الأقسام الفرعية
   }
 }
 
@@ -682,6 +1123,9 @@ class NavigationEngine {
 // ============================================================
 // 7. HOME ENGINE (محرك قسم الرئيسية)
 // ============================================================
+// ============================================================
+// 7. HOME ENGINE (محرك قسم الرئيسية)
+// ============================================================
 class HomeEngine {
   constructor(app) {
     this.app = app;
@@ -689,12 +1133,18 @@ class HomeEngine {
     this.init();
   }
 
+  // ==========================================================
+  // التهيئة
+  // ==========================================================
   init() {
     this.setupEvents();
     this.load();
     console.log("🏠 Home Engine ready");
   }
 
+  // ==========================================================
+  // إعداد الأحداث
+  // ==========================================================
   setupEvents() {
     // زر تحديث الرئيسية
     const refreshBtn = document.getElementById("refreshHomeBtn");
@@ -711,6 +1161,31 @@ class HomeEngine {
       searchBtn.addEventListener("click", () => this.openGlobalSearch());
     }
 
+    // زر تبديل الثيم
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener("click", () => {
+        if (this.app.theme) {
+          this.app.theme.toggle();
+        }
+      });
+    }
+
+    // زر مشاركة الملف الشخصي
+    const shareBtn = document.getElementById("shareProfileBtn");
+    if (shareBtn) {
+      shareBtn.addEventListener("click", () => this.shareProfile());
+    }
+
+    // زر تنزيل السيرة الذاتية
+    const cvBtn = document.getElementById("downloadCVBtn");
+    if (cvBtn) {
+      cvBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.downloadCV();
+      });
+    }
+
     // حقل البحث السريع
     const searchInput = document.getElementById("home-quick-search");
     if (searchInput) {
@@ -724,7 +1199,7 @@ class HomeEngine {
     // أزرار التشغيل السريع
     const quickActions = {
       quickOpenSiteBtn: () => window.open("../index.html", "_blank"),
-      quickPreviewBtn: () => this.togglePreview(true),
+      quickPreviewBtn: () => this.togglePreview(),
       quickBackupBtn: () => this.doBackup(),
       quickPublishBtn: () => this.doPublish(),
       quickMediaBtn: () => this.openMediaManager(),
@@ -737,15 +1212,12 @@ class HomeEngine {
       }
     }
 
-    // أزرار المعاينة في الهوم
-    const previewBtns = ["btn-preview-website", "btn-open-website"];
-    previewBtns.forEach((id) => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener("click", (e) => {
-          // الروابط شغالة طبيعي
-        });
-      }
+    // أزرار تحديث المخططات
+    document.querySelectorAll(".chart-refresh-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const chartType = btn.dataset.chart;
+        this.refreshChart(chartType);
+      });
     });
 
     // زر تحديث الداش بورد
@@ -755,9 +1227,17 @@ class HomeEngine {
     }
   }
 
+  // ==========================================================
+  // تحميل البيانات الرئيسية
+  // ==========================================================
   async load() {
     console.log("🔄 Loading Home Section...");
     AppState.loading.home = true;
+
+    // إظهار مؤشرات التحميل
+    this.showLoading("completion-spinner");
+    this.showLoading("visitors-chart-spinner");
+    this.showLoading("growth-chart-spinner");
 
     try {
       // تحميل الإحصائيات
@@ -772,6 +1252,10 @@ class HomeEngine {
       this.loadGoalsAndAchievements();
       // تحميل التوصيات الذكية
       this.loadInsights();
+      // تحميل إحصائيات المستخدم
+      this.loadUserStats();
+      // تحديث الطقس
+      this.updateWeather();
 
       // تشغيل الساعة كل دقيقة
       if (this.clockInterval) {
@@ -783,9 +1267,17 @@ class HomeEngine {
       Utils.toast("فشل تحميل البيانات ❌", "error");
     }
 
+    // إخفاء مؤشرات التحميل
+    this.hideLoading("completion-spinner");
+    this.hideLoading("visitors-chart-spinner");
+    this.hideLoading("growth-chart-spinner");
+
     AppState.loading.home = false;
   }
 
+  // ==========================================================
+  // تحميل الإحصائيات
+  // ==========================================================
   async loadStats() {
     // محاكاة بيانات - ستأتي من Supabase لاحقاً
     const stats = {
@@ -827,7 +1319,7 @@ class HomeEngine {
       Math.round((stats.featuredCerts / stats.certificates) * 100) || 0;
     const msgProgress = Math.min(
       Math.round((stats.unreadMessages / stats.messages) * 100) || 0,
-      100,
+      100
     );
 
     const bars = {
@@ -869,6 +1361,9 @@ class HomeEngine {
     AppState.data.stats = stats;
   }
 
+  // ==========================================================
+  // تحميل مؤشرات الأداء
+  // ==========================================================
   async loadKPIs() {
     // محاكاة مؤشرات الأداء
     const completion = 75;
@@ -885,10 +1380,7 @@ class HomeEngine {
     Utils.setText("completion-percentage-val", `${completion}%`);
     Utils.setText("completion-items-done", `12/16`);
     Utils.setText("completion-items-pending", "4");
-    Utils.setText(
-      "completion-top-suggestion",
-      "أضف مشروعين آخرين لتحسين المحفظة",
-    );
+    Utils.setText("completion-top-suggestion", "أضف مشروعين آخرين لتحسين المحفظة");
 
     // درجة الجودة
     Utils.setText("dashboard-score-val", score);
@@ -903,12 +1395,12 @@ class HomeEngine {
     const rating =
       score >= 80 ? "ممتاز 🌟" : score >= 60 ? "جيد 👍" : "يحتاج تحسين 📈";
     Utils.setText("score-rating-label", rating);
-    Utils.setText(
-      "score-audit-summary",
-      `التقييم: ${rating} - تم التحديث تلقائياً`,
-    );
+    Utils.setText("score-audit-summary", `التقييم: ${rating} - تم التحديث تلقائياً`);
   }
 
+  // ==========================================================
+  // تحديث الساعة والوقت
+  // ==========================================================
   updateClock() {
     const now = new Date();
     Utils.setText("home-live-date", Utils.formatDate(now));
@@ -921,16 +1413,17 @@ class HomeEngine {
     Utils.setText("home-last-login", Utils.formatDateTime(now));
   }
 
-    initCharts() {
-    // تهيئة الرسوم البيانية - سيتم تفعيلها عند تحميل Chart.js
+  // ==========================================================
+  // تهيئة الرسوم البيانية
+  // ==========================================================
+  initCharts() {
     if (typeof Chart !== "undefined") {
       // مخطط الزوار
       const visitorsCtx = document.getElementById("visitorsChart");
       if (visitorsCtx) {
-        // **إيديت مهم:** لازم نمسح الرسمة القديمة لو موجودة قبل ما نرسم جديدة
         let existingChart = Chart.getChart(visitorsCtx);
         if (existingChart) {
-            existingChart.destroy();
+          existingChart.destroy();
         }
 
         new Chart(visitorsCtx, {
@@ -957,10 +1450,9 @@ class HomeEngine {
       // مخطط النمو
       const growthCtx = document.getElementById("growthChart");
       if (growthCtx) {
-        // **إيديت مهم:** نفس الكلام للمخطط الثاني
         let existingChart = Chart.getChart(growthCtx);
         if (existingChart) {
-            existingChart.destroy();
+          existingChart.destroy();
         }
 
         new Chart(growthCtx, {
@@ -998,6 +1490,9 @@ class HomeEngine {
     }
   }
 
+  // ==========================================================
+  // تحميل الأهداف والإنجازات
+  // ==========================================================
   loadGoalsAndAchievements() {
     // محاكاة الأهداف
     const goals = [
@@ -1021,13 +1516,13 @@ class HomeEngine {
                         <div style="height:100%;width:${goal.progress}%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;transition:width 0.6s;"></div>
                     </div>
                 </div>
-            `,
+            `
         )
         .join("");
 
       // تحديث النسبة الإجمالية
       const avg = Math.round(
-        goals.reduce((sum, g) => sum + g.progress, 0) / goals.length,
+        goals.reduce((sum, g) => sum + g.progress, 0) / goals.length
       );
       Utils.setText("overallGoalsProgressText", `${avg}%`);
     }
@@ -1040,9 +1535,7 @@ class HomeEngine {
       { icon: "💪", title: "10 مشاريع مكتملة" },
     ];
 
-    const achievementsContainer = document.getElementById(
-      "achievementsContainer",
-    );
+    const achievementsContainer = document.getElementById("achievementsContainer");
     if (achievementsContainer) {
       achievementsContainer.innerHTML = achievements
         .map(
@@ -1051,12 +1544,21 @@ class HomeEngine {
                     <div style="font-size:24px;">${a.icon}</div>
                     <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${a.title}</div>
                 </div>
-            `,
+            `
         )
         .join("");
+
+      // تحديث عداد الإنجازات
+      const achievementsCount = document.getElementById("achievements-count");
+      if (achievementsCount) {
+        achievementsCount.textContent = achievements.length;
+      }
     }
   }
 
+  // ==========================================================
+  // تحميل التوصيات الذكية
+  // ==========================================================
   loadInsights() {
     const insights = [
       "📊 لديك 4 مشاريع مميزة تظهر في الواجهة",
@@ -1073,15 +1575,71 @@ class HomeEngine {
                 <div class="insight-item" style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:6px;font-size:12px;color:#cbd5e1;border-right:3px solid #a855f7;">
                     ${insight}
                 </div>
-            `,
+            `
         )
         .join("");
     }
+
+    // تحديث حالة التوصيات
+    const statusBadge = document.getElementById("insights-status");
+    if (statusBadge) {
+      statusBadge.innerHTML = `
+                <i class="fa-solid fa-circle"></i> 
+                Live
+            `;
+      statusBadge.className = "status-badge badge-success";
+    }
   }
 
-  // ========================
-  // Actions
-  // ========================
+  // ==========================================================
+  // تحميل إحصائيات المستخدم
+  // ==========================================================
+  loadUserStats() {
+    const projects = AppState.data.stats?.projects || 12;
+    const skills = AppState.data.stats?.skills || 8;
+    const certificates = AppState.data.stats?.certificates || 5;
+
+    Utils.setText("user-projects-count", projects);
+    Utils.setText("user-experience-years", "3+");
+    Utils.setText("user-completed-projects", Math.floor(projects * 0.7));
+
+    const achievementsCount = document.getElementById("achievements-count");
+    if (achievementsCount) {
+      achievementsCount.textContent = projects + skills + certificates;
+    }
+  }
+
+  // ==========================================================
+  // تحديث ويدجت الطقس
+  // ==========================================================
+  updateWeather() {
+    const weatherData = {
+      temp: Math.floor(Math.random() * 10) + 20,
+      condition: ["مشمس", "غائم", "معتدل", "ممطر"][Math.floor(Math.random() * 4)],
+      location: "سويس، مصر",
+    };
+
+    Utils.setText("weather-temp", `${weatherData.temp}°C`);
+    Utils.setText("weather-condition", weatherData.condition);
+    Utils.setText("weather-location", `🇪🇬 ${weatherData.location}`);
+  }
+
+  // ==========================================================
+  // تحكم في مؤشرات التحميل
+  // ==========================================================
+  showLoading(elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.style.display = "flex";
+  }
+
+  hideLoading(elementId) {
+    const el = document.getElementById(elementId);
+    if (el) el.style.display = "none";
+  }
+
+  // ==========================================================
+  // البحث العام
+  // ==========================================================
   openGlobalSearch() {
     const search = document.getElementById("home-quick-search");
     if (search) {
@@ -1091,18 +1649,124 @@ class HomeEngine {
     }
   }
 
+  // ==========================================================
+  // البحث السريع (مطور)
+  // ==========================================================
   doQuickSearch(query) {
-    if (query.trim()) {
-      Utils.toast(`🔍 جاري البحث عن: "${query}"`, "info");
-      // هنا سيتم تنفيذ البحث الفعلي
-      console.log("Searching for:", query);
+    if (!query.trim()) {
+      Utils.toast("🔍 اكتب كلمة للبحث", "info");
+      return;
+    }
+
+    const searchTerm = query.toLowerCase().trim();
+    let results = [];
+    let totalResults = 0;
+
+    // البحث في المشاريع
+    if (AppState.data.projects) {
+      const projectResults = AppState.data.projects.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(searchTerm) ||
+          p.desc?.toLowerCase().includes(searchTerm) ||
+          p.tech?.toLowerCase().includes(searchTerm)
+      );
+      results = results.concat(projectResults.map((p) => ({ ...p, type: "project" })));
+      totalResults += projectResults.length;
+    }
+
+    // البحث في المهارات
+    if (AppState.data.skills) {
+      const skillResults = AppState.data.skills.filter(
+        (s) =>
+          s.name?.toLowerCase().includes(searchTerm) ||
+          s.category?.toLowerCase().includes(searchTerm)
+      );
+      results = results.concat(skillResults.map((s) => ({ ...s, type: "skill" })));
+      totalResults += skillResults.length;
+    }
+
+    // البحث في الشهادات
+    if (AppState.data.certificates) {
+      const certResults = AppState.data.certificates.filter(
+        (c) =>
+          c.title?.toLowerCase().includes(searchTerm) ||
+          c.provider?.toLowerCase().includes(searchTerm)
+      );
+      results = results.concat(certResults.map((c) => ({ ...c, type: "certificate" })));
+      totalResults += certResults.length;
+    }
+
+    if (totalResults > 0) {
+      Utils.toast(`🔍 تم العثور على ${totalResults} نتيجة`, "success");
+      console.log("Search results:", results);
+    } else {
+      Utils.toast(`🔍 لا توجد نتائج للبحث عن: "${query}"`, "warning");
     }
   }
 
-  togglePreview(show) {
+  // ==========================================================
+  // المشاركة
+  // ==========================================================
+  shareProfile() {
+    const url = window.location.href;
+    const text = "👋 تعرف على ملفي الشخصي - Mohamed Abdallah";
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Mohamed Abdallah - Portfolio",
+          text: text,
+          url: url,
+        })
+        .catch(() => {});
+    } else {
+      Utils.copy(url);
+      Utils.toast("📋 تم نسخ رابط الملف الشخصي", "success");
+    }
+  }
+
+  // ==========================================================
+  // تنزيل السيرة الذاتية
+  // ==========================================================
+  downloadCV() {
+    Utils.toast("📄 جاري تحضير السيرة الذاتية...", "info");
+
+    setTimeout(() => {
+      Utils.toast("✅ تم تنزيل السيرة الذاتية", "success");
+      this.addLog("📄 تم تنزيل السيرة الذاتية");
+    }, 1500);
+  }
+
+  // ==========================================================
+  // تحديث المخططات
+  // ==========================================================
+  refreshChart(chartType) {
+    const spinner = document.getElementById(`${chartType}-chart-spinner`);
+    if (spinner) spinner.style.display = "flex";
+
+    Utils.toast(
+      `🔄 جاري تحديث المخطط: ${chartType === "visitors" ? "الزوار" : "النمو"}`,
+      "info"
+    );
+
+    setTimeout(() => {
+      this.initCharts();
+      if (spinner) spinner.style.display = "none";
+      Utils.toast("✅ تم تحديث المخطط", "success");
+      this.addLog(`📊 تم تحديث مخطط ${chartType === "visitors" ? "الزوار" : "النمو"}`);
+    }, 1000);
+  }
+
+  // ==========================================================
+  // المعاينة
+  // ==========================================================
+  togglePreview() {
     window.open("../index.html", "_blank");
   }
 
+  // ==========================================================
+  // النسخ الاحتياطي
+  // ==========================================================
   doBackup() {
     Utils.toast("💾 جاري إنشاء نسخة احتياطية...", "info");
     setTimeout(() => {
@@ -1116,34 +1780,48 @@ class HomeEngine {
     }, 1500);
   }
 
+  // ==========================================================
+  // النشر
+  // ==========================================================
   doPublish() {
     if (confirm("هل أنت متأكد من نشر التغييرات؟")) {
       Utils.toast("🚀 جاري النشر...", "info");
       setTimeout(() => {
         Utils.toast("✅ تم النشر بنجاح", "success");
-        // إضافة سجل للنشاط
         this.addLog("تم نشر التغييرات على الموقع");
       }, 2000);
     }
   }
 
+  // ==========================================================
+  // فتح مدير الوسائط
+  // ==========================================================
   openMediaManager() {
     Utils.toast("🖼️ فتح مكتبة الوسائط", "info");
-    // هنا سيتم فتح مدير الوسائط
+    this.addLog("🖼️ تم فتح مكتبة الوسائط");
   }
 
+  // ==========================================================
+  // إدارة السجلات (مزامنة مع LogsEngine)
+  // ==========================================================
   addLog(message) {
-    const logs = AppState.data.logs;
-    logs.unshift({
-      id: Utils.genId(),
-      message: message,
-      time: new Date().toISOString(),
-    });
-
-    // تحديث واجهة السجلات
-    this.updateLogsDisplay();
+    if (this.app.logs) {
+      this.app.logs.addLog(message);
+    } else {
+      // Fallback للتخزين المحلي
+      const logs = AppState.data.logs;
+      logs.unshift({
+        id: Utils.genId(),
+        message: message,
+        time: new Date().toISOString(),
+      });
+      this.updateLogsDisplay();
+    }
   }
 
+  // ==========================================================
+  // تحديث عرض السجلات
+  // ==========================================================
   updateLogsDisplay() {
     const logsGrid = document.getElementById("logsGrid");
     if (logsGrid) {
@@ -1155,20 +1833,12 @@ class HomeEngine {
                     <span style="color:#cbd5e1;">${log.message}</span>
                     <span style="color:#94a3b8;">${Utils.formatTime(log.time)}</span>
                 </div>
-            `,
+            `
         )
         .join("");
     }
   }
 }
-
-// ============================================================
-// 8. MAIN APPLICATION (التطبيق الرئيسي)
-// ============================================================
-
-// ============================================================
-// 9. RUN APPLICATION (تشغيل التطبيق)
-
 
 // دعم الصفحة بعد التحميل
 
@@ -2168,15 +2838,21 @@ class HeroEngine {
 // ============================================================
 // 11. SKILLS ENGINE (محرك قسم المهارات)
 // ============================================================
-class SkillsEngine {
+// ============================================================
+// 11. SKILLS ENGINE (محرك قسم المهارات)
+// ============================================================
+class SkillsEngine extends BaseEngine {
   constructor(app) {
-    this.app = app;
-    this.skills = [];
+    super(app, {
+      storageKey: 'skills-data',
+      containerId: 'categories-container',
+      itemName: 'مهارة'
+    });
     this.categories = [
       "Web Development",
-      "Programming",
+      "Programming", 
       "Software Skills",
-      "Tools",
+      "Tools"
     ];
     this.selectedSkills = new Set();
     this.init();
@@ -2227,10 +2903,7 @@ class SkillsEngine {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener("click", () => {
-          const action = id
-            .replace("bulk", "")
-            .replace("Btn", "")
-            .toLowerCase();
+          const action = id.replace("bulk", "").replace("Btn", "").toLowerCase();
           this.bulkAction(action);
         });
       }
@@ -2243,12 +2916,7 @@ class SkillsEngine {
     }
 
     // معاينة حية في النموذج
-    const previewInputs = [
-      "skill-name",
-      "skill-level",
-      "skill-progress",
-      "skill-icon",
-    ];
+    const previewInputs = ["skill-name", "skill-level", "skill-progress", "skill-icon"];
     previewInputs.forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
@@ -2259,110 +2927,111 @@ class SkillsEngine {
   }
 
   loadData() {
-    // تحميل المهارات المحفوظة
     const saved = Utils.storage.get("skills-data", []);
     if (saved.length > 0) {
       this.skills = saved;
     } else {
-      // بيانات افتراضية
-      this.skills = [
-        {
-          id: Utils.genId(),
-          name: "React.js",
-          category: "Web Development",
-          level: "Advanced",
-          progress: 90,
-          icon: "fa-brands fa-react",
-          experience: "3 Years",
-          featured: true,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "JavaScript",
-          category: "Programming",
-          level: "Expert",
-          progress: 95,
-          icon: "fa-brands fa-js",
-          experience: "5 Years",
-          featured: true,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "HTML & CSS",
-          category: "Web Development",
-          level: "Expert",
-          progress: 98,
-          icon: "fa-brands fa-html5",
-          experience: "5 Years",
-          featured: true,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "Node.js",
-          category: "Programming",
-          level: "Advanced",
-          progress: 80,
-          icon: "fa-brands fa-node",
-          experience: "2 Years",
-          featured: false,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "Git & GitHub",
-          category: "Tools",
-          level: "Advanced",
-          progress: 85,
-          icon: "fa-brands fa-github",
-          experience: "4 Years",
-          featured: false,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "UI/UX Design",
-          category: "Software Skills",
-          level: "Intermediate",
-          progress: 70,
-          icon: "fa-solid fa-palette",
-          experience: "2 Years",
-          featured: false,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "TypeScript",
-          category: "Programming",
-          level: "Intermediate",
-          progress: 65,
-          icon: "fa-brands fa-ts",
-          experience: "1 Year",
-          featured: false,
-          hidden: false,
-        },
-        {
-          id: Utils.genId(),
-          name: "Tailwind CSS",
-          category: "Web Development",
-          level: "Advanced",
-          progress: 88,
-          icon: "fa-brands fa-tailwind",
-          experience: "2 Years",
-          featured: false,
-          hidden: false,
-        },
-      ];
+      this.skills = this.getDefaultData();
     }
+  }
+
+  getDefaultData() {
+    return [
+      {
+        id: Utils.genId(),
+        name: "React.js",
+        category: "Web Development",
+        level: "Advanced",
+        progress: 90,
+        icon: "fa-brands fa-react",
+        experience: "3 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "JavaScript",
+        category: "Programming",
+        level: "Expert",
+        progress: 95,
+        icon: "fa-brands fa-js",
+        experience: "5 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "HTML & CSS",
+        category: "Web Development",
+        level: "Expert",
+        progress: 98,
+        icon: "fa-brands fa-html5",
+        experience: "5 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Node.js",
+        category: "Programming",
+        level: "Advanced",
+        progress: 80,
+        icon: "fa-brands fa-node",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Git & GitHub",
+        category: "Tools",
+        level: "Advanced",
+        progress: 85,
+        icon: "fa-brands fa-github",
+        experience: "4 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "UI/UX Design",
+        category: "Software Skills",
+        level: "Intermediate",
+        progress: 70,
+        icon: "fa-solid fa-palette",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "TypeScript",
+        category: "Programming",
+        level: "Intermediate",
+        progress: 65,
+        icon: "fa-brands fa-ts",
+        experience: "1 Year",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Tailwind CSS",
+        category: "Web Development",
+        level: "Advanced",
+        progress: 88,
+        icon: "fa-brands fa-tailwind",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+    ];
   }
 
   renderCategories() {
     const container = document.getElementById("categories-container");
     if (!container) return;
 
-    // تجميع المهارات حسب الفئة
     const grouped = {};
     this.categories.forEach((cat) => {
       grouped[cat] = this.skills.filter((s) => s.category === cat && !s.hidden);
@@ -2374,56 +3043,46 @@ class SkillsEngine {
       if (visibleSkills.length === 0) continue;
 
       html += `
-                <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                        <h3 style="color:#60a5fa;font-size:14px;margin:0;">
-                            <i class="fa-solid fa-folder-open"></i> ${category}
-                        </h3>
-                        <span style="font-size:11px;color:#94a3b8;">${visibleSkills.length} مهارة</span>
-                    </div>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
-                        ${visibleSkills.map((skill) => this.renderSkillCard(skill)).join("")}
-                    </div>
-                </div>
-            `;
+        <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+              <i class="fa-solid fa-folder-open"></i> ${category}
+            </h3>
+            <span style="font-size:11px;color:#94a3b8;">${visibleSkills.length} مهارة</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+            ${visibleSkills.map((skill) => this.renderSkillCard(skill)).join("")}
+          </div>
+        </div>
+      `;
     }
 
-    container.innerHTML =
-      html ||
-      '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مضافة</p>';
+    container.innerHTML = html || '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مضافة</p>';
 
-    // ربط الأحداث للكروت
-    container.querySelectorAll(".skill-card").forEach((card) => {
-      const checkbox = card.querySelector(".skill-select");
-      if (checkbox) {
-        checkbox.addEventListener("change", () => this.updateBulkBar());
-      }
+    this.attachItemEvents(container);
+  }
 
-      const editBtn = card.querySelector(".edit-skill-btn");
-      if (editBtn) {
-        editBtn.addEventListener("click", () => {
-          const id = card.dataset.skillId;
-          if (id) this.editSkill(id);
-        });
+  attachItemEvents(container) {
+    const em = this.app.eventManager;
+    
+    // تفويض الأحداث للكروت
+    em.delegate('.skill-card', 'click', (e, target) => {
+      const card = target.closest('.skill-card');
+      if (!card) return;
+      const id = card.dataset.skillId;
+      
+      if (target.closest('.edit-skill-btn')) {
+        this.editSkill(id);
+      } else if (target.closest('.delete-skill-btn')) {
+        this.deleteItem(id);
+      } else if (target.closest('.toggle-skill-btn')) {
+        this.toggleVisibility(id);
       }
-
-      const deleteBtn = card.querySelector(".delete-skill-btn");
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => {
-          const id = card.dataset.skillId;
-          if (id && confirm("هل تريد حذف هذه المهارة؟")) {
-            this.deleteSkill(id);
-          }
-        });
-      }
-
-      const toggleBtn = card.querySelector(".toggle-skill-btn");
-      if (toggleBtn) {
-        toggleBtn.addEventListener("click", () => {
-          const id = card.dataset.skillId;
-          if (id) this.toggleSkillVisibility(id);
-        });
-      }
+    });
+    
+    // تفويض أحداث الـ checkbox
+    em.delegate('.skill-select', 'change', () => {
+      this.updateBulkBar();
     });
   }
 
@@ -2437,38 +3096,38 @@ class SkillsEngine {
     };
 
     return `
-            <div class="skill-card" data-skill-id="${skill.id}" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;border:1px solid ${skill.featured ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.06)"};">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                    <input type="checkbox" class="skill-select" style="accent-color:#a855f7;width:14px;height:14px;">
-                    <div style="width:28px;height:28px;background:rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a855f7;">
-                        <i class="${skill.icon || "fa-solid fa-code"}"></i>
-                    </div>
-                    <span style="font-size:13px;font-weight:600;color:#fff;flex:1;">${skill.name}</span>
-                    <span style="font-size:9px;background:rgba(168,85,247,0.2);color:#a855f7;padding:2px 6px;border-radius:4px;">${isFeatured}</span>
-                </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#94a3b8;">
-                    <span>${skill.level}</span>
-                    <span>•</span>
-                    <span>${skill.experience || "N/A"}</span>
-                    <span>•</span>
-                    <span style="color:${levelColors[skill.level] || "#94a3b8"};">${skill.progress}%</span>
-                </div>
-                <div style="width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:6px;overflow:hidden;">
-                    <div style="width:${skill.progress}%;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;"></div>
-                </div>
-                <div style="display:flex;gap:4px;margin-top:8px;">
-                    <button class="edit-skill-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
-                        <i class="fa-solid fa-edit"></i>
-                    </button>
-                    <button class="toggle-skill-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
-                        <i class="fa-solid fa-${skill.hidden ? "eye-slash" : "eye"}"></i>
-                    </button>
-                    <button class="delete-skill-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `;
+      <div class="skill-card" data-skill-id="${skill.id}" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;border:1px solid ${skill.featured ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.06)"};">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <input type="checkbox" class="skill-select" style="accent-color:#a855f7;width:14px;height:14px;">
+          <div style="width:28px;height:28px;background:rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a855f7;">
+            <i class="${skill.icon || "fa-solid fa-code"}"></i>
+          </div>
+          <span style="font-size:13px;font-weight:600;color:#fff;flex:1;">${skill.name}</span>
+          <span style="font-size:9px;background:rgba(168,85,247,0.2);color:#a855f7;padding:2px 6px;border-radius:4px;">${isFeatured}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#94a3b8;">
+          <span>${skill.level}</span>
+          <span>•</span>
+          <span>${skill.experience || "N/A"}</span>
+          <span>•</span>
+          <span style="color:${levelColors[skill.level] || "#94a3b8"};">${skill.progress}%</span>
+        </div>
+        <div style="width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:6px;overflow:hidden;">
+          <div style="width:${skill.progress}%;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;"></div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button class="edit-skill-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="toggle-skill-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-${skill.hidden ? "eye-slash" : "eye"}"></i>
+          </button>
+          <button class="delete-skill-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
   }
 
   openModal(skillId = null) {
@@ -2501,7 +3160,6 @@ class SkillsEngine {
         if (hidden) hidden.checked = skill.hidden || false;
       }
     } else {
-      // إعادة تعيين النموذج
       document.getElementById("skill-form")?.reset();
       Utils.setVal("edit-skill-id", "");
       Utils.setVal("skill-progress", 85);
@@ -2532,34 +3190,7 @@ class SkillsEngine {
       hidden: document.getElementById("skill-hidden")?.checked || false,
     };
 
-    if (!data.name) {
-      Utils.toast("⚠️ اسم المهارة مطلوب", "warning");
-      return;
-    }
-
-    if (id) {
-      // تعديل
-      const index = this.skills.findIndex((s) => s.id === id);
-      if (index !== -1) {
-        this.skills[index] = { ...this.skills[index], ...data };
-        Utils.toast("✅ تم تحديث المهارة", "success");
-      }
-    } else {
-      // إضافة جديدة
-      data.id = Utils.genId();
-      this.skills.push(data);
-      Utils.toast("✅ تم إضافة المهارة", "success");
-    }
-
-    this.closeModal();
-    this.saveToStorage();
-    this.renderCategories();
-    this.updateStats();
-
-    // إضافة سجل
-    if (this.app.home) {
-      this.app.home.addLog(`📝 ${id ? "تعديل" : "إضافة"} مهارة: ${data.name}`);
-    }
+    this.saveItem(e, data, id);
   }
 
   editSkill(id) {
@@ -2587,7 +3218,7 @@ class SkillsEngine {
       this.updateStats();
       Utils.toast(
         skill.hidden ? "👁️ تم إخفاء المهارة" : "👁️ تم إظهار المهارة",
-        "info",
+        "info"
       );
     }
   }
@@ -2610,17 +3241,14 @@ class SkillsEngine {
       filtered = filtered.filter((s) => s.level === level);
     }
 
-    // ترتيب
     if (sort === "alpha") {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sort === "progress-desc") {
       filtered.sort((a, b) => b.progress - a.progress);
     }
 
-    // تحديث العرض
     const container = document.getElementById("categories-container");
     if (container) {
-      // إعادة التجميع حسب الفئة
       const grouped = {};
       this.categories.forEach((cat) => {
         grouped[cat] = filtered.filter((s) => s.category === cat);
@@ -2630,39 +3258,39 @@ class SkillsEngine {
       for (const [category, skills] of Object.entries(grouped)) {
         if (skills.length === 0) continue;
         html += `
-                    <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                            <h3 style="color:#60a5fa;font-size:14px;margin:0;">
-                                <i class="fa-solid fa-folder-open"></i> ${category}
-                            </h3>
-                            <span style="font-size:11px;color:#94a3b8;">${skills.length} مهارة</span>
-                        </div>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
-                            ${skills.map((s) => this.renderSkillCard(s)).join("")}
-                        </div>
-                    </div>
-                `;
+          <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+                <i class="fa-solid fa-folder-open"></i> ${category}
+              </h3>
+              <span style="font-size:11px;color:#94a3b8;">${skills.length} مهارة</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+              ${skills.map((s) => this.renderSkillCard(s)).join("")}
+            </div>
+          </div>
+        `;
       }
-      container.innerHTML =
-        html ||
-        '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مطابقة</p>';
+      container.innerHTML = html || '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مطابقة</p>';
     }
   }
 
   updateStats() {
     const visible = this.skills.filter((s) => !s.hidden);
     const featured = this.skills.filter((s) => s.featured && !s.hidden);
-    const avgProgress =
-      visible.length > 0
-        ? Math.round(
-            visible.reduce((sum, s) => sum + s.progress, 0) / visible.length,
-          )
-        : 0;
+    const avgProgress = visible.length > 0
+      ? Math.round(visible.reduce((sum, s) => sum + s.progress, 0) / visible.length)
+      : 0;
 
     Utils.setText("stat-total-skills", this.skills.length);
     Utils.setText("stat-visible-trend", `${visible.length} مرئية`);
     Utils.setText("stat-featured-skills", featured.length);
     Utils.setText("stat-avg-level", `${avgProgress}%`);
+    
+    const totalCategories = this.categories.filter(cat => {
+      return this.skills.some(s => s.category === cat && !s.hidden);
+    }).length;
+    Utils.setText("stat-total-categories", totalCategories);
   }
 
   updateBulkBar() {
@@ -5773,3 +6401,530 @@ window.addEventListener("unhandledrejection", (e) => {
 });
 
 console.log("✅ Error handlers registered");
+// ============================================================
+// 11. SKILLS ENGINE (محرك قسم المهارات)
+// ============================================================
+class SkillsEngine extends BaseEngine {
+  constructor(app) {
+    super(app, {
+      storageKey: 'skills-data',
+      containerId: 'categories-container',
+      itemName: 'مهارة'
+    });
+    this.categories = [
+      "Web Development",
+      "Programming", 
+      "Software Skills",
+      "Tools"
+    ];
+    this.selectedSkills = new Set();
+    this.init();
+  }
+
+  init() {
+    this.setupEvents();
+    this.loadData();
+    this.renderCategories();
+    this.updateStats();
+    console.log("💻 Skills Engine ready");
+  }
+
+  setupEvents() {
+    const addBtn = document.getElementById("openSkillModalBtn");
+    if (addBtn) {
+      addBtn.addEventListener("click", () => this.openModal());
+    }
+
+    const closeBtns = ["closeSkillModalBtn", "cancelSkillBtn"];
+    closeBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => this.closeModal());
+      }
+    });
+
+    const search = document.getElementById("skill-search-input");
+    if (search) {
+      search.addEventListener("input", () => this.filterSkills());
+    }
+
+    const filters = ["filter-category", "filter-level", "sort-skills-select"];
+    filters.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("change", () => this.filterSkills());
+      }
+    });
+
+    const bulkBtns = ["bulkShowBtn", "bulkHideBtn", "bulkDeleteBtn"];
+    bulkBtns.forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const action = id.replace("bulk", "").replace("Btn", "").toLowerCase();
+          this.bulkAction(action);
+        });
+      }
+    });
+
+    const form = document.getElementById("skill-form");
+    if (form) {
+      form.addEventListener("submit", (e) => this.saveSkill(e));
+    }
+
+    const previewInputs = ["skill-name", "skill-level", "skill-progress", "skill-icon"];
+    previewInputs.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", () => this.updatePreview());
+        el.addEventListener("change", () => this.updatePreview());
+      }
+    });
+  }
+
+  loadData() {
+    const saved = Utils.storage.get("skills-data", []);
+    if (saved.length > 0) {
+      this.skills = saved;
+    } else {
+      this.skills = this.getDefaultData();
+    }
+  }
+
+  getDefaultData() {
+    return [
+      {
+        id: Utils.genId(),
+        name: "React.js",
+        category: "Web Development",
+        level: "Advanced",
+        progress: 90,
+        icon: "fa-brands fa-react",
+        experience: "3 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "JavaScript",
+        category: "Programming",
+        level: "Expert",
+        progress: 95,
+        icon: "fa-brands fa-js",
+        experience: "5 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "HTML & CSS",
+        category: "Web Development",
+        level: "Expert",
+        progress: 98,
+        icon: "fa-brands fa-html5",
+        experience: "5 Years",
+        featured: true,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Node.js",
+        category: "Programming",
+        level: "Advanced",
+        progress: 80,
+        icon: "fa-brands fa-node",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Git & GitHub",
+        category: "Tools",
+        level: "Advanced",
+        progress: 85,
+        icon: "fa-brands fa-github",
+        experience: "4 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "UI/UX Design",
+        category: "Software Skills",
+        level: "Intermediate",
+        progress: 70,
+        icon: "fa-solid fa-palette",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "TypeScript",
+        category: "Programming",
+        level: "Intermediate",
+        progress: 65,
+        icon: "fa-brands fa-ts",
+        experience: "1 Year",
+        featured: false,
+        hidden: false,
+      },
+      {
+        id: Utils.genId(),
+        name: "Tailwind CSS",
+        category: "Web Development",
+        level: "Advanced",
+        progress: 88,
+        icon: "fa-brands fa-tailwind",
+        experience: "2 Years",
+        featured: false,
+        hidden: false,
+      },
+    ];
+  }
+
+  renderCategories() {
+    const container = document.getElementById("categories-container");
+    if (!container) return;
+
+    const grouped = {};
+    this.categories.forEach((cat) => {
+      grouped[cat] = this.skills.filter((s) => s.category === cat && !s.hidden);
+    });
+
+    let html = "";
+    for (const [category, skills] of Object.entries(grouped)) {
+      const visibleSkills = skills.filter((s) => !s.hidden);
+      if (visibleSkills.length === 0) continue;
+
+      html += `
+        <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+              <i class="fa-solid fa-folder-open"></i> ${category}
+            </h3>
+            <span style="font-size:11px;color:#94a3b8;">${visibleSkills.length} مهارة</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+            ${visibleSkills.map((skill) => this.renderSkillCard(skill)).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html || '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مضافة</p>';
+    this.attachItemEvents(container);
+  }
+
+  attachItemEvents(container) {
+    const em = this.app.eventManager;
+    
+    em.delegate('.skill-card', 'click', (e, target) => {
+      const card = target.closest('.skill-card');
+      if (!card) return;
+      const id = card.dataset.skillId;
+      
+      if (target.closest('.edit-skill-btn')) {
+        this.editSkill(id);
+      } else if (target.closest('.delete-skill-btn')) {
+        this.deleteItem(id);
+      } else if (target.closest('.toggle-skill-btn')) {
+        this.toggleVisibility(id);
+      }
+    });
+    
+    em.delegate('.skill-select', 'change', () => {
+      this.updateBulkBar();
+    });
+  }
+
+  renderSkillCard(skill) {
+    const isFeatured = skill.featured ? "⭐" : "";
+    const levelColors = {
+      Beginner: "#10b981",
+      Intermediate: "#fbbf24",
+      Advanced: "#f59e0b",
+      Expert: "#ef4444",
+    };
+
+    return `
+      <div class="skill-card" data-skill-id="${skill.id}" style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;border:1px solid ${skill.featured ? "rgba(168,85,247,0.3)" : "rgba(255,255,255,0.06)"};">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <input type="checkbox" class="skill-select" style="accent-color:#a855f7;width:14px;height:14px;">
+          <div style="width:28px;height:28px;background:rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a855f7;">
+            <i class="${skill.icon || "fa-solid fa-code"}"></i>
+          </div>
+          <span style="font-size:13px;font-weight:600;color:#fff;flex:1;">${skill.name}</span>
+          <span style="font-size:9px;background:rgba(168,85,247,0.2);color:#a855f7;padding:2px 6px;border-radius:4px;">${isFeatured}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:#94a3b8;">
+          <span>${skill.level}</span>
+          <span>•</span>
+          <span>${skill.experience || "N/A"}</span>
+          <span>•</span>
+          <span style="color:${levelColors[skill.level] || "#94a3b8"};">${skill.progress}%</span>
+        </div>
+        <div style="width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:6px;overflow:hidden;">
+          <div style="width:${skill.progress}%;height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);border-radius:4px;"></div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button class="edit-skill-btn" style="background:rgba(56,189,248,0.2);color:#38bdf8;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="toggle-skill-btn" style="background:rgba(251,191,36,0.2);color:#fbbf24;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-${skill.hidden ? "eye-slash" : "eye"}"></i>
+          </button>
+          <button class="delete-skill-btn" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:none;border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  openModal(skillId = null) {
+    const modal = document.getElementById("skill-modal");
+    if (!modal) return;
+
+    const title = document.getElementById("skill-modal-title");
+    if (title) {
+      title.innerHTML = skillId
+        ? '<i class="fa-solid fa-edit" style="color:#a855f7;"></i> تعديل المهارة'
+        : '<i class="fa-solid fa-circle-plus" style="color:#a855f7;"></i> إضافة مهارة جديدة';
+    }
+
+    if (skillId) {
+      const skill = this.skills.find((s) => s.id === skillId);
+      if (skill) {
+        Utils.setVal("edit-skill-id", skill.id);
+        Utils.setVal("skill-name", skill.name);
+        Utils.setVal("skill-category", skill.category);
+        Utils.setVal("skill-level", skill.level);
+        Utils.setVal("skill-experience", skill.experience || "");
+        Utils.setVal("skill-progress", skill.progress);
+        Utils.setVal("skill-icon", skill.icon || "");
+        Utils.setVal("skill-desc", skill.desc || "");
+
+        const featured = document.getElementById("skill-featured");
+        if (featured) featured.checked = skill.featured || false;
+
+        const hidden = document.getElementById("skill-hidden");
+        if (hidden) hidden.checked = skill.hidden || false;
+      }
+    } else {
+      document.getElementById("skill-form")?.reset();
+      Utils.setVal("edit-skill-id", "");
+      Utils.setVal("skill-progress", 85);
+    }
+
+    modal.style.display = "flex";
+    this.updatePreview();
+  }
+
+  closeModal() {
+    const modal = document.getElementById("skill-modal");
+    if (modal) modal.style.display = "none";
+  }
+
+  saveSkill(e) {
+    e.preventDefault();
+
+    const id = Utils.getVal("edit-skill-id");
+    const data = {
+      name: Utils.getVal("skill-name"),
+      category: Utils.getVal("skill-category"),
+      level: Utils.getVal("skill-level"),
+      experience: Utils.getVal("skill-experience"),
+      progress: parseInt(Utils.getVal("skill-progress")) || 0,
+      icon: Utils.getVal("skill-icon"),
+      desc: Utils.getVal("skill-desc"),
+      featured: document.getElementById("skill-featured")?.checked || false,
+      hidden: document.getElementById("skill-hidden")?.checked || false,
+    };
+
+    this.saveItem(e, data, id);
+  }
+
+  editSkill(id) {
+    this.openModal(id);
+  }
+
+  deleteSkill(id) {
+    this.skills = this.skills.filter((s) => s.id !== id);
+    this.saveToStorage();
+    this.renderCategories();
+    this.updateStats();
+    Utils.toast("🗑️ تم حذف المهارة", "info");
+
+    if (this.app.home) {
+      this.app.home.addLog("🗑️ تم حذف مهارة");
+    }
+  }
+
+  toggleSkillVisibility(id) {
+    const skill = this.skills.find((s) => s.id === id);
+    if (skill) {
+      skill.hidden = !skill.hidden;
+      this.saveToStorage();
+      this.renderCategories();
+      this.updateStats();
+      Utils.toast(
+        skill.hidden ? "👁️ تم إخفاء المهارة" : "👁️ تم إظهار المهارة",
+        "info"
+      );
+    }
+  }
+
+  filterSkills() {
+    const query = Utils.getVal("skill-search-input").toLowerCase();
+    const category = Utils.getVal("filter-category");
+    const level = Utils.getVal("filter-level");
+    const sort = Utils.getVal("sort-skills-select");
+
+    let filtered = this.skills.filter((s) => !s.hidden);
+
+    if (query) {
+      filtered = filtered.filter((s) => s.name.toLowerCase().includes(query));
+    }
+    if (category) {
+      filtered = filtered.filter((s) => s.category === category);
+    }
+    if (level) {
+      filtered = filtered.filter((s) => s.level === level);
+    }
+
+    if (sort === "alpha") {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === "progress-desc") {
+      filtered.sort((a, b) => b.progress - a.progress);
+    }
+
+    const container = document.getElementById("categories-container");
+    if (container) {
+      const grouped = {};
+      this.categories.forEach((cat) => {
+        grouped[cat] = filtered.filter((s) => s.category === cat);
+      });
+
+      let html = "";
+      for (const [category, skills] of Object.entries(grouped)) {
+        if (skills.length === 0) continue;
+        html += `
+          <div class="category-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="color:#60a5fa;font-size:14px;margin:0;">
+                <i class="fa-solid fa-folder-open"></i> ${category}
+              </h3>
+              <span style="font-size:11px;color:#94a3b8;">${skills.length} مهارة</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;">
+              ${skills.map((s) => this.renderSkillCard(s)).join("")}
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html || '<p style="color:#94a3b8;text-align:center;padding:40px;">لا توجد مهارات مطابقة</p>';
+    }
+  }
+
+  updateStats() {
+    const visible = this.skills.filter((s) => !s.hidden);
+    const featured = this.skills.filter((s) => s.featured && !s.hidden);
+    const avgProgress = visible.length > 0
+      ? Math.round(visible.reduce((sum, s) => sum + s.progress, 0) / visible.length)
+      : 0;
+
+    Utils.setText("stat-total-skills", this.skills.length);
+    Utils.setText("stat-visible-trend", `${visible.length} مرئية`);
+    Utils.setText("stat-featured-skills", featured.length);
+    Utils.setText("stat-avg-level", `${avgProgress}%`);
+    
+    const totalCategories = this.categories.filter(cat => {
+      return this.skills.some(s => s.category === cat && !s.hidden);
+    }).length;
+    Utils.setText("stat-total-categories", totalCategories);
+  }
+
+  updateBulkBar() {
+    const checked = document.querySelectorAll(".skill-select:checked");
+    const count = checked.length;
+    const bar = document.getElementById("bulk-actions-bar");
+    const label = document.getElementById("selected-count-label");
+
+    if (bar) {
+      bar.style.display = count > 0 ? "flex" : "none";
+    }
+    if (label) {
+      label.textContent = `تم تحديد ${count} عناصر`;
+    }
+  }
+
+  bulkAction(action) {
+    const checked = document.querySelectorAll(".skill-select:checked");
+    const ids = Array.from(checked)
+      .map((el) => {
+        const card = el.closest(".skill-card");
+        return card ? card.dataset.skillId : null;
+      })
+      .filter(Boolean);
+
+    if (ids.length === 0) {
+      Utils.toast("⚠️ لم يتم تحديد أي مهارة", "warning");
+      return;
+    }
+
+    if (action === "delete" && !confirm(`هل تريد حذف ${ids.length} مهارة؟`)) {
+      return;
+    }
+
+    ids.forEach((id) => {
+      const skill = this.skills.find((s) => s.id === id);
+      if (skill) {
+        if (action === "show") skill.hidden = false;
+        else if (action === "hide") skill.hidden = true;
+        else if (action === "delete") {
+          this.skills = this.skills.filter((s) => s.id !== id);
+        }
+      }
+    });
+
+    this.saveToStorage();
+    this.renderCategories();
+    this.updateStats();
+    this.updateBulkBar();
+
+    const messages = {
+      show: "👁️ تم إظهار المهارات المحددة",
+      hide: "👁️ تم إخفاء المهارات المحددة",
+      delete: "🗑️ تم حذف المهارات المحددة",
+    };
+    Utils.toast(messages[action] || "✅ تم التنفيذ", "success");
+
+    if (this.app.home) {
+      this.app.home.addLog(`📝 ${messages[action]}`);
+    }
+  }
+
+  updatePreview() {
+    const name = Utils.getVal("skill-name") || "اسم المهارة";
+    const level = Utils.getVal("skill-level") || "Advanced";
+    const progress = parseInt(Utils.getVal("skill-progress")) || 85;
+    const icon = Utils.getVal("skill-icon") || "fa-solid fa-code";
+
+    Utils.setText("preview-title", name);
+    Utils.setText("preview-badge", level);
+
+    const progressFill = document.getElementById("preview-progress-fill");
+    if (progressFill) progressFill.style.width = `${progress}%`;
+
+    const iconBox = document.getElementById("preview-icon-box");
+    if (iconBox) {
+      iconBox.innerHTML = `<i class="${icon}"></i>`;
+    }
+  }
+
+  saveToStorage() {
+    Utils.storage.set("skills-data", this.skills);
+  }
+}

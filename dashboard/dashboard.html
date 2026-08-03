@@ -38,6 +38,10 @@
                 <i class="fa-solid fa-globe"></i>
                 <span id="langLabel">AR / EN</span>
             </button>
+            <button class="theme-toggle" id="themeToggleBtn" type="button" data-tooltip="تبديل الثيم (فاتح/مظلم)">
+    <i class="fa-solid fa-circle-half-stroke"></i>
+    <span>الثيم</span>
+</button>
             <button class="ctrl-btn logout-btn" id="logoutBtn" type="button">
                 <i class="fa-solid fa-power-off"></i>
                 <span>خروج</span>
@@ -1361,12 +1365,12 @@
                     <span>مركز ذكاء لوحة التحكم (Home Intelligence Center)</span>
                 </h2>
                 <div class="header-actions">
-                    <button class="btn-action" id="refreshHomeBtn" type="button">
-                        <i class="fa-solid fa-arrows-rotate"></i> تحديث
-                    </button>
-                    <button class="btn-action primary" id="globalSearchBtn" type="button">
-                        <i class="fa-solid fa-magnifying-glass"></i> بحث عام
-                    </button>
+                   <button class="saas-btn saas-btn-secondary" id="refreshHomeBtn" type="button" data-tooltip="تحديث البيانات">
+    <i class="fa-solid fa-arrows-rotate"></i> تحديث
+</button>
+<button class="saas-btn saas-btn-primary" id="globalSearchBtn" type="button" data-tooltip="بحث عام في لوحة التحكم">
+    <i class="fa-solid fa-magnifying-glass"></i> بحث عام
+</button>
                 </div>
             </div>
 
@@ -1374,8 +1378,8 @@
                 <div class="hero-top-bar">
                     <div class="hero-identity">
                         <div class="user-avatar-wrapper">
-                            <img id="home-user-avatar" src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="User Avatar" class="hero-avatar">
-                            <span class="status-indicator online"></span>
+                            <img id="home-user-avatar" src="./about.jpg" alt="Mohamed Abdallah " class="home-avatar">
+                           <span class="status-indicator online" data-tooltip="متصل الآن"></span>
                         </div>
                         <div class="hero-text-details">
                             <div class="greeting-badge">
@@ -1383,13 +1387,54 @@
                                 <span id="home-dynamic-greeting">Welcome back</span>
                             </div>
                             <h1 id="home-user-name" class="hero-title">Mohamed Abdallah</h1>
-                            <p class="hero-subtitle">Portfolio CMS Intelligence & Command Center</p>
+                            <p class="hero-subtitle">Portfolio Dashboard Center</p>
+                            <div class="location-badge">
+    <i class="fa-solid fa-location-dot"></i>
+    <span id="user-location">سويس، مصر</span>
+    <span class="location-divider">•</span>
+    <span id="user-timezone">UTC +2</span>
+</div>
+<div class="connection-status">
+    <span class="status-dot online"></span>
+    <span id="connection-status-text">متصل</span>
+    <span class="status-divider">•</span>
+    <span id="last-active-time">نشط الآن</span>
+</div>
                         </div>
                     </div>
                     <div class="hero-meta-pills">
                         <div class="meta-pill"><span>v2.5.0-pro</span></div>
-                        <div class="meta-pill"><span id="home-theme-indicator">Dark Mode</span></div>
-                        <div class="meta-pill"><span id="home-lang-indicator">English (LTR)</span></div>
+                        <div class="meta-pill weather-widget" id="weather-widget" data-tooltip="الطقس في سويس، مصر">
+    <i class="fa-solid fa-cloud-sun"></i>
+    <span id="weather-temp">26°C</span>
+    <span class="weather-divider">|</span>
+    <span id="weather-condition">مشمس</span>
+    <span class="weather-divider">|</span>
+    <span id="weather-location">🇪🇬 سويس، مصر</span>
+</div>
+<div class="meta-pill" data-tooltip="المتابعين على GitHub">
+    <i class="fa-brands fa-github"></i>
+    <span id="github-followers">2.5k</span>
+</div>
+<div class="meta-pill" data-tooltip="المتابعين على LinkedIn">
+    <i class="fa-brands fa-linkedin"></i>
+    <span id="linkedin-connections">1.8k</span>
+</div>
+    <div class="meta-pill"><span id="home-theme-indicator">Dark Mode</span></div>
+
+                        <div class="meta-pill"><span id="home-lang-indicator">English</span></div>
+                        <div class="meta-pill badge-available" data-tooltip="متاح للعمل الحر">
+    <span class="status-dot available"></span>
+    متاح للعمل
+</div>
+<div class="meta-pill badge-premium" data-tooltip="حساب مميز">
+    <i class="fa-solid fa-crown"></i>
+    Pro
+</div>
+<a href="#" class="saas-btn saas-btn-primary" id="downloadCVBtn" type="button" data-tooltip="تنزيل السيرة الذاتية">
+    <i class="fa-solid fa-file-pdf"></i>
+    <span>السيرة الذاتية</span>
+</a>
                         <div class="meta-pill"><span id="home-last-login">Just Now</span></div>
                     </div>
                 </div>
@@ -1399,9 +1444,32 @@
                         <span id="home-live-time">00:00:00 AM</span>
                     </div>
                     <div class="hero-search-box">
-                        <input type="text" id="home-quick-search">
+                      <input type="text" id="home-quick-search" placeholder="ابحث عن المقاييس، المشاريع، المهارات..." aria-label="بحث سريع">
+<kbd class="search-shortcut">⌘K</kbd>
                     </div>
+<div class="user-stats-mini">
+    <div class="stat-item" data-tooltip="إجمالي المشاريع">
+        <span class="stat-number" id="user-projects-count">12</span>
+        <span class="stat-label">مشروع</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" data-tooltip="سنوات الخبرة">
+        <span class="stat-number" id="user-experience-years">3+</span>
+        <span class="stat-label">سنوات</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" data-tooltip="المشاريع المنجزة">
+        <span class="stat-number" id="user-completed-projects">8</span>
+        <span class="stat-label">منجز</span>
+    </div>
+</div>
+
                     <div class="hero-button-group">
+                        <button class="saas-btn saas-btn-secondary" id="shareProfileBtn" type="button" data-tooltip="مشاركة الملف الشخصي">
+    <i class="fa-solid fa-share-nodes"></i>
+    <span>مشاركة</span>
+</button>
+
                         <button id="btn-refresh-dashboard" class="saas-btn saas-btn-secondary" type="button">Refresh</button>
                         <a id="btn-preview-website" href="../index.html" target="_blank" class="saas-btn saas-btn-secondary">Preview</a>
                         <a id="btn-open-website" href="../index.html" target="_blank" class="saas-btn saas-btn-primary">Open Site</a>
@@ -1423,6 +1491,10 @@
                     </div>
                     <div class="completion-body">
                         <div class="progress-ring-container">
+                            <!-- Loading Spinner -->
+<div class="loading-spinner" id="completion-spinner" style="display:none;">
+    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+</div>
                             <svg class="progress-ring" width="130" height="130">
                                 <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="transparent" r="52" cx="65" cy="65">
                                 <circle id="completion-progress-circle" class="progress-ring-fill" stroke="url(#completion-gradient)" stroke-width="10" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" fill="transparent" r="52" cx="65" cy="65">
@@ -1515,7 +1587,7 @@
                 <div class="kpi-card glass-panel" id="kpi-projects">
                     <div class="kpi-top">
                         <div class="kpi-icon-box bg-indigo-soft"><i class="ri-folder-code-line"></i></div>
-                        <div class="kpi-badges"><span class="status-badge badge-neutral" id="kpi-featured-projects-count">0 Featured</span></div>
+                        <div class="kpi-badges"><span class="status-badge badge-neutral" id="kpi-featured-projects-count" data-tooltip="0 مميز">0 Featured</span></div>
                     </div>
                     <div class="kpi-middle">
                         <h4 class="kpi-title">Projects</h4>
@@ -1529,7 +1601,7 @@
                         <div class="kpi-progress-bar"><div id="bar-projects" class="progress-fill bg-indigo"></div></div>
                         <div class="kpi-footer-meta">
                             <span id="sub-draft-projects">0 Drafts</span>
-                            <a href="#projects-section" class="kpi-action-link">Manage</a>
+                            <a href="#projects-section" class="kpi-action-link" data-tooltip="إدارة المشاريع">Manage</a>
                         </div>
                     </div>
                 </div>
@@ -1543,7 +1615,7 @@
                         <h4 class="kpi-title">Technical Skills</h4>
                         <div class="kpi-value-row">
                             <span class="kpi-number" id="counter-skills">0</span>
-                            <span class="kpi-trend positive" id="trend-skills">Active</span>
+                            <span class="kpi-trend positive" id="trend-skills" data-tooltip="نشط">Active</span>
                         </div>
                         <p class="kpi-desc" id="desc-skills">Technologies, frameworks & tools</p>
                     </div>
@@ -1551,7 +1623,7 @@
                         <div class="kpi-progress-bar"><div id="bar-skills" class="progress-fill bg-purple"></div></div>
                         <div class="kpi-footer-meta">
                             <span>Stack Competency</span>
-                            <a href="#skills-section" class="kpi-action-link">Manage</a>
+                            <a href="#skills-section" class="kpi-action-link"data-tooltip="إدارة المهارات">Manage</a>
                         </div>
                     </div>
                 </div>
@@ -1573,7 +1645,7 @@
                         <div class="kpi-progress-bar"><div id="bar-certificates" class="progress-fill bg-amber"></div></div>
                         <div class="kpi-footer-meta">
                             <span>Credentials Credibility</span>
-                            <a href="#certificates-section" class="kpi-action-link">Manage</a>
+                            <a href="#certificates-section" class="kpi-action-link" data-tooltip="إدارة الشهادات">Manage</a>
                         </div>
                     </div>
                 </div>
@@ -1581,7 +1653,7 @@
                 <div class="kpi-card glass-panel" id="kpi-messages">
                     <div class="kpi-top">
                         <div class="kpi-icon-box bg-rose-soft"><i class="ri-mail-unread-line"></i></div>
-                        <div class="kpi-badges"><span class="status-badge badge-warning" id="kpi-unread-messages-count">0 Unread</span></div>
+                        <div class="kpi-badges"><span class="status-badge badge-warning" id="kpi-unread-messages-count" data-tooltip="0 غير مقروءة">0 Unread</span></div>
                     </div>
                     <div class="kpi-middle">
                         <h4 class="kpi-title">Inbound Messages</h4>
@@ -1595,7 +1667,7 @@
                         <div class="kpi-progress-bar"><div id="bar-messages" class="progress-fill bg-rose"></div></div>
                         <div class="kpi-footer-meta">
                             <span id="sub-unread-messages">0 Action required</span>
-                            <a href="#messages-section" class="kpi-action-link">Inbox</a>
+                            <a href="#messages-section" class="kpi-action-link" data-tooltip="الذهاب إلى صندوق الوارد">Inbox</a>
                         </div>
                     </div>
                 </div>
@@ -1603,25 +1675,51 @@
 
             <div class="glass-panel quick-launch-panel">
                 <div class="panel-header">
-                    <h3>Quick Operations Launchpad</h3>
+                    <h3><i class="fa-solid fa-rocket"></i> Quick Operations Launchpad</h3>
                 </div>
                 <div class="quick-action-grid">
-                    <button class="quick-action-card" id="quickOpenSiteBtn" type="button"><i class="fa-solid fa-globe"></i> فتح الموقع</button>
-                    <button class="quick-action-card" id="quickPreviewBtn" type="button"><i class="fa-solid fa-laptop-code"></i> معاينة حية</button>
-                    <button class="quick-action-card" id="quickBackupBtn" type="button"><i class="fa-solid fa-database"></i> نسخ احتياطي</button>
-                    <button class="quick-action-card" id="quickPublishBtn" type="button"><i class="fa-solid fa-rocket"></i> نشر التحديثات</button>
-                    <button class="quick-action-card" data-section="projects-section" type="button"><i class="fa-solid fa-folder-plus"></i> إضافة مشروع</button>
-                    <button class="quick-action-card" data-section="skills-section" type="button"><i class="fa-solid fa-bolt"></i> إضافة مهارة</button>
-                    <button class="quick-action-card" data-section="certificates-section" type="button"><i class="fa-solid fa-award"></i> إضافة شهادة</button>
-                    <button class="quick-action-card" id="quickMediaBtn" type="button"><i class="fa-solid fa-images"></i> مكتبة الوسائط</button>
-                </div>
+                <button class="quick-action-card" id="quickOpenSiteBtn" type="button" data-tooltip="فتح الموقع الرئيسي">
+    <i class="fa-solid fa-globe"></i>
+    <span>فتح الموقع</span>
+</button>
+<button class="quick-action-card" id="quickPreviewBtn" type="button" data-tooltip="معاينة الموقع في تبويب جديد">
+    <i class="fa-solid fa-laptop-code"></i>
+    <span>معاينة حية</span>
+</button>
+<button class="quick-action-card" id="quickBackupBtn" type="button" data-tooltip="إنشاء نسخة احتياطية للبيانات">
+    <i class="fa-solid fa-database"></i>
+    <span>نسخ احتياطي</span>
+</button>
+<button class="quick-action-card" id="quickPublishBtn" type="button" data-tooltip="نشر التحديثات على الموقع">
+    <i class="fa-solid fa-rocket"></i>
+    <span>نشر التحديثات</span>
+</button>
+<button class="quick-action-card" data-section="projects-section" type="button" data-tooltip="إضافة مشروع جديد">
+    <i class="fa-solid fa-folder-plus"></i>
+    <span>إضافة مشروع</span>
+</button>
+<button class="quick-action-card" data-section="skills-section" type="button" data-tooltip="إضافة مهارة جديدة">
+    <i class="fa-solid fa-bolt"></i>
+    <span>إضافة مهارة</span>
+</button>
+<button class="quick-action-card" data-section="certificates-section" type="button" data-tooltip="إضافة شهادة جديدة">
+    <i class="fa-solid fa-award"></i>
+    <span>إضافة شهادة</span>
+</button>
+<button class="quick-action-card" id="quickMediaBtn" type="button" data-tooltip="فتح مكتبة الوسائط">
+    <i class="fa-solid fa-images"></i>
+    <span>مكتبة الوسائط</span>
+</button>
             </div>
 
             <div class="dashboard-banner-insights" id="smartInsightsContainer">
-                <div class="insight-header">
-                    <i class="fa-solid fa-brain"></i>
-                    <h3>محرك الذكاء والتوصيات التلقائية</h3>
-                </div>
+               <div class="insight-header">
+    <i class="fa-solid fa-brain"></i>
+    <h3>محرك الذكاء والتوصيات التلقائية</h3>
+    <span class="status-badge badge-success" id="insights-status">
+        <i class="fa-solid fa-circle"></i> Live
+    </span>
+</div>
                 <div class="insights-list" id="insightsList">
                     <div class="insight-item loading-skeleton">جاري تحليل بيانات لوحة التحكم...</div>
                 </div>
@@ -1629,12 +1727,32 @@
 
             <div class="analytics-charts-grid">
                 <div class="card chart-card">
-                    <div class="card-title"><h3><i class="fa-solid fa-chart-pie"></i> إحصائيات الزوار والتفاعل</h3></div>
-                    <div class="canvas-container"><canvas id="visitorsChart"></canvas></div>
+                   <div class="card-title">
+    <h3><i class="fa-solid fa-chart-pie"></i> إحصائيات الزوار والتفاعل</h3>
+    <button class="chart-refresh-btn" data-chart="visitors" data-tooltip="تحديث المخطط" aria-label="تحديث مخطط الزوار">
+        <i class="fa-solid fa-rotate"></i>
+    </button>
+</div>
+                    <div class="canvas-container">
+                        <!-- Loading Spinner -->
+<div class="loading-spinner" id="visitors-chart-spinner" style="display:none;">
+    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+</div>
+                        <canvas id="visitorsChart"></canvas></div>
                 </div>
                 <div class="card chart-card">
-                    <div class="card-title"><h3><i class="fa-solid fa-chart-column"></i> نمو المشاريع والمهارات</h3></div>
-                    <div class="canvas-container"><canvas id="growthChart"></canvas></div>
+                   <div class="card-title">
+    <h3><i class="fa-solid fa-chart-column"></i> نمو المشاريع والمهارات</h3>
+    <button class="chart-refresh-btn" data-chart="growth" data-tooltip="تحديث المخطط" aria-label="تحديث مخطط النمو">
+        <i class="fa-solid fa-rotate"></i>
+    </button>
+</div>
+                    <div class="canvas-container">
+                        <!-- Loading Spinner -->
+<div class="loading-spinner" id="growth-chart-spinner" style="display:none;">
+    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+</div>
+                        <canvas id="growthChart"></canvas></div>
                 </div>
             </div>
 
@@ -1644,13 +1762,18 @@
                         <h3><i class="fa-solid fa-bullseye"></i> أهداف البورتفوليو</h3>
                         <span id="overallGoalsProgressText" class="badge">0%</span>
                     </div>
-                    <div class="goals-list" id="goalsListContainer"></div>
+                  <div class="goals-list" id="goalsListContainer">
+    <div class="loading-skeleton">جاري تحميل الأهداف...</div>
+</div>
                 </div>
                 <div class="card">
-                    <div class="card-title">
-                        <h3><i class="fa-solid fa-trophy"></i> الأوسمة والإنجازات المحققة</h3>
-                    </div>
-                    <div class="achievements-grid" id="achievementsContainer"></div>
+                  <div class="card-title">
+    <h3><i class="fa-solid fa-trophy"></i> الأوسمة والإنجازات المحققة</h3>
+    <span class="status-badge badge-neutral" id="achievements-count">0</span>
+</div>
+                <div class="achievements-grid" id="achievementsContainer">
+    <div class="loading-skeleton">جاري تحميل الإنجازات...</div>
+</div>
                 </div>
             </div>
 

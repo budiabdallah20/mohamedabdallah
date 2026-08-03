@@ -2,7 +2,8 @@
 /*     Ultimate Navbar & Glassmorphism Neon Cleaned  */
 /* ================================================= */
 
-.header, header {
+.header,
+header {
   position: fixed;
   top: 0;
   left: 0;
@@ -14,7 +15,8 @@
   border-bottom: 1px solid rgba(252, 2, 2, 0.08);
 }
 
-.navbar, nav {
+.navbar,
+nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -59,7 +61,7 @@
 
 /* خط سفلي بلون نيون بنفسجي عند التحويم أو النشاط */
 .navbar__link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
@@ -70,12 +72,12 @@
   transition: width 0.3s ease-in-out;
 }
 
-.navbar__link:hover, 
+.navbar__link:hover,
 .navbar__link.active {
   color: #f8fafc;
 }
 
-.navbar__link:hover::after, 
+.navbar__link:hover::after,
 .navbar__link.active::after {
   width: 100%;
 }
@@ -84,10 +86,10 @@
 /*       Top Controls & Glassmorphism Wrapper        */
 /* ================================================= */
 
-.navbar__controls, 
-.nav-actions, 
-.top-controls, 
-.navbar__actions, 
+.navbar__controls,
+.nav-actions,
+.top-controls,
+.navbar__actions,
 .top-controls-wrapper {
   display: flex;
   align-items: center;
@@ -109,11 +111,11 @@
 }
 
 /* تنسيق موحد لكل الأيقونات والأزرار والـ CV داخل الإطار العلوي */
-.navbar__controls button, 
-.navbar__controls a, 
-.nav-actions button, 
+.navbar__controls button,
+.navbar__controls a,
+.nav-actions button,
 .nav-actions a,
-.top-controls button, 
+.top-controls button,
 .top-controls a,
 .navbar__actions button,
 .navbar__actions a,
@@ -136,11 +138,11 @@
 }
 
 /* تأثير التفاعل والـ Hover الاحترافي والمريح للعين */
-.navbar__controls button:hover, 
-.navbar__controls a:hover, 
-.nav-actions button:hover, 
+.navbar__controls button:hover,
+.navbar__controls a:hover,
+.nav-actions button:hover,
 .nav-actions a:hover,
-.top-controls button:hover, 
+.top-controls button:hover,
 .top-controls a:hover,
 .navbar__actions button:hover,
 .navbar__actions a:hover,
