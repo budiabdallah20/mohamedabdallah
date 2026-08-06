@@ -9,20 +9,44 @@ const supabaseHeaders = {
 };
 
 // 1. إرسال رسالة تواصل جديدة وتخزينها في جدول messages
+// 1. إرسال رسالة تواصل جديدة وتخزينها في جدول messages مع الـ IP والمتصفح
 async function sendContactMessage(formData) {
     try {
+        // 1. جلب الـ IP الخاص بالزائر تلقائياً
+        let ipAddress = 'Unknown';
+        try {
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            ipAddress = ipData.ip;
+        } catch (e) {
+            console.log('Could not fetch IP address');
+        }
+
+        // 2. تجميع البيانات كلها (بتاعت الفورم + الـ IP + المتصفح + الوقت + ID عشوائي)
+        const completeData = {
+        id: Math.floor(Math.random() * 10000000), // ID عشوائي لعمود bigint
+            sender_name: formData.name,       // تم التعديل
+            sender_email: formData.email,     // تم التعديل
+            subject: formData.subject,
+            message: formData.message,
+            ip_address: ipAddress,
+            user_agent: navigator.userAgent,
+            created_at: new Date().toISOString()
+        };
+
+        // 3. إرسال البيانات لقاعدة البيانات
         const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
             method: 'POST',
             headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(completeData) // ركز هنا: بنبعت completeData
         });
+        
         return response.ok ? { status: 'success' } : { status: 'error' };
     } catch (error) {
         console.error('Network Error:', error);
         return { status: 'error' };
     }
 }
-
 // 2. تحميل المشاريع (مقسّمة لفئتين: Featured أو Mini)
 async function loadProjects() {
     try {
