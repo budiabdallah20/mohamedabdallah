@@ -888,6 +888,489 @@ console.log('✅ Error handlers registered');
 
 
 
+
+
+
+// ============================================================ */
+// 💰 DONATIONS ENGINE - نظام التبرعات                         */
+// ============================================================ */
+
+class DonationsEngine {
+    constructor() {
+        // DOM Elements
+        this.container = document.getElementById('donations-grid-container');
+        this.refreshBtn = document.getElementById('donation-refresh-btn');
+        this.badge = document.getElementById('donation-live-badge');
+        
+        // Stats Elements
+        this.totalEl = document.getElementById('stat-total-donations');
+        this.countEl = document.getElementById('stat-donation-count');
+        this.pendingEl = document.getElementById('stat-pending-count');
+        this.avgEl = document.getElementById('stat-avg-donation');
+        
+        // State
+        this.donations = [];
+        this.isLoading = false;
+        this._isInitialized = false;
+        
+        this.init();
+    }
+    
+    init() {
+        console.log('💰 Donations Engine initializing...');
+        
+        try {
+            this.setupEvents();
+            this.loadDonations();
+            this._isInitialized = true;
+            
+            document.addEventListener('dashboard:donation-received', (e) => {
+                const donation = e.detail;
+                if (donation) {
+                    this.donations.unshift({
+                        ...donation,
+                        created_at: new Date(donation.created_at)
+                    });
+                    this.render();
+                    this.updateStats();
+                    Utils.toast('💰 تبرع جديد مستلم!', 'success');
+                    
+                    if (window._logsEngine) {
+                        window._logsEngine.addLog(
+                            `💰 تبرع جديد من: ${donation.donor_name || 'مجهول'} بقيمة $${donation.amount}`,
+                            'donation'
+                        );
+                    }
+                }
+            });
+            
+            console.log('✅ Donations Engine ready');
+        } catch (error) {
+            console.error('❌ Donations Engine init error:', error);
+        }
+    }
+    
+    setupEvents() {
+        if (this.refreshBtn) {
+            this.refreshBtn.addEventListener('click', () => {
+                this.loadDonations(true);
+            });
+        }
+        // زر حفظ التغييرات
+const saveAllBtn = document.getElementById('donation-save-all-btn');
+if (saveAllBtn) {
+    saveAllBtn.addEventListener('click', async () => {
+        Utils.toast('🔄 جاري حفظ التغييرات...', 'info');
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        for (const donation of this.donations) {
+            try {
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('donations')
+                        .update({
+                            status: donation.status,
+                            amount: donation.amount,
+                            donor_name: donation.donor_name,
+                            platform: donation.platform
+                        })
+                        .eq('id', donation.id);
+                    
+                    if (error) throw error;
+                    successCount++;
+                }
+            } catch (e) {
+                failCount++;
+            }
+        }
+        
+        if (failCount === 0) {
+            Utils.toast(`✅ تم حفظ ${successCount} تبرع`, 'success');
+        } else {
+            Utils.toast(`⚠️ تم حفظ ${successCount} تبرع، فشل ${failCount}`, 'warning');
+        }
+    });
+}
+    }
+    
+   async loadDonations(force = false) {
+    if (this.isLoading) return;
+    
+    this.isLoading = true;
+    this.renderLoading();
+    
+    try {
+        // 🔥 استخدام supabaseClient من الـ Dashboard
+        if (supabaseClient) {
+            console.log('📤 Loading donations from Supabase...');
+            
+            const { data, error } = await supabaseClient
+                .from('donations')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(100);
+            
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                throw error;
+            }
+            
+            console.log('📥 Data received:', data?.length || 0, 'records');
+            
+            if (data && data.length > 0) {
+                this.donations = data.map(d => ({
+                    ...d,
+                    created_at: new Date(d.created_at)
+                }));
+                this.saveToStorage();
+                console.log(`✅ Loaded ${this.donations.length} donations from Supabase`);
+            } else {
+                // لو مفيش بيانات في Supabase، استخدم البيانات الافتراضية
+                this.loadDefaultDonations();
+            }
+        } else {
+            console.warn('⚠️ Supabase client not ready, using default donations');
+            this.loadDefaultDonations();
+        }
+        
+        this.render();
+        this.updateStats();
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `💰 تم تحميل ${this.donations.length} تبرع`,
+                'donation'
+            );
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading donations:', error);
+        // في حالة الخطأ، استخدم البيانات الافتراضية
+        this.loadDefaultDonations();
+        this.render();
+    } finally {
+        this.isLoading = false;
+    }
+}
+    loadDefaultDonations() {
+        const now = Date.now();
+        this.donations = [
+            {
+                id: Date.now() - 1,
+                amount: 150,
+                platform: 'Vodafone Cash',
+                donor_name: 'أحمد محمد',
+                message: 'دعم وتطوير الموقع',
+                location: 'القاهرة، مصر',
+                created_at: new Date(now - 3600000),
+                status: 'confirmed'
+            },
+            {
+                id: Date.now() - 2,
+                amount: 75,
+                platform: 'InstaPay',
+                donor_name: 'سارة علي',
+                message: 'شكراً على المحتوى',
+                location: 'الإسكندرية، مصر',
+                created_at: new Date(now - 7200000),
+                status: 'pending'
+            },
+            {
+                id: Date.now() - 3,
+                amount: 200,
+                platform: 'Vodafone Cash',
+                donor_name: 'خالد حسن',
+                message: 'استمراراً للنجاح',
+                location: 'الجيزة، مصر',
+                created_at: new Date(now - 86400000),
+                status: 'confirmed'
+            },
+            {
+                id: Date.now() - 4,
+                amount: 50,
+                platform: 'InstaPay',
+                donor_name: 'منى إبراهيم',
+                message: 'دعم بسيط',
+                location: 'سويس، مصر',
+                created_at: new Date(now - 172800000),
+                status: 'pending'
+            }
+        ];
+        this.saveToStorage();
+    }
+    
+    saveToStorage() {
+        try {
+            localStorage.setItem('dashboard-donations', JSON.stringify(this.donations));
+        } catch (e) {}
+    }
+    
+    render() {
+        if (!this.container) return;
+        
+        if (this.donations.length === 0) {
+            this.renderEmpty();
+            return;
+        }
+        
+        this.container.innerHTML = '';
+        this.donations.forEach(donation => {
+            this.container.appendChild(this.createDonationItem(donation));
+        });
+    }
+    
+    createDonationItem(donation) {
+    const div = document.createElement('div');
+    div.className = 'donation-item';
+    div.dataset.id = donation.id;
+    
+    const amount = donation.amount ? `$${donation.amount}` : '$0';
+    const dateStr = this.formatDate(donation.created_at);
+    const timeStr = this.formatTime(donation.created_at);
+    const statusClass = donation.status === 'confirmed' ? 'active' : 'inactive';
+    const statusLabel = donation.status === 'confirmed' ? '✅ مؤكد' : '⏳ قيد المراجعة';
+    const statusText = donation.status === 'confirmed' ? 'تعليق' : 'تأكيد';
+    
+    div.innerHTML = `
+        <div class="donation-top">
+            <h4 class="donation-title">${donation.donor_name || 'متبرع مجهول'}</h4>
+            <span class="donation-method">${donation.platform}</span>
+        </div>
+        <div class="donation-amounts">
+            <div class="amount">
+                <span class="label">المبلغ</span>
+                <span class="value raised">${amount}</span>
+            </div>
+            <div class="amount">
+                <span class="label">الحالة</span>
+                <span class="donation-status ${statusClass}">${statusLabel}</span>
+            </div>
+        </div>
+        ${donation.message ? `<div class="donation-message">${donation.message}</div>` : ''}
+        <div class="donation-location">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>${donation.location || 'غير معروف'}</span>
+        </div>
+        <div class="donation-meta">
+            <span><i class="fa-regular fa-calendar"></i> ${dateStr}</span>
+            <span><i class="fa-regular fa-clock"></i> ${timeStr}</span>
+        </div>
+        <div class="donation-actions">
+            <button class="toggle-status-btn" data-id="${donation.id}" data-status="${donation.status}">
+                <i class="fa-solid ${donation.status === 'confirmed' ? 'fa-pause' : 'fa-check-circle'}"></i>
+                ${statusText}
+            </button>
+            <button class="delete-donation-btn" data-id="${donation.id}">
+                <i class="fa-solid fa-trash"></i> حذف
+            </button>
+        </div>
+    `;
+    
+    // 🔥 زر تغيير الحالة
+    const toggleBtn = div.querySelector('.toggle-status-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const id = parseInt(toggleBtn.dataset.id);
+            const currentStatus = toggleBtn.dataset.status;
+            const newStatus = currentStatus === 'confirmed' ? 'pending' : 'confirmed';
+            
+            // إظهار حالة تحميل
+            toggleBtn.classList.add('btn-loading');
+            toggleBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...';
+            
+            try {
+                // تحديث في Supabase
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('donations')
+                        .update({ status: newStatus })
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                }
+                
+                // تحديث محلياً
+                const localDonation = this.donations.find(d => d.id === id);
+                if (localDonation) {
+                    localDonation.status = newStatus;
+                    this.saveToStorage();
+                }
+                
+                // إعادة التحميل
+                await this.loadDonations(true);
+                
+                Utils.toast(`✅ تم تغيير الحالة إلى ${newStatus === 'confirmed' ? 'مؤكد' : 'قيد المراجعة'}`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error updating status:', error);
+                Utils.toast('❌ فشل تغيير الحالة', 'error');
+                // إعادة الزر لوضعه الطبيعي
+                toggleBtn.classList.remove('btn-loading');
+                toggleBtn.innerHTML = `<i class="fa-solid ${currentStatus === 'confirmed' ? 'fa-pause' : 'fa-check-circle'}"></i> ${currentStatus === 'confirmed' ? 'تعليق' : 'تأكيد'}`;
+            }
+        });
+    }
+    
+    // 🔥 زر الحذف
+    const deleteBtn = div.querySelector('.delete-donation-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm('هل تريد حذف هذا التبرع؟')) return;
+            
+            const id = parseInt(deleteBtn.dataset.id);
+            deleteBtn.classList.add('btn-loading');
+            deleteBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            
+            try {
+                // حذف من Supabase
+                if (supabaseClient) {
+                    const { error } = await supabaseClient
+                        .from('donations')
+                        .delete()
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                }
+                
+                // حذف محلياً
+                this.donations = this.donations.filter(d => d.id !== id);
+                this.saveToStorage();
+                this.render();
+                this.updateStats();
+                
+                Utils.toast('🗑️ تم حذف التبرع', 'info');
+                
+            } catch (error) {
+                console.error('❌ Error deleting donation:', error);
+                Utils.toast('❌ فشل الحذف', 'error');
+                deleteBtn.classList.remove('btn-loading');
+                deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> حذف';
+            }
+        });
+    }
+    
+    return div;
+}
+
+    
+    renderEmpty() {
+        this.container.innerHTML = `
+            <div class="donations-empty">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <h4>لا توجد تبرعات</h4>
+                <p>لم يتم استلام أي تبرعات حتى الآن. ستظهر هنا عند استلام تبرع جديد.</p>
+                <button class="saas-btn saas-btn-primary" onclick="window._donationsEngine?.loadDonations(true)">
+                    <i class="fa-solid fa-rotate"></i> تحديث
+                </button>
+            </div>
+        `;
+    }
+    
+    renderLoading() {
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+            <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+            <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+        `;
+    }
+    
+    updateStats() {
+        const total = this.donations.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+        const count = this.donations.length;
+        const pending = this.donations.filter(d => d.status === 'pending').length;
+        const avg = count > 0 ? total / count : 0;
+        
+        if (this.totalEl) this.totalEl.textContent = `$${total.toFixed(0)}`;
+        if (this.countEl) this.countEl.textContent = count;
+        if (this.pendingEl) this.pendingEl.textContent = pending;
+        if (this.avgEl) this.avgEl.textContent = `$${avg.toFixed(0)}`;
+    }
+    
+    formatDate(date) {
+        if (!date) return 'N/A';
+        const d = date instanceof Date ? date : new Date(date);
+        return d.toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    formatTime(date) {
+        if (!date) return 'N/A';
+        const d = date instanceof Date ? date : new Date(date);
+        return d.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
+    refresh() {
+        this.loadDonations(true);
+    }
+}
+
+// ============================================================ */
+// INITIALIZATION                                                */
+// ============================================================ */
+
+window._donationsEngine = null;
+
+function getDonationsEngine() {
+    if (!window._donationsEngine) {
+        window._donationsEngine = new DonationsEngine();
+    }
+    return window._donationsEngine;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const donationsSection = document.getElementById('donations-section');
+    if (donationsSection) {
+        if (donationsSection.classList.contains('active')) {
+            getDonationsEngine();
+        } else {
+            const observer = new MutationObserver(() => {
+                if (donationsSection.classList.contains('active') && !window._donationsEngine) {
+                    getDonationsEngine();
+                    observer.disconnect();
+                }
+            });
+            observer.observe(donationsSection, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        }
+    }
+});
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    const donationsSection = document.getElementById('donations-section');
+    if (donationsSection && donationsSection.classList.contains('active') && !window._donationsEngine) {
+        getDonationsEngine();
+    }
+}
+
+console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   💰 DONATIONS ENGINE - v1.0                               ║
+║                                                              ║
+║   ✅ Donations Tracking                                     ║
+║   ✅ Live Updates                                           ║
+║   ✅ Stats (Total, Count, Pending, Avg)                    ║
+║   ✅ Supabase Integration                                   ║
+║   ✅ Lazy Loading                                           ║
+║                                                              ║
+║   📦 Available: window._donationsEngine                     ║
+║   🔧 Methods: refresh()                                     ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`);
 // ============================================================ */
 // 📱 SOCIAL ENGINE - روابط السوشيال ميديا v3.0                */
 // ============================================================ */

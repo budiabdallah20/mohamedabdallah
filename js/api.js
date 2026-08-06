@@ -328,3 +328,134 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// ============================================================ */
+// DONATIONS API - التبرعات                                     */
+// ============================================================ */
+
+// إرسال تبرع جديد من الموقع الأساسي
+async function sendDonation(donationData) {
+    try {
+        // 1. جلب الـ IP الخاص بالزائر
+        let ipAddress = 'Unknown';
+        let location = 'Unknown';
+        
+        try {
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            ipAddress = ipData.ip;
+            
+            // 2. جلب الموقع التقريبي من الـ IP
+            try {
+                const geoResponse = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+                const geoData = await geoResponse.json();
+                location = `${geoData.city || ''}, ${geoData.country_name || ''}`.trim() || 'Unknown';
+            } catch (e) {}
+        } catch (e) {}
+
+        // 3. تجميع البيانات كاملة
+        const completeData = {
+            id: Math.floor(Math.random() * 1000000000),
+            amount: parseFloat(donationData.amount),
+            platform: donationData.platform,
+            donor_name: donationData.donor_name || 'Anonymous',
+            donor_phone: donationData.donor_phone || '',
+            message: donationData.message || '',
+            location: location,
+            ip_address: ipAddress,
+            user_agent: navigator.userAgent,
+            status: 'pending',
+            is_active: true,
+            created_at: new Date().toISOString()
+        };
+
+        // 4. إرسال البيانات لقاعدة البيانات
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
+            method: 'POST',
+            headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
+            body: JSON.stringify(completeData)
+        });
+        
+        if (response.ok) {
+            // إرسال إشعار للـ Dashboard
+            document.dispatchEvent(new CustomEvent('dashboard:donation-received', {
+                detail: completeData
+            }));
+            return { status: 'success', data: completeData };
+        }
+        
+        return { status: 'error' };
+    } catch (error) {
+        console.error('Network Error:', error);
+        return { status: 'error' };
+    }
+}
+
+// تحميل التبرعات للـ Dashboard
+async function loadDonationsForDashboard() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=*&order=created_at.desc&limit=100`, {
+            headers: supabaseHeaders
+        });
+        if (!res.ok) return [];
+        return await res.json();
+    } catch (err) {
+        console.error("Error loading donations:", err);
+        return [];
+    }
+}
+
+// تحميل إجمالي التبرعات
+async function getDonationStats() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount,status`, {
+            headers: supabaseHeaders
+        });
+        if (!res.ok) return { total: 0, count: 0, pending: 0 };
+        
+        const data = await res.json();
+        const total = data.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+        const count = data.length;
+        const pending = data.filter(d => d.status === 'pending').length;
+        
+        return { total, count, pending };
+    } catch (err) {
+        console.error("Error getting donation stats:", err);
+        return { total: 0, count: 0, pending: 0 };
+    }
+}
+
+// ربط نموذج التبرع (لو موجود في الموقع)
+const donationForm = document.getElementById("donationForm");
+if (donationForm) {
+    donationForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const submitBtn = donationForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جاري الإرسال...";
+        }
+        
+        const formData = {
+            amount: donationForm.querySelector('[name="amount"]').value,
+            platform: donationForm.querySelector('[name="platform"]').value,
+            donor_name: donationForm.querySelector('[name="donor_name"]')?.value || '',
+            donor_phone: donationForm.querySelector('[name="donor_phone"]')?.value || '',
+            message: donationForm.querySelector('[name="message"]')?.value || ''
+        };
+        
+        const result = await sendDonation(formData);
+        
+        if (result.status === 'success') {
+            alert('✅ شكراً لك على تبرعك!');
+            donationForm.reset();
+        } else {
+            alert('❌ حدث خطأ، حاول مرة أخرى.');
+        }
+        
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "تبرع الآن";
+        }
+    });
+}

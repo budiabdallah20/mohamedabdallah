@@ -1284,6 +1284,765 @@ html[dir="rtl"] .u-text-right { text-align: left; }
 /* ============================================================ */
 /* نهاية الأساس - END OF FOUNDATION                            */
 /* ============================================================ */
+
+
+
+
+
+/* ============================================================ */
+/* DONATIONS SECTION - التبرعات (كامل)                        */
+/* ============================================================ */
+
+#donations-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* ============================================================ */
+/* 01. SECTION HEADER                                          */
+/* ============================================================ */
+
+#donations-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#donations-section .section-header h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#donations-section .section-header h2 i {
+    color: #10b981;
+    font-size: var(--text-xl);
+}
+
+/* ============================================================ */
+/* 02. HEADER ACTIONS - أزرار الهيدر                          */
+/* ============================================================ */
+
+.donation-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* ============================================================ */
+/* 03. REFRESH BUTTON - زر التحديث (Google Style)             */
+/* ============================================================ */
+
+#donation-refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    min-height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+/* تأثير الخلفية المتوهجة */
+#donation-refresh-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.05), 
+        rgba(139, 92, 246, 0.01)
+    );
+    opacity: 0;
+    transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+/* تأثير الإطار المتوهج */
+#donation-refresh-btn::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-full);
+    padding: 2px;
+    background: conic-gradient(
+        from 0deg,
+        transparent,
+        var(--color-primary),
+        transparent,
+        var(--color-primary),
+        transparent
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--transition-medium) var(--ease-out);
+    pointer-events: none;
+}
+
+/* Hover */
+#donation-refresh-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 30px var(--glow-primary);
+}
+
+#donation-refresh-btn:hover::before {
+    opacity: 1;
+}
+
+#donation-refresh-btn:hover::after {
+    opacity: 1;
+    animation: refreshBorderSpin 3s linear infinite;
+}
+
+@keyframes refreshBorderSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Active (ضغط) */
+#donation-refresh-btn:active {
+    transform: scale(0.95) translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* الأيقونة */
+#donation-refresh-btn i {
+    font-size: var(--text-base);
+    color: var(--color-primary);
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+}
+
+/* دوران الأيقونة عند hover */
+#donation-refresh-btn:hover i {
+    transform: rotate(180deg) scale(1.1);
+    color: var(--color-primary-hover);
+}
+
+/* دوران الأيقونة عند الضغط */
+#donation-refresh-btn:active i {
+    transform: rotate(180deg) scale(0.9);
+}
+
+/* التحديث الجاري (loading state) */
+#donation-refresh-btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+#donation-refresh-btn.loading i {
+    animation: refreshSpin 0.8s linear infinite;
+}
+
+@keyframes refreshSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* النص */
+#donation-refresh-btn .btn-text {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    letter-spacing: 0.3px;
+}
+
+/* ============================================================ */
+/* 04. LIVE BADGE - شارة مباشر                                */
+/* ============================================================ */
+
+.donation-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    color: #10b981;
+    font-weight: var(--font-medium);
+    min-height: 32px;
+}
+
+.donation-live-badge .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    display: inline-block;
+    animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ============================================================ */
+/* 05. STATS GRID - بطاقات الإحصائيات                         */
+/* ============================================================ */
+
+.donation-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.donation-stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.donation-stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+.donation-stat-card .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+.donation-stat-card .stat-icon.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.donation-stat-card .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+.donation-stat-card .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.donation-stat-card .stat-icon.blue {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0ea5e9;
+}
+
+.donation-stat-card .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.donation-stat-card .stat-info .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+.donation-stat-card .stat-info .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.donation-stat-card .stat-info .stat-sub {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+/* ============================================================ */
+/* 06. DONATIONS GRID                                          */
+/* ============================================================ */
+
+#donations-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+}
+
+/* ============================================================ */
+/* 07. DONATION ITEM - كارد التبرع                            */
+/* ============================================================ */
+
+.donation-item {
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.donation-item:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+}
+
+.donation-item .donation-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-3);
+}
+
+.donation-item .donation-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.donation-item .donation-method {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.donation-item .donation-amounts {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+}
+
+.donation-item .donation-amounts .amount {
+    display: flex;
+    flex-direction: column;
+}
+
+.donation-item .donation-amounts .amount .label {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+.donation-item .donation-amounts .amount .value {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.donation-item .donation-amounts .amount .value.raised {
+    color: #10b981;
+}
+
+.donation-item .donation-status {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+}
+
+.donation-item .donation-status.active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.donation-item .donation-status.inactive {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.donation-item .donation-message {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    padding: var(--space-2) var(--space-3);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+    font-style: italic;
+}
+
+.donation-item .donation-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--space-3);
+}
+
+.donation-item .donation-location i {
+    color: #f59e0b;
+}
+
+.donation-item .donation-meta {
+    display: flex;
+    gap: var(--space-4);
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+.donation-item .donation-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* ============================================================ */
+/* 08. DONATION ACTIONS - أزرار الكارد                        */
+/* ============================================================ */
+
+.donation-item .donation-actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+}
+
+.donation-item .donation-actions button {
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    flex: 1;
+    min-width: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+}
+
+/* زر تغيير الحالة */
+.donation-item .donation-actions .toggle-status-btn {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.donation-item .donation-actions .toggle-status-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--glow-primary);
+}
+
+.donation-item .donation-actions .toggle-status-btn:active {
+    transform: scale(0.95);
+}
+
+/* زر الحذف */
+.donation-item .donation-actions .delete-donation-btn {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
+
+.donation-item .donation-actions .delete-donation-btn:hover {
+    background: var(--color-danger);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.donation-item .donation-actions .delete-donation-btn:active {
+    transform: scale(0.95);
+}
+
+/* حالة التحميل للأزرار */
+.donation-item .donation-actions .btn-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: wait;
+}
+
+/* ============================================================ */
+/* 09. EMPTY STATE                                             */
+/* ============================================================ */
+
+.donations-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+}
+
+.donations-empty i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+.donations-empty h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.donations-empty p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    max-width: 320px;
+}
+
+/* ============================================================ */
+/* 10. SKELETON - هيكل التحميل                                */
+/* ============================================================ */
+
+.donation-skeleton {
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.donation-skeleton .skeleton-title {
+    height: 20px;
+    width: 60%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-bottom: var(--space-3);
+}
+
+.donation-skeleton .skeleton-amount {
+    height: 30px;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-bottom: var(--space-3);
+}
+
+.donation-skeleton .skeleton-progress {
+    height: 6px;
+    width: 100%;
+    border-radius: var(--radius-full);
+    background: var(--border-color);
+    margin-bottom: var(--space-3);
+}
+
+.donation-skeleton .skeleton-actions {
+    height: 32px;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+}
+
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ============================================================ */
+/* 11. SAVE ALL BUTTON - زر حفظ التغييرات                      */
+/* ============================================================ */
+
+#donation-save-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    min-height: 40px;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+#donation-save-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+#donation-save-all-btn:active {
+    transform: scale(0.95);
+}
+
+#donation-save-all-btn i {
+    font-size: var(--text-base);
+}
+
+/* ============================================================ */
+/* 12. THEME SUPPORT - Light Theme                             */
+/* ============================================================ */
+
+[data-theme="light"] .donation-stat-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .donation-item {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] #donation-refresh-btn {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] #donation-refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================ */
+/* 13. RESPONSIVE - التجاوب مع الشاشات                         */
+/* ============================================================ */
+
+@media (max-width: 1024px) {
+    #donations-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+    }
+    
+    #donations-section .section-header h2 {
+        font-size: var(--text-xl);
+    }
+    
+    .donation-header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .donation-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    #donations-grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .donation-item {
+        padding: var(--space-4);
+    }
+    
+    .donation-item .donation-amounts {
+        flex-direction: column;
+        gap: var(--space-2);
+        align-items: stretch;
+    }
+    
+    #donation-refresh-btn {
+        padding: var(--space-2) var(--space-4);
+        min-height: 36px;
+        font-size: var(--text-xs);
+    }
+    
+    #donation-refresh-btn .btn-text {
+        font-size: var(--text-xs);
+    }
+    
+    .donation-header-actions {
+        gap: var(--space-2);
+    }
+    
+    .donation-item .donation-actions {
+        flex-direction: column;
+    }
+    
+    .donation-item .donation-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    #donations-section .section-header h2 {
+        font-size: var(--text-lg);
+    }
+    
+    .donation-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .donation-stat-card .stat-value {
+        font-size: var(--text-base);
+    }
+    
+    #donation-refresh-btn {
+        padding: var(--space-2) var(--space-3);
+        min-height: 34px;
+        font-size: var(--text-2xs);
+    }
+    
+    #donation-refresh-btn .btn-text {
+        display: none;
+    }
+    
+    #donation-refresh-btn i {
+        font-size: var(--text-base);
+        margin: 0;
+    }
+    
+    .donation-header-actions {
+        gap: var(--space-2);
+    }
+    
+    #donation-save-all-btn {
+        padding: var(--space-2) var(--space-3);
+        min-height: 34px;
+        font-size: var(--text-xs);
+    }
+    
+    #donation-save-all-btn .btn-text {
+        display: none;
+    }
+}
 /* SOCIAL SECTION - روابط السوشيال ميديا                        */
 /* ============================================================ */
 /*

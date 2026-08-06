@@ -1673,93 +1673,70 @@
                     <!-- ==========================================================
                     SECTION: DONATIONS (التبرعات)
                     ========================================================== -->
-                    <section id="donations-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-hand-holding-dollar"></i>
-                                <span>نظام إدارة التبرعات والحملات (Donations Management System)</span>
-                            </h2>
-                            <div class="header-actions">
-                                <button id="donation-add-new-btn" class="saas-btn saas-btn-primary" type="button">
-                                    <i class="fa-solid fa-plus"></i> إضافة حملة تبرع
-                                </button>
-                                <button id="donation-save-all-btn" class="saas-btn saas-btn-secondary" type="button">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> حفظ التغييرات
-                                </button>
-                            </div>
-                        </div>
+                 <!-- ==========================================================
+SECTION: DONATIONS (التبرعات)
+========================================================== -->
+<section id="donations-section" class="section-view">
+    <div class="section-header">
+        <h2>
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>صندوق التبرعات والدعم</span>
+        </h2>
+        <div class="header-actions">
+            <button id="donation-refresh-btn" class="saas-btn saas-btn-secondary" type="button">
+                <i class="fa-solid fa-rotate"></i> تحديث
+            </button>
+            <span class="donation-live-badge" id="donation-live-badge">
+                <span class="pulse-dot"></span> Live
+            </span>
+        </div>
+    </div>
 
-                        <div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-wallet"></i></div>
-                                <div>
-                                    <h4 id="stat-total-raised">$0</h4>
-                                    <span>إجمالي الأموال المبرعة</span>
-                                </div>
-                            </div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-bullseye"></i></div>
-                                <div>
-                                    <h4 id="stat-total-goal">$0</h4>
-                                    <span>إجمالي المستهدف</span>
-                                </div>
-                            </div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-users"></i></div>
-                                <div>
-                                    <h4 id="stat-donor-count">0</h4>
-                                    <span>عدد المتبرعين</span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Stats -->
+    <div class="donation-stats-grid">
+        <div class="donation-stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">إجمالي التبرعات</span>
+                <span class="stat-value" id="stat-total-donations">$0</span>
+                <span class="stat-sub">تم جمعها</span>
+            </div>
+        </div>
+        <div class="donation-stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-list-check"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">عدد التبرعات</span>
+                <span class="stat-value" id="stat-donation-count">0</span>
+                <span class="stat-sub">تبرع</span>
+            </div>
+        </div>
+        <div class="donation-stat-card">
+            <div class="stat-icon orange"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">قيد المراجعة</span>
+                <span class="stat-value" id="stat-pending-count">0</span>
+                <span class="stat-sub">معلقة</span>
+            </div>
+        </div>
+        <div class="donation-stat-card">
+            <div class="stat-icon blue"><i class="fa-solid fa-check-circle"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">متوسط التبرع</span>
+                <span class="stat-value" id="stat-avg-donation">$0</span>
+                <span class="stat-sub">لكل تبرع</span>
+            </div>
+        </div>
+    </div>
 
-                        <div class="saas-card">
-                            <div>
-                                <h3><i class="fa-solid fa-hand-holding-dollar"></i> حملات ووسائل التبرع النشطة (Supabase Ready)</h3>
-                            </div>
-                            <div id="donations-grid-container"></div>
-                        </div>
-
-                        <div id="donation-modal-overlay">
-                            <div class="saas-card">
-                                <div>
-                                    <h3 id="donation-modal-title"><i class="fa-solid fa-hand-holding-dollar"></i> إضافة / تعديل حملة تبرع</h3>
-                                    <button type="button" class="saas-btn saas-btn-secondary" id="closeDonationModalBtn"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                                <form id="donation-form">
-                                    <input type="hidden" id="donation_edit_id" name="donation_edit_id">
-                                    <div>
-                                        <div>
-                                            <label>عنوان الحملة (Campaign Title)*</label>
-                                            <input type="text" id="donation_title" name="donation_title" required placeholder="مثال: دعم وتطوير سيرفرات الموقع">
-                                        </div>
-                                        <div>
-                                            <label>طريقة الدفع (Payment Method)</label>
-                                            <input type="text" id="donation_method" name="donation_method" placeholder="PayPal / Vodafone Cash">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <label>المبلغ المستهدف (Target Amount)</label>
-                                            <input type="number" id="donation_target" name="donation_target" placeholder="500">
-                                        </div>
-                                        <div>
-                                            <label>المبلغ المجمع حالياً (Raised Amount)</label>
-                                            <input type="number" id="donation_raised" name="donation_raised" placeholder="150">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label>معلومات الحساب أو رابط التحويل (Account / Link)</label>
-                                        <input type="text" id="donation_account_info" name="donation_account_info" placeholder="رقم المحفظة أو البريد الإلكتروني">
-                                    </div>
-                                    <div>
-                                        <button type="button" class="saas-btn saas-btn-secondary" id="closeDonationModalBtn2">إلغاء</button>
-                                        <button type="submit" class="saas-btn" style="background: #10b981; color: #fff;">حفظ الحملة</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </section>
+    <!-- Grid -->
+    <div id="donations-grid-container" class="donations-grid">
+        <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+        <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+        <div class="donation-skeleton"><div class="skeleton-title"></div><div class="skeleton-amount"></div><div class="skeleton-progress"></div><div class="skeleton-actions"></div></div>
+    </div>
+    
+    
+</section>
 
                   
                   <!-- ==========================================================
@@ -1922,26 +1899,8 @@ SECTION: SOCIAL (السوشيال ميديا)
 
     <!-- External JavaScript -->
     <script src="dashboard.js" defer></script>
-    <!-- ============================================================ -->
-<!-- PERFORMANCE - Non-critical scripts with defer               -->
-<!-- ============================================================ -->
-
-<!-- External libraries (already loaded) -->
-<!-- Chart.js and Supabase already loaded -->
-
-<!-- Main script with defer -->
-<script src="dashboard.js" defer></script>
-
-<!-- Performance monitor -->
-<script>
-    // Monitor performance
-    if (window.performance) {
-        window.addEventListener('load', () => {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            console.log('⏱️ Page Load Time:', (perfData.loadEventEnd - perfData.fetchStart).toFixed(0), 'ms');
-        });
-    }
-</script>
+    <!-- Performance & Optimization Engine -->
+<script src="performance.js" defer></script>
 
 </body>
 </html>
