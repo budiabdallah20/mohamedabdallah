@@ -1,4 +1,8 @@
-// بيانات مشروع Supabase (المصدر الوحيد للحقيقة)
+// ============================================================ */
+// 🚀 API - SUPABASE CONNECTION (المصدر الوحيد للحقيقة)       */
+// ============================================================ */
+
+// بيانات مشروع Supabase
 const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI';
 
@@ -8,46 +12,190 @@ const supabaseHeaders = {
     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
 };
 
-// 1. إرسال رسالة تواصل جديدة وتخزينها في جدول messages
-// 1. إرسال رسالة تواصل جديدة وتخزينها في جدول messages مع الـ IP والمتصفح
-async function sendContactMessage(formData) {
-    try {
-        // 1. جلب الـ IP الخاص بالزائر تلقائياً
-        let ipAddress = 'Unknown';
-        try {
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipResponse.json();
-            ipAddress = ipData.ip;
-        } catch (e) {
-            console.log('Could not fetch IP address');
-        }
+// ============================================================ */
+// 1️⃣ دالة مساعدة لجلب IP والموقع                           */
+// ============================================================ */
 
-        // 2. تجميع البيانات كلها (بتاعت الفورم + الـ IP + المتصفح + الوقت + ID عشوائي)
+async function getVisitorInfo() {
+    let ipAddress = 'Unknown';
+    let location = 'Unknown';
+    
+    try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        ipAddress = ipData.ip;
+        
+        try {
+            const geoResponse = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+            const geoData = await geoResponse.json();
+            location = `${geoData.city || ''}, ${geoData.country_name || ''}`.trim() || 'Unknown';
+        } catch (e) {
+            console.log('Could not fetch location');
+        }
+    } catch (e) {
+        console.log('Could not fetch IP address');
+    }
+    
+    return { ipAddress, location };
+}
+
+// ============================================================ */
+// 2️⃣ إرسال تذكرة دعم جديدة (الربط مع موقع وداشبورد)        */
+// ============================================================ */
+
+async function sendSupportTicket(formData) {
+    try {
+        // 1. جلب معلومات الزائر
+        const { ipAddress, location } = await getVisitorInfo();
+
+        // 2. تجميع البيانات
         const completeData = {
-        id: Math.floor(Math.random() * 10000000), // ID عشوائي لعمود bigint
-            sender_name: formData.name,       // تم التعديل
-            sender_email: formData.email,     // تم التعديل
-            subject: formData.subject,
-            message: formData.message,
+            id: Math.floor(Math.random() * 1000000000),
+            sender_name: formData.name.trim(),
+            sender_email: formData.email.trim(),
+            subject: formData.subject.trim(),
+            message: formData.message.trim(),
+            status: 'pending',
+            reply_message: null,
+            replied_at: null,
             ip_address: ipAddress,
             user_agent: navigator.userAgent,
+            location: location,
             created_at: new Date().toISOString()
         };
 
+        console.log('📤 Sending support ticket:', completeData);
+
         // 3. إرسال البيانات لقاعدة البيانات
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/support_tickets`, {
+            method: 'POST',
+            headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
+            body: JSON.stringify(completeData)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('❌ API Error:', error);
+            return { status: 'error', message: error };
+        }
+
+        const data = await response.json();
+        console.log('✅ Ticket saved:', data);
+
+        // 4. 🔥 إرسال إشعار للـ Dashboard (مهم جداً)
+        document.dispatchEvent(new CustomEvent('dashboard:new-ticket', {
+            detail: completeData
+        }));
+
+        // 5. إرسال إشعار ثانٍ للـ Logs Engine
+        document.dispatchEvent(new CustomEvent('dashboard:log', {
+            detail: {
+                message: `🎧 تذكرة دعم جديدة من: ${completeData.sender_name}`,
+                type: 'support',
+                details: completeData.subject
+            }
+        }));
+
+        return { status: 'success', data: completeData };
+
+    } catch (error) {
+        console.error('❌ Network Error:', error);
+        return { status: 'error', message: error.message };
+    }
+}
+
+// ============================================================ */
+// 3️⃣ إرسال رسالة تواصل جديدة (المحادثات)                   */
+// ============================================================ */
+
+async function sendContactMessage(formData) {
+    try {
+        const { ipAddress, location } = await getVisitorInfo();
+
+        const completeData = {
+            id: Math.floor(Math.random() * 10000000),
+            sender_name: formData.name.trim(),
+            sender_email: formData.email.trim(),
+            subject: formData.subject.trim(),
+            message: formData.message.trim(),
+            ip_address: ipAddress,
+            user_agent: navigator.userAgent,
+            location: location,
+            created_at: new Date().toISOString()
+        };
+
         const response = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
             method: 'POST',
             headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
-            body: JSON.stringify(completeData) // ركز هنا: بنبعت completeData
+            body: JSON.stringify(completeData)
         });
-        
-        return response.ok ? { status: 'success' } : { status: 'error' };
+
+        if (!response.ok) {
+            return { status: 'error' };
+        }
+
+        // إشعار للداشبورد
+        document.dispatchEvent(new CustomEvent('dashboard:new-message', {
+            detail: completeData
+        }));
+
+        return { status: 'success' };
+
     } catch (error) {
         console.error('Network Error:', error);
         return { status: 'error' };
     }
 }
-// 2. تحميل المشاريع (مقسّمة لفئتين: Featured أو Mini)
+
+// ============================================================ */
+// 4️⃣ إرسال تبرع جديد                                          */
+// ============================================================ */
+
+async function sendDonation(donationData) {
+    try {
+        const { ipAddress, location } = await getVisitorInfo();
+
+        const completeData = {
+            id: Math.floor(Math.random() * 1000000000),
+            amount: parseFloat(donationData.amount),
+            platform: donationData.platform || 'Vodafone Cash',
+            donor_name: donationData.donor_name || 'Anonymous',
+            donor_phone: donationData.donor_phone || '',
+            message: donationData.message || '',
+            location: location,
+            ip_address: ipAddress,
+            user_agent: navigator.userAgent,
+            status: 'pending',
+            is_active: true,
+            created_at: new Date().toISOString()
+        };
+
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
+            method: 'POST',
+            headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
+            body: JSON.stringify(completeData)
+        });
+
+        if (response.ok) {
+            // إشعار للداشبورد
+            document.dispatchEvent(new CustomEvent('dashboard:donation-received', {
+                detail: completeData
+            }));
+            return { status: 'success', data: completeData };
+        }
+        
+        return { status: 'error' };
+    } catch (error) {
+        console.error('Network Error:', error);
+        return { status: 'error' };
+    }
+}
+
+// ============================================================ */
+// 5️⃣ دوال تحميل البيانات للموقع (GET)                       */
+// ============================================================ */
+
+// 5.1 تحميل المشاريع
 async function loadProjects() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*`, { headers: supabaseHeaders });
@@ -82,7 +230,7 @@ async function loadProjects() {
     }
 }
 
-// 3. تحميل المهارات (مقسّمة إلى 4 فئات ثابتة: Frontend, Backend, Tools & Methods, Soft Skills)
+// 5.2 تحميل المهارات
 async function loadSkills() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/skills?select=*`, { headers: supabaseHeaders });
@@ -117,7 +265,7 @@ async function loadSkills() {
     }
 }
 
-// 4. تحميل الشهادات
+// 5.3 تحميل الشهادات
 async function loadCertificates() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/certificates?select=*`, { headers: supabaseHeaders });
@@ -145,7 +293,7 @@ async function loadCertificates() {
     }
 }
 
-// 5. تحميل إعدادات الموقع والهيرو وقسم "من أنا" بالأسماء الثابتة
+// 5.4 تحميل إعدادات الموقع
 async function loadSettings() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`, { headers: supabaseHeaders });
@@ -155,7 +303,6 @@ async function loadSettings() {
         if (settings.length > 0) {
             const data = settings[0];
             
-            // الهيرو (Hero Section)
             if (data.hero_title) {
                 const el = document.getElementById("dynamic-hero-title");
                 if (el) el.innerText = data.hero_title;
@@ -168,8 +315,6 @@ async function loadSettings() {
                 const el = document.getElementById("dynamic-hero-img");
                 if (el) el.src = data.hero_image;
             }
-
-            // قسم "من أنا" (About Section + 4 معلومات أساسية)
             if (data.about_text) {
                 const el = document.getElementById("dynamic-about-text");
                 if (el) el.innerText = data.about_text;
@@ -200,7 +345,7 @@ async function loadSettings() {
     }
 }
 
-// 6. تحميل قسم الدعم والتبرعات (Vodafone Cash, Instapay, Phone)
+// 5.5 تحميل بيانات التبرعات (للشاشة)
 async function loadDonations() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=*`, { headers: supabaseHeaders });
@@ -226,7 +371,7 @@ async function loadDonations() {
     }
 }
 
-// 7. تحميل حسابات السوشيال ميديا مع الكونتر التلقائي عند الضغط
+// 5.6 تحميل السوشيال ميديا
 async function loadSocialMedia() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/social_media?select=*`, { headers: supabaseHeaders });
@@ -248,10 +393,9 @@ async function loadSocialMedia() {
     }
 }
 
-// دالة لتحديث الكونتر تلقائياً عند النقر على أي أكونت سوشيال ميديا
+// 5.7 تحديث عداد النقرات على السوشيال ميديا
 async function incrementSocialClick(id) {
     try {
-        // جلب العدد الحالي أولاً
         const res = await fetch(`${SUPABASE_URL}/rest/v1/social_media?id=eq.${id}&select=click_count`, { headers: supabaseHeaders });
         const data = await res.json();
         if(data && data.length > 0) {
@@ -267,7 +411,7 @@ async function incrementSocialClick(id) {
     }
 }
 
-// 8. تسجيل زيارة جديدة لـ عداد الزوار
+// 5.8 تسجيل زوار الموقع
 async function trackVisitor() {
     try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/visitors_counter?select=count&id=eq.1`, { headers: supabaseHeaders });
@@ -285,8 +429,14 @@ async function trackVisitor() {
     }
 }
 
-// التشغيل التلقائي عند تحميل الصفحة والربط الكامل
+// ============================================================ */
+// 6️⃣ ربط جميع النماذج في الموقع الرئيسي                     */
+// ============================================================ */
+
 document.addEventListener("DOMContentLoaded", () => {
+    console.log('🚀 API - Initializing...');
+
+    // تحميل البيانات
     loadProjects();
     loadSkills();
     loadCertificates();
@@ -295,17 +445,21 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSocialMedia();
     trackVisitor();
 
-    // ربط نموذج التواصل
+    // ========================================================== */
+    // 6.1 ربط نموذج التواصل (Contact Form)                      */
+    // ========================================================== */
+    
     const contactForm = document.getElementById("contactForm");
     if (contactForm) {
         contactForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            // 1. تحديد زرار الإرسال وتعطيله عشان نمنع الضغط المزدوج
+            
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             if (submitBtn) {
-                submitBtn.disabled = true; // تعطيل الزرار
-                submitBtn.innerText = "جاري الإرسال..."; // تغيير النص
+                submitBtn.disabled = true;
+                submitBtn.innerText = "جاري الإرسال...";
             }
+            
             const formData = {
                 name: contactForm.querySelector('[name="name"]').value,
                 email: contactForm.querySelector('[name="email"]').value,
@@ -314,148 +468,180 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             const result = await sendContactMessage(formData);
+            
             if (result.status === 'success') {
-                alert('تم ارسال الرسالة بنجاح!');
+                alert('✅ تم إرسال رسالتك بنجاح!');
                 contactForm.reset();
             } else {
-                alert('حدث خطأ أثناء الإرسال.');
+                alert('❌ حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
             }
-            // 4. إعادة تشغيل الزرار تاني بعد ما نخلص
+            
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Send Message"; // رجع النص الأصلي (عدله حسب المكتوب عندك)
+                submitBtn.innerText = "إرسال";
             }
         });
     }
-});
-// ============================================================ */
-// DONATIONS API - التبرعات                                     */
-// ============================================================ */
 
-// إرسال تبرع جديد من الموقع الأساسي
-async function sendDonation(donationData) {
-    try {
-        // 1. جلب الـ IP الخاص بالزائر
-        let ipAddress = 'Unknown';
-        let location = 'Unknown';
-        
-        try {
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipResponse.json();
-            ipAddress = ipData.ip;
+    // ========================================================== */
+    // 6.2 ربط نموذج التبرعات (Donation Form)                    */
+    // ========================================================== */
+    
+    const donationForm = document.getElementById("donationForm");
+    if (donationForm) {
+        donationForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
             
-            // 2. جلب الموقع التقريبي من الـ IP
-            try {
-                const geoResponse = await fetch(`https://ipapi.co/${ipAddress}/json/`);
-                const geoData = await geoResponse.json();
-                location = `${geoData.city || ''}, ${geoData.country_name || ''}`.trim() || 'Unknown';
-            } catch (e) {}
-        } catch (e) {}
-
-        // 3. تجميع البيانات كاملة
-        const completeData = {
-            id: Math.floor(Math.random() * 1000000000),
-            amount: parseFloat(donationData.amount),
-            platform: donationData.platform,
-            donor_name: donationData.donor_name || 'Anonymous',
-            donor_phone: donationData.donor_phone || '',
-            message: donationData.message || '',
-            location: location,
-            ip_address: ipAddress,
-            user_agent: navigator.userAgent,
-            status: 'pending',
-            is_active: true,
-            created_at: new Date().toISOString()
-        };
-
-        // 4. إرسال البيانات لقاعدة البيانات
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/donations`, {
-            method: 'POST',
-            headers: { ...supabaseHeaders, 'Prefer': 'return=representation' },
-            body: JSON.stringify(completeData)
+            const submitBtn = donationForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "جاري الإرسال...";
+            }
+            
+            const formData = {
+                amount: donationForm.querySelector('[name="amount"]').value,
+                platform: donationForm.querySelector('[name="platform"]').value || 'Vodafone Cash',
+                donor_name: donationForm.querySelector('[name="donor_name"]')?.value || '',
+                donor_phone: donationForm.querySelector('[name="donor_phone"]')?.value || '',
+                message: donationForm.querySelector('[name="message"]')?.value || ''
+            };
+            
+            const result = await sendDonation(formData);
+            
+            if (result.status === 'success') {
+                alert('✅ شكراً لك على تبرعك!');
+                donationForm.reset();
+            } else {
+                alert('❌ حدث خطأ، حاول مرة أخرى.');
+            }
+            
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "تبرع الآن";
+            }
         });
-        
-        if (response.ok) {
-            // إرسال إشعار للـ Dashboard
-            document.dispatchEvent(new CustomEvent('dashboard:donation-received', {
-                detail: completeData
-            }));
-            return { status: 'success', data: completeData };
-        }
-        
-        return { status: 'error' };
-    } catch (error) {
-        console.error('Network Error:', error);
-        return { status: 'error' };
     }
-}
 
-// تحميل التبرعات للـ Dashboard
-async function loadDonationsForDashboard() {
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=*&order=created_at.desc&limit=100`, {
-            headers: supabaseHeaders
+    // ========================================================== */
+    // 6.3 🔥 ربط نموذج الدعم الفني (Support Form) - الأهم     */
+    // ========================================================== */
+    
+    const supportForm = document.getElementById("supportForm");
+    if (supportForm) {
+        console.log('✅ Support form found, attaching listener...');
+        
+        supportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            console.log('📤 Support form submitted');
+            
+            const submitBtn = supportForm.querySelector('button[type="submit"]');
+            const statusEl = document.getElementById('supportFormStatus');
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+            }
+            
+            if (statusEl) {
+                statusEl.textContent = '⏳ جاري إرسال شكواك...';
+                statusEl.className = 'form-status sending';
+            }
+            
+            const formData = {
+                name: supportForm.querySelector('[name="supportName"]')?.value || 
+                      supportForm.querySelector('#supportName')?.value || '',
+                email: supportForm.querySelector('[name="supportEmail"]')?.value || 
+                       supportForm.querySelector('#supportEmail')?.value || '',
+                subject: supportForm.querySelector('[name="supportSubject"]')?.value || 
+                        supportForm.querySelector('#supportSubject')?.value || '',
+                message: supportForm.querySelector('[name="supportMessage"]')?.value || 
+                        supportForm.querySelector('#supportMessage')?.value || ''
+            };
+            
+            // التحقق من الحقول
+            if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+                alert('⚠️ الرجاء ملء جميع الحقول المطلوبة');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى';
+                }
+                if (statusEl) {
+                    statusEl.textContent = '⚠️ الرجاء ملء جميع الحقول';
+                    statusEl.className = 'form-status error';
+                }
+                return;
+            }
+            
+            console.log('📤 Sending support ticket:', formData);
+            
+            const result = await sendSupportTicket(formData);
+            console.log('📥 Result:', result);
+            
+            if (result.status === 'success') {
+                if (statusEl) {
+                    statusEl.textContent = '✅ تم إرسال شكواك بنجاح! سنتواصل معك قريباً.';
+                    statusEl.className = 'form-status success';
+                }
+                alert('✅ تم إرسال شكواك بنجاح! سنتواصل معك خلال 24 ساعة.');
+                supportForm.reset();
+            } else {
+                if (statusEl) {
+                    statusEl.textContent = `❌ فشل الإرسال: ${result.message || 'حاول مرة أخرى'}`;
+                    statusEl.className = 'form-status error';
+                }
+                alert('❌ حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+            }
+            
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى';
+            }
         });
-        if (!res.ok) return [];
-        return await res.json();
-    } catch (err) {
-        console.error("Error loading donations:", err);
-        return [];
+    } else {
+        console.warn('⚠️ Support form not found! Check ID: supportForm');
     }
-}
 
-// تحميل إجمالي التبرعات
-async function getDonationStats() {
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/donations?select=amount,status`, {
-            headers: supabaseHeaders
-        });
-        if (!res.ok) return { total: 0, count: 0, pending: 0 };
-        
-        const data = await res.json();
-        const total = data.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
-        const count = data.length;
-        const pending = data.filter(d => d.status === 'pending').length;
-        
-        return { total, count, pending };
-    } catch (err) {
-        console.error("Error getting donation stats:", err);
-        return { total: 0, count: 0, pending: 0 };
-    }
-}
+    console.log('✅ API - All forms initialized');
+});
 
-// ربط نموذج التبرع (لو موجود في الموقع)
-const donationForm = document.getElementById("donationForm");
-if (donationForm) {
-    donationForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        
-        const submitBtn = donationForm.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerText = "جاري الإرسال...";
-        }
-        
-        const formData = {
-            amount: donationForm.querySelector('[name="amount"]').value,
-            platform: donationForm.querySelector('[name="platform"]').value,
-            donor_name: donationForm.querySelector('[name="donor_name"]')?.value || '',
-            donor_phone: donationForm.querySelector('[name="donor_phone"]')?.value || '',
-            message: donationForm.querySelector('[name="message"]')?.value || ''
-        };
-        
-        const result = await sendDonation(formData);
-        
-        if (result.status === 'success') {
-            alert('✅ شكراً لك على تبرعك!');
-            donationForm.reset();
-        } else {
-            alert('❌ حدث خطأ، حاول مرة أخرى.');
-        }
-        
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "تبرع الآن";
-        }
-    });
-}
+// ============================================================ */
+// 7️⃣ تصدير الدوال للاستخدام العالمي                         */
+// ============================================================ */
+
+// جعل الدوال متاحة في window للاستخدام من أي مكان
+window.sendSupportTicket = sendSupportTicket;
+window.sendContactMessage = sendContactMessage;
+window.sendDonation = sendDonation;
+window.loadProjects = loadProjects;
+window.loadSkills = loadSkills;
+window.loadCertificates = loadCertificates;
+window.loadSettings = loadSettings;
+window.loadDonations = loadDonations;
+window.loadSocialMedia = loadSocialMedia;
+window.incrementSocialClick = incrementSocialClick;
+window.trackVisitor = trackVisitor;
+
+console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   🚀 API - FULLY CONNECTED v2.0                            ║
+║                                                              ║
+║   ✅ Support Tickets - sendSupportTicket()                  ║
+║   ✅ Contact Messages - sendContactMessage()                ║
+║   ✅ Donations - sendDonation()                             ║
+║   ✅ Load Projects - loadProjects()                         ║
+║   ✅ Load Skills - loadSkills()                             ║
+║   ✅ Load Certificates - loadCertificates()                 ║
+║   ✅ Load Settings - loadSettings()                         ║
+║   ✅ Load Donations - loadDonations()                       ║
+║   ✅ Load Social Media - loadSocialMedia()                  ║
+║                                                              ║
+║   🔗 Connected to: ${SUPABASE_URL}                          ║
+║   📡 Dashboard Events:                                      ║
+║   • dashboard:new-ticket                                    ║
+║   • dashboard:new-message                                   ║
+║   • dashboard:donation-received                             ║
+║   • dashboard:log                                           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`);

@@ -1642,33 +1642,87 @@
                     <!-- ==========================================================
                     SECTION: SUPPORT (الدعم الفني)
                     ========================================================== -->
-                    <section id="support-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-headset"></i>
-                                <span>صندوق خدمة العملاء والشكاوى (Customer Support)</span>
-                            </h2>
-                        </div>
-                        <div class="card card-full">
-                            <h3><span>التذاكر الحية والرسائل الشاملة</span></h3>
-                            <div class="support-inbox-layout">
-                                <div class="tickets-sidebar" id="supportTicketsSidebar"></div>
-                                <div class="ticket-chat-area">
-                                    <div class="chat-box-header">
-                                        <span id="activeTicketTitle">اختر شكوى لعرض التفاصيل الكاملة</span>
-                                        <span id="activeTicketStatus" class="status-badge status-online">مفتوحة</span>
-                                    </div>
-                                    <div class="chat-box-body" id="activeTicketMessages">
-                                        <p>اختر تذكرة لعرض تفاصيل العميل، الجهاز، المتصفح، الـ IP والموقع</p>
-                                    </div>
-                                    <div class="chat-box-footer">
-                                        <input type="text" id="adminReplyInput" placeholder="اكتب ردك للعميل..." disabled>
-                                        <button class="submit-btn" id="supportSendReplyBtn" disabled>إرسال الرد</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+              <section id="support-section" class="section-view">
+    <div class="section-header">
+        <h2><i class="fa-solid fa-headset"></i> خدمة العملاء والدعم الفني</h2>
+        <div class="header-actions">
+            <button id="supportRefreshBtn" class="saas-btn saas-btn-secondary">
+                <i class="fa-solid fa-rotate"></i> تحديث
+            </button>
+            <span class="support-live-badge"><span class="pulse-dot"></span> Live</span>
+        </div>
+    </div>
+
+    <!-- الإحصائيات -->
+    <div class="support-stats-grid">
+        <div class="support-stat-card"><div class="stat-icon blue"><i class="fa-solid fa-ticket"></i></div><div><span class="stat-label">الإجمالي</span><h4 id="stat-total-tickets">0</h4></div></div>
+        <div class="support-stat-card"><div class="stat-icon orange"><i class="fa-solid fa-clock"></i></div><div><span class="stat-label">معلقة</span><h4 id="stat-pending-tickets">0</h4></div></div>
+        <div class="support-stat-card"><div class="stat-icon purple"><i class="fa-solid fa-spinner"></i></div><div><span class="stat-label">قيد المعالجة</span><h4 id="stat-progress-tickets">0</h4></div></div>
+        <div class="support-stat-card"><div class="stat-icon green"><i class="fa-solid fa-check-circle"></i></div><div><span class="stat-label">محلولة</span><h4 id="stat-resolved-tickets">0</h4></div></div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="support-main-layout">
+        <!-- القائمة الجانبية -->
+        <div class="support-tickets-sidebar" id="supportTicketsSidebar">
+            <div class="sidebar-header">
+                <span>التذاكر</span>
+                <div class="filter-btns">
+                    <button class="filter-btn active" data-filter="all">الكل</button>
+                    <button class="filter-btn" data-filter="pending">معلقة</button>
+                    <button class="filter-btn" data-filter="in_progress">قيد المعالجة</button>
+                    <button class="filter-btn" data-filter="resolved">محلولة</button>
+                </div>
+            </div>
+            <div class="tickets-list" id="ticketsList">
+                <div class="ticket-skeleton">جاري تحميل التذاكر...</div>
+            </div>
+        </div>
+
+        <!-- منطقة عرض التفاصيل والرد -->
+        <div class="support-ticket-details" id="supportTicketDetails">
+            <div class="details-header">
+                <h3 id="ticketDetailSubject">اختر تذكرة لعرض التفاصيل</h3>
+                <span class="ticket-status-badge" id="ticketDetailStatus">-</span>
+            </div>
+            <div class="details-body" id="ticketDetailBody">
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p>لم يتم اختيار تذكرة بعد</p>
+                    <span>اختر تذكرة من القائمة الجانبية لعرض تفاصيلها</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- كارت الرد -->
+    <div class="support-reply-card" id="supportReplyCard" style="display:none;">
+        <div class="reply-header">
+            <h4><i class="fa-solid fa-reply"></i> الرد على التذكرة</h4>
+            <button class="close-reply-btn" id="closeSupportReplyBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="reply-body">
+            <div class="reply-sender-info" id="replySenderInfo">
+                <div><span>المرسل:</span> <strong id="replySenderName">-</strong></div>
+                <div><span>البريد:</span> <strong id="replySenderEmail">-</strong></div>
+                <div><span>الموضوع:</span> <strong id="replySenderSubject">-</strong></div>
+            </div>
+            <div class="reply-message-area">
+                <label for="supportReplyInput">نص الرد:</label>
+                <textarea id="supportReplyInput" rows="4" placeholder="اكتب ردك على هذه التذكرة..."></textarea>
+            </div>
+            <div class="reply-actions">
+                <button class="saas-btn saas-btn-secondary" id="cancelSupportReplyBtn">إلغاء</button>
+                <button class="saas-btn saas-btn-primary" id="sendSupportReplyBtn">
+                    <i class="fa-solid fa-paper-plane"></i> إرسال الرد
+                </button>
+            </div>
+        </div>
+        <div class="reply-status" id="supportReplyStatus" style="display:none;">
+            <span id="supportReplyStatusMessage"></span>
+        </div>
+    </div>
+</section>
 
                     <!-- ==========================================================
                     SECTION: DONATIONS (التبرعات)

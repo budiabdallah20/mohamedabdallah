@@ -888,7 +888,1287 @@ console.log('✅ Error handlers registered');
 
 
 
+// ============================================================ */
+// 🎧 SUPPORT ENGINE - خدمة العملاء والدعم الفني v2.0         */
+// ============================================================ */
+/*
+   🎯 المميزات:
+   - ✅ عرض جميع التذاكر في قائمة جانبية
+   - ✅ عرض تفاصيل التذكرة عند النقر
+   - ✅ الرد على التذاكر مع حفظ في Supabase
+   - ✅ إرسال الرد عبر البريد الإلكتروني (EmailJS)
+   - ✅ تحديث حالة التذكرة تلقائياً
+   - ✅ إحصائيات فورية (الكل، معلق، قيد المعالجة، محلول)
+   - ✅ تصفية التذاكر حسب الحالة
+   - ✅ حذف تذكرة فردية
+   - ✅ تفريغ جميع التذاكر
+   - ✅ تخزين محلي (localStorage)
+   - ✅ مزامنة مع Supabase
+   - ✅ Lazy Loading
+   - ✅ معالجة الأخطاء
+   - ✅ Toast Notifications
+   - ✅ Logs Integration
+   - ✅ متجاوب مع جميع الشاشات
+   - ✅ 100% مطابق مع Schema و HTML
+*/
 
+// ============================================================ */
+// 01. SUPPORT ENGINE CLASS                                     */
+// ============================================================ */
+
+class SupportEngine {
+    constructor() {
+        // ============================================================
+        // DOM Elements
+        // ============================================================
+        this.sidebar = document.getElementById('supportTicketsSidebar');
+        this.ticketsList = document.getElementById('ticketsList');
+        this.detailsContainer = document.getElementById('supportTicketDetails');
+        this.detailsBody = document.getElementById('ticketDetailBody');
+        this.detailsSubject = document.getElementById('ticketDetailSubject');
+        this.detailsStatus = document.getElementById('ticketDetailStatus');
+        this.replyCard = document.getElementById('supportReplyCard');
+        this.replyInput = document.getElementById('supportReplyInput');
+        this.replyStatus = document.getElementById('supportReplyStatus');
+        this.replyStatusMsg = document.getElementById('supportReplyStatusMessage');
+        this.refreshBtn = document.getElementById('supportRefreshBtn');
+        
+        // Sender info in reply card
+        this.replySenderName = document.getElementById('replySenderName');
+        this.replySenderEmail = document.getElementById('replySenderEmail');
+        this.replySenderSubject = document.getElementById('replySenderSubject');
+        
+        // Stats
+        this.statTotal = document.getElementById('stat-total-tickets');
+        this.statPending = document.getElementById('stat-pending-tickets');
+        this.statProgress = document.getElementById('stat-progress-tickets');
+        this.statResolved = document.getElementById('stat-resolved-tickets');
+        
+        // ============================================================
+        // State
+        // ============================================================
+        this.tickets = [];
+        this.currentTicketId = null;
+        this.currentFilter = 'all';
+        this.isLoading = false;
+        this._isSending = false;
+        this._isInitialized = false;
+        
+        // ============================================================
+        // EmailJS Config
+        // ============================================================
+        this.EMAILJS_SERVICE_ID = 'service_t51g617';
+        this.EMAILJS_TEMPLATE_ID = 'reply_template';
+        this.EMAILJS_PUBLIC_KEY = 'Zg7gM0yDAtCmbp4p9';
+        
+        // ============================================================
+        // Status Labels
+        // ============================================================
+        this.statusLabels = {
+            pending: 'معلقة',
+            in_progress: 'قيد المعالجة',
+            resolved: 'محلولة',
+            closed: 'مغلقة'
+        };
+        
+        this.statusColors = {
+            pending: 'pending',
+            in_progress: 'in_progress',
+            resolved: 'resolved',
+            closed: 'closed'
+        };
+        
+        // ============================================================
+        // INIT
+        // ============================================================
+        this.init();
+    }
+    
+    // ============================================================
+    // 01. INITIALIZATION
+    // ============================================================
+    
+    init() {
+        console.log('🎧 Support Engine initializing...');
+        
+        try {
+            // Load from storage
+            this.loadFromStorage();
+            
+            // Setup events
+            this.setupEvents();
+            
+            // Render
+            this.render();
+            
+            // Load from Supabase after delay
+            setTimeout(() => {
+                this.loadFromSupabase();
+            }, 500);
+            
+            // Setup reply events
+            this.setupReplyEvents();
+            
+            this._isInitialized = true;
+            
+            console.log('✅ Support Engine ready');
+            console.log(`📊 ${this.tickets.length} tickets loaded`);
+            
+            if (window._logsEngine) {
+                window._logsEngine.addLog(
+                    `🎧 تم تحميل محرك الدعم الفني (${this.tickets.length} تذكرة)`,
+                    'support'
+                );
+            }
+        } catch (error) {
+            console.error('❌ Support Engine init error:', error);
+            Utils.toast('❌ فشل تحميل محرك الدعم الفني', 'error');
+        }
+    }
+    
+    // ============================================================
+    // 02. STORAGE MANAGEMENT
+    // ============================================================
+    
+    loadFromStorage() {
+        try {
+            const saved = localStorage.getItem('dashboard-support-tickets');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    this.tickets = parsed.map(t => ({
+                        ...t,
+                        created_at: t.created_at ? new Date(t.created_at) : new Date(),
+                        replied_at: t.replied_at ? new Date(t.replied_at) : null
+                    }));
+                    console.log(`📂 Loaded ${this.tickets.length} tickets from storage`);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not load tickets:', e);
+        }
+        
+        // Default tickets if nothing saved
+        this.loadDefaultTickets();
+    }
+    
+    saveToStorage() {
+        try {
+            localStorage.setItem('dashboard-support-tickets', JSON.stringify(this.tickets));
+        } catch (e) {
+            console.warn('⚠️ Could not save tickets:', e);
+        }
+    }
+    
+    loadDefaultTickets() {
+        const now = Date.now();
+        this.tickets = [
+            {
+                id: Date.now() - 1,
+                sender_name: 'أحمد محمد',
+                sender_email: 'ahmed@example.com',
+                subject: 'مشكلة في تسجيل الدخول',
+                message: 'لا أستطيع تسجيل الدخول إلى حسابي، تظهر لي رسالة خطأ "Invalid credentials"',
+                status: 'pending',
+                reply_message: null,
+                replied_at: null,
+                ip_address: '192.168.1.1',
+                user_agent: 'Chrome/120.0.0.0',
+                location: 'القاهرة، مصر',
+                created_at: new Date(now - 3600000)
+            },
+            {
+                id: Date.now() - 2,
+                sender_name: 'سارة علي',
+                sender_email: 'sara@example.com',
+                subject: 'طلب تعديل في الموقع',
+                message: 'أريد تعديل بعض المحتويات في الصفحة الرئيسية، كيف يمكنني ذلك؟',
+                status: 'in_progress',
+                reply_message: 'جاري العمل على طلبك، سنتواصل معك قريباً',
+                replied_at: new Date(now - 1800000),
+                ip_address: '192.168.1.2',
+                user_agent: 'Firefox/121.0',
+                location: 'الإسكندرية، مصر',
+                created_at: new Date(now - 7200000)
+            },
+            {
+                id: Date.now() - 3,
+                sender_name: 'خالد حسن',
+                sender_email: 'khaled@example.com',
+                subject: 'شكر وتقدير',
+                message: 'شكراً على الخدمة الممتازة، الموقع يعمل بشكل رائع',
+                status: 'resolved',
+                reply_message: 'شكراً لك على كلماتك الطيبة، نتمنى لك دوام التوفيق',
+                replied_at: new Date(now - 86400000),
+                ip_address: '192.168.1.3',
+                user_agent: 'Safari/17.2',
+                location: 'الجيزة، مصر',
+                created_at: new Date(now - 172800000)
+            },
+            {
+                id: Date.now() - 4,
+                sender_name: 'منى إبراهيم',
+                sender_email: 'mona@example.com',
+                subject: 'اقتراح لتطوير الموقع',
+                message: 'أقترح إضافة قسم للمدونة لمشاركة المقالات والدروس التعليمية',
+                status: 'closed',
+                reply_message: 'شكراً على اقتراحك، سيتم دراسته مع الفريق',
+                replied_at: new Date(now - 259200000),
+                ip_address: '192.168.1.4',
+                user_agent: 'Edge/120.0.0.0',
+                location: 'سويس، مصر',
+                created_at: new Date(now - 345600000)
+            }
+        ];
+        this.saveToStorage();
+        console.log('📂 Default tickets loaded');
+    }
+    
+    // ============================================================
+    // 03. SUPABASE OPERATIONS
+    // ============================================================
+    
+    async loadFromSupabase() {
+        try {
+            if (!supabaseClient) {
+                console.warn('⚠️ Supabase client not ready');
+                return;
+            }
+            
+            console.log('📤 Loading tickets from Supabase...');
+            
+            const { data, error } = await supabaseClient
+                .from('support_tickets')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(100);
+            
+            if (error) {
+                console.error('❌ Supabase load error:', error);
+                return;
+            }
+            
+            console.log('📥 Data received:', data?.length || 0, 'records');
+            
+            if (data && data.length > 0) {
+                const existingIds = new Set(this.tickets.map(t => t.id));
+                const existingContent = new Set(
+                    this.tickets.map(t => `${t.sender_email}-${t.subject}-${t.message}`)
+                );
+                
+                let newCount = 0;
+                
+                data.forEach(ticket => {
+                    if (existingIds.has(ticket.id)) return;
+                    
+                    const contentKey = `${ticket.sender_email}-${ticket.subject}-${ticket.message}`;
+                    if (existingContent.has(contentKey)) return;
+                    
+                    const newTicket = {
+                        id: ticket.id,
+                        sender_name: ticket.sender_name,
+                        sender_email: ticket.sender_email,
+                        subject: ticket.subject,
+                        message: ticket.message,
+                        status: ticket.status || 'pending',
+                        reply_message: ticket.reply_message || null,
+                        replied_at: ticket.replied_at ? new Date(ticket.replied_at) : null,
+                        ip_address: ticket.ip_address || 'Unknown',
+                        user_agent: ticket.user_agent || 'Unknown',
+                        location: ticket.location || 'Unknown',
+                        created_at: ticket.created_at ? new Date(ticket.created_at) : new Date()
+                    };
+                    
+                    this.tickets.unshift(newTicket);
+                    existingIds.add(ticket.id);
+                    existingContent.add(contentKey);
+                    newCount++;
+                });
+                
+                if (newCount > 0) {
+                    this.saveToStorage();
+                    this.render();
+                    console.log(`📂 Added ${newCount} new tickets from Supabase`);
+                    
+                    if (window._logsEngine) {
+                        window._logsEngine.addLog(
+                            `🎧 تم استيراد ${newCount} تذكرة من Supabase`,
+                            'support'
+                        );
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('❌ Error loading from Supabase:', e);
+        }
+    }
+    
+    async saveToSupabase(ticket) {
+        try {
+            if (!supabaseClient) {
+                console.warn('⚠️ Supabase not ready');
+                return false;
+            }
+            
+            // Check if exists
+            const { data: existing, error: checkError } = await supabaseClient
+                .from('support_tickets')
+                .select('id')
+                .eq('id', ticket.id)
+                .limit(1);
+            
+            if (checkError) {
+                console.warn('⚠️ Could not check existing:', checkError);
+            }
+            
+            const isUpdate = existing && existing.length > 0;
+            
+            const ticketData = {
+                sender_name: ticket.sender_name,
+                sender_email: ticket.sender_email,
+                subject: ticket.subject,
+                message: ticket.message,
+                status: ticket.status || 'pending',
+                reply_message: ticket.reply_message || null,
+                replied_at: ticket.replied_at?.toISOString() || null,
+                ip_address: ticket.ip_address || 'Unknown',
+                user_agent: ticket.user_agent || 'Unknown',
+                location: ticket.location || 'Unknown'
+            };
+            
+            if (isUpdate) {
+                const { error } = await supabaseClient
+                    .from('support_tickets')
+                    .update(ticketData)
+                    .eq('id', ticket.id);
+                
+                if (error) {
+                    console.error('❌ Failed to update ticket:', error);
+                    return false;
+                }
+                console.log('✅ Ticket updated in Supabase:', ticket.id);
+            } else {
+                const { error } = await supabaseClient
+                    .from('support_tickets')
+                    .insert([{
+                        id: ticket.id,
+                        ...ticketData,
+                        created_at: ticket.created_at?.toISOString() || new Date().toISOString()
+                    }]);
+                
+                if (error) {
+                    console.error('❌ Failed to save ticket:', error);
+                    return false;
+                }
+                console.log('✅ Ticket saved to Supabase:', ticket.id);
+            }
+            
+            return true;
+        } catch (e) {
+            console.error('❌ Error saving to Supabase:', e);
+            return false;
+        }
+    }
+    
+    async updateTicketStatus(id, status) {
+        const ticket = this.tickets.find(t => t.id === id);
+        if (!ticket) return false;
+        
+        ticket.status = status;
+        this.saveToStorage();
+        this.render();
+        
+        // Update in Supabase
+        await this.saveToSupabase(ticket);
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🎧 تحديث حالة التذكرة #${id} إلى ${this.statusLabels[status]}`,
+                'support',
+                ticket.subject
+            );
+        }
+        
+        return true;
+    }
+    
+    // ============================================================
+    // 04. EVENT SETUP
+    // ============================================================
+    
+    setupEvents() {
+        // Refresh button
+        if (this.refreshBtn) {
+            this.refreshBtn.addEventListener('click', () => {
+                this.loadFromSupabase();
+                Utils.toast('🔄 جاري تحديث التذاكر...', 'info');
+            });
+        }
+        
+        // Filter buttons (delegation)
+        if (this.sidebar) {
+            this.sidebar.addEventListener('click', (e) => {
+                const filterBtn = e.target.closest('.filter-btn');
+                if (filterBtn) {
+                    const filter = filterBtn.dataset.filter;
+                    this.setFilter(filter);
+                    
+                    // Update active state
+                    this.sidebar.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.filter === filter);
+                    });
+                }
+            });
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                this.loadFromSupabase();
+                Utils.toast('🔄 تحديث التذاكر', 'info');
+            }
+        });
+        
+        // Listen for new tickets from website
+        document.addEventListener('dashboard:new-ticket', (e) => {
+            const ticket = e.detail;
+            if (ticket && ticket.sender_name && ticket.sender_email) {
+                this.addTicket(
+                    ticket.sender_name,
+                    ticket.sender_email,
+                    ticket.subject,
+                    ticket.message,
+                    ticket.ip_address,
+                    ticket.user_agent,
+                    ticket.location
+                );
+                Utils.toast('🎧 تم استلام تذكرة دعم جديدة', 'success');
+            }
+        });
+        
+        console.log('✅ Support events setup complete');
+    }
+    
+    // ============================================================
+    // 05. REPLY EVENTS
+    // ============================================================
+    
+    setupReplyEvents() {
+        // Send reply button
+        const sendBtn = document.getElementById('sendSupportReplyBtn');
+        if (sendBtn) {
+            sendBtn.addEventListener('click', () => {
+                this.sendReply();
+            });
+        }
+        
+        // Cancel button
+        const cancelBtn = document.getElementById('cancelSupportReplyBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.closeReplyCard();
+            });
+        }
+        
+        // Close button
+        const closeBtn = document.getElementById('closeSupportReplyBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeReplyCard();
+            });
+        }
+        
+        // Ctrl+Enter to send
+        if (this.replyInput) {
+            this.replyInput.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    this.sendReply();
+                }
+            });
+        }
+        
+        // Escape to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentTicketId) {
+                this.closeReplyCard();
+            }
+        });
+        
+        console.log('✅ Reply events setup complete');
+    }
+    
+    // ============================================================
+    // 06. FILTER
+    // ============================================================
+    
+    setFilter(filter) {
+        this.currentFilter = filter;
+        this.renderTickets();
+    }
+    
+    getFilteredTickets() {
+        if (this.currentFilter === 'all') {
+            return this.tickets;
+        }
+        return this.tickets.filter(t => t.status === this.currentFilter);
+    }
+    
+    // ============================================================
+    // 07. RENDER ENGINE
+    // ============================================================
+    
+    render() {
+        this.renderStats();
+        this.renderTickets();
+        if (this.currentTicketId) {
+            this.renderTicketDetails(this.currentTicketId);
+        }
+    }
+    
+    renderStats() {
+        const total = this.tickets.length;
+        const pending = this.tickets.filter(t => t.status === 'pending').length;
+        const inProgress = this.tickets.filter(t => t.status === 'in_progress').length;
+        const resolved = this.tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
+        
+        if (this.statTotal) this.statTotal.textContent = total;
+        if (this.statPending) this.statPending.textContent = pending;
+        if (this.statProgress) this.statProgress.textContent = inProgress;
+        if (this.statResolved) this.statResolved.textContent = resolved;
+    }
+    
+    renderTickets() {
+        if (!this.ticketsList) return;
+        
+        if (this.isLoading) {
+            this.renderSkeleton();
+            return;
+        }
+        
+        const filtered = this.getFilteredTickets();
+        
+        if (filtered.length === 0) {
+            this.ticketsList.innerHTML = `
+                <div class="empty-state" style="padding: var(--space-8) var(--space-4); text-align: center; color: var(--text-tertiary);">
+                    <i class="fa-solid fa-inbox" style="font-size: 2rem; opacity: 0.3; display: block; margin-bottom: var(--space-3);"></i>
+                    <p style="font-size: var(--text-sm);">لا توجد تذاكر ${this.currentFilter !== 'all' ? 'في هذه الحالة' : ''}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        this.ticketsList.innerHTML = '';
+        
+        filtered.forEach(ticket => {
+            this.ticketsList.appendChild(this.createTicketItem(ticket));
+        });
+    }
+    
+    createTicketItem(ticket) {
+        const div = document.createElement('div');
+        div.className = `ticket-item ${this.currentTicketId === ticket.id ? 'active' : ''}`;
+        div.dataset.id = ticket.id;
+        
+        const isActive = this.currentTicketId === ticket.id;
+        const statusLabel = this.statusLabels[ticket.status] || ticket.status;
+        const statusColor = this.statusColors[ticket.status] || 'pending';
+        const timeStr = this.formatTime(ticket.created_at);
+        
+        div.innerHTML = `
+            <div class="ticket-top">
+                <span class="ticket-sender">${this.escapeHtml(ticket.sender_name)}</span>
+                <span class="ticket-status-badge ${statusColor}">
+                    <span class="status-dot"></span>
+                    ${statusLabel}
+                </span>
+            </div>
+            <div class="ticket-subject">${this.escapeHtml(ticket.subject)}</div>
+            <div class="ticket-bottom">
+                <span class="ticket-time"><i class="fa-regular fa-clock"></i> ${timeStr}</span>
+                ${ticket.reply_message ? '<span style="font-size: var(--text-2xs); color: var(--color-primary);"><i class="fa-solid fa-reply"></i> تم الرد</span>' : ''}
+            </div>
+        `;
+        
+        div.addEventListener('click', () => {
+            this.selectTicket(ticket.id);
+        });
+        
+        return div;
+    }
+    
+    renderSkeleton() {
+        if (!this.ticketsList) return;
+        this.ticketsList.innerHTML = `
+            <div class="ticket-skeleton"><div class="skeleton-name"></div><div class="skeleton-subject"></div><div class="skeleton-time"></div></div>
+            <div class="ticket-skeleton"><div class="skeleton-name"></div><div class="skeleton-subject"></div><div class="skeleton-time"></div></div>
+            <div class="ticket-skeleton"><div class="skeleton-name"></div><div class="skeleton-subject"></div><div class="skeleton-time"></div></div>
+        `;
+    }
+    
+    // ============================================================
+    // 08. SELECT TICKET
+    // ============================================================
+    
+    selectTicket(id) {
+        this.currentTicketId = id;
+        this.renderTickets();
+        this.renderTicketDetails(id);
+    }
+    
+    renderTicketDetails(id) {
+        const ticket = this.tickets.find(t => t.id === id);
+        if (!ticket) {
+            this.showEmptyDetails();
+            return;
+        }
+        
+        if (!this.detailsBody) return;
+        
+        const statusLabel = this.statusLabels[ticket.status] || ticket.status;
+        const statusColor = this.statusColors[ticket.status] || 'pending';
+        const dateStr = this.formatDate(ticket.created_at);
+        const timeStr = this.formatTime(ticket.created_at);
+        
+        if (this.detailsSubject) {
+            this.detailsSubject.textContent = ticket.subject;
+        }
+        
+        if (this.detailsStatus) {
+            this.detailsStatus.className = `ticket-status-badge ${statusColor}`;
+            this.detailsStatus.innerHTML = `<span class="status-dot"></span> ${statusLabel}`;
+        }
+        
+        let replyHtml = '';
+        if (ticket.reply_message) {
+            const repliedDate = ticket.replied_at ? this.formatDateTime(ticket.replied_at) : '';
+            replyHtml = `
+                <div class="ticket-detail-reply">
+                    <span class="reply-label"><i class="fa-solid fa-reply"></i> الرد (${repliedDate})</span>
+                    <div class="reply-text">${this.escapeHtml(ticket.reply_message)}</div>
+                </div>
+            `;
+        }
+        
+        this.detailsBody.innerHTML = `
+            <div class="ticket-detail-info">
+                <div class="info-item">
+                    <span class="info-label">المرسل</span>
+                    <span class="info-value"><strong>${this.escapeHtml(ticket.sender_name)}</strong></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">البريد الإلكتروني</span>
+                    <span class="info-value"><strong>${this.escapeHtml(ticket.sender_email)}</strong></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">تاريخ الإنشاء</span>
+                    <span class="info-value">${dateStr} - ${timeStr}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">الحالة</span>
+                    <span class="info-value"><span class="ticket-status-badge ${statusColor}"><span class="status-dot"></span> ${statusLabel}</span></span>
+                </div>
+                <div class="info-item full-width">
+                    <span class="info-label">الـ IP</span>
+                    <span class="info-value">${this.escapeHtml(ticket.ip_address || 'Unknown')}</span>
+                </div>
+                <div class="info-item full-width">
+                    <span class="info-label">الموقع</span>
+                    <span class="info-value">${this.escapeHtml(ticket.location || 'Unknown')}</span>
+                </div>
+                <div class="info-item full-width">
+                    <span class="info-label">المتصفح / الجهاز</span>
+                    <span class="info-value" style="font-size: var(--text-xs);">${this.escapeHtml(ticket.user_agent || 'Unknown')}</span>
+                </div>
+            </div>
+            
+            <div class="ticket-detail-message">
+                <span class="message-label"><i class="fa-solid fa-envelope"></i> نص الشكوى</span>
+                <div class="message-text">${this.escapeHtml(ticket.message)}</div>
+            </div>
+            
+            ${replyHtml}
+            
+            <div class="details-actions">
+                <button class="reply-ticket-btn" data-id="${ticket.id}">
+                    <i class="fa-solid fa-reply"></i> الرد على التذكرة
+                </button>
+                <button class="status-update-btn" data-id="${ticket.id}">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> تغيير الحالة
+                </button>
+                <button class="delete-ticket-btn" data-id="${ticket.id}">
+                    <i class="fa-solid fa-trash"></i> حذف
+                </button>
+            </div>
+        `;
+        
+        // Reply button
+        const replyBtn = this.detailsBody.querySelector('.reply-ticket-btn');
+        if (replyBtn) {
+            replyBtn.addEventListener('click', () => {
+                this.openReplyCard(ticket.id);
+            });
+        }
+        
+        // Status update button
+        const statusBtn = this.detailsBody.querySelector('.status-update-btn');
+        if (statusBtn) {
+            statusBtn.addEventListener('click', () => {
+                this.showStatusMenu(ticket.id);
+            });
+        }
+        
+        // Delete button
+        const deleteBtn = this.detailsBody.querySelector('.delete-ticket-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+                this.deleteTicket(ticket.id);
+            });
+        }
+    }
+    
+    showEmptyDetails() {
+        if (!this.detailsBody) return;
+        
+        if (this.detailsSubject) {
+            this.detailsSubject.textContent = 'اختر تذكرة لعرض التفاصيل';
+        }
+        
+        if (this.detailsStatus) {
+            this.detailsStatus.className = 'ticket-status-badge';
+            this.detailsStatus.textContent = '-';
+        }
+        
+        this.detailsBody.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                <p>لم يتم اختيار تذكرة بعد</p>
+                <span>اختر تذكرة من القائمة الجانبية لعرض تفاصيلها</span>
+            </div>
+        `;
+    }
+    
+    // ============================================================
+    // 09. STATUS MENU
+    // ============================================================
+    
+    showStatusMenu(ticketId) {
+        const ticket = this.tickets.find(t => t.id === ticketId);
+        if (!ticket) return;
+        
+        const statuses = ['pending', 'in_progress', 'resolved', 'closed'];
+        const labels = ['معلقة', 'قيد المعالجة', 'محلولة', 'مغلقة'];
+        
+        const options = statuses.map((s, i) => 
+            `${s === ticket.status ? '✅' : '⬜'} ${labels[i]}`
+        ).join('\n');
+        
+        const choice = prompt(
+            `تغيير حالة التذكرة:\n\n${options}\n\nاختر رقم الحالة (1-4):`,
+            `${statuses.indexOf(ticket.status) + 1}`
+        );
+        
+        if (choice === null) return;
+        
+        const index = parseInt(choice) - 1;
+        if (index >= 0 && index < statuses.length) {
+            const newStatus = statuses[index];
+            if (newStatus !== ticket.status) {
+                this.updateTicketStatus(ticketId, newStatus);
+                Utils.toast(`✅ تم تغيير الحالة إلى ${labels[index]}`, 'success');
+            }
+        } else {
+            Utils.toast('⚠️ اختيار غير صحيح', 'warning');
+        }
+    }
+    
+    // ============================================================
+    // 10. REPLY CARD
+    // ============================================================
+    
+    openReplyCard(ticketId) {
+        const ticket = this.tickets.find(t => t.id === ticketId);
+        if (!ticket) {
+            Utils.toast('❌ التذكرة غير موجودة', 'error');
+            return;
+        }
+        
+        this.currentTicketId = ticketId;
+        
+        if (this.replySenderName) this.replySenderName.textContent = ticket.sender_name;
+        if (this.replySenderEmail) this.replySenderEmail.textContent = ticket.sender_email;
+        if (this.replySenderSubject) this.replySenderSubject.textContent = ticket.subject;
+        if (this.replyInput) this.replyInput.value = '';
+        
+        if (this.replyCard) {
+            this.replyCard.style.display = 'block';
+            setTimeout(() => {
+                this.replyCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                this.replyInput?.focus();
+            }, 300);
+        }
+        
+        if (this.replyStatus) this.replyStatus.style.display = 'none';
+    }
+    
+    closeReplyCard() {
+        if (this.replyCard) this.replyCard.style.display = 'none';
+        if (this.replyInput) this.replyInput.value = '';
+        this.currentTicketId = null;
+    }
+    
+    // ============================================================
+    // 11. SEND REPLY
+    // ============================================================
+    
+    async sendReply() {
+        if (this._isSending) {
+            Utils.toast('⏳ جاري الإرسال...', 'info');
+            return;
+        }
+        
+        const ticketId = this.currentTicketId;
+        if (!ticketId) {
+            Utils.toast('❌ لا توجد تذكرة محددة', 'error');
+            return;
+        }
+        
+        const ticket = this.tickets.find(t => t.id === ticketId);
+        if (!ticket) {
+            Utils.toast('❌ التذكرة غير موجودة', 'error');
+            return;
+        }
+        
+        const replyText = this.replyInput?.value?.trim();
+        if (!replyText) {
+            Utils.toast('⚠️ الرجاء كتابة نص الرد', 'warning');
+            this.replyInput?.focus();
+            return;
+        }
+        
+        this._isSending = true;
+        
+        if (this.replyStatus) {
+            this.replyStatus.style.display = 'block';
+            this.replyStatus.className = 'reply-status';
+            if (this.replyStatusMsg) {
+                this.replyStatusMsg.textContent = '⏳ جاري إرسال الرد...';
+            }
+        }
+        
+        const sendBtn = document.getElementById('sendSupportReplyBtn');
+        const cancelBtn = document.getElementById('cancelSupportReplyBtn');
+        if (sendBtn) sendBtn.disabled = true;
+        if (cancelBtn) cancelBtn.disabled = true;
+        
+        try {
+            // Update ticket
+            ticket.reply_message = replyText;
+            ticket.replied_at = new Date();
+            ticket.status = 'resolved';
+            
+            // Save to Supabase
+            await this.saveToSupabase(ticket);
+            this.saveToStorage();
+            
+            // Send email
+            let emailSent = false;
+            try {
+                emailSent = await this.sendReplyEmail(
+                    ticket.sender_email,
+                    ticket.sender_name,
+                    ticket.subject,
+                    replyText,
+                    ticket.message
+                );
+            } catch (emailError) {
+                console.error('❌ Email error:', emailError);
+            }
+            
+            // Log
+            if (window._logsEngine) {
+                window._logsEngine.addLog(
+                    `🎧 تم الرد على تذكرة من: ${ticket.sender_name} ${emailSent ? '(📧 تم الإرسال)' : '(⚠️ بدون إيميل)'}`,
+                    'support',
+                    ticket.subject
+                );
+            }
+            
+            // Show success
+            if (this.replyStatus && this.replyStatusMsg) {
+                this.replyStatus.className = 'reply-status';
+                this.replyStatusMsg.textContent = emailSent
+                    ? '✅ تم إرسال الرد وإشعار المرسل بنجاح!'
+                    : '✅ تم حفظ الرد (تعذر إرسال الإيميل)';
+            }
+            
+            Utils.toast(emailSent
+                ? `✅ تم إرسال الرد إلى ${ticket.sender_name}`
+                : `✅ تم حفظ الرد (الإيميل لم يرسل)`,
+                emailSent ? 'success' : 'warning'
+            );
+            
+            this.render();
+            
+            setTimeout(() => {
+                this.closeReplyCard();
+                this._isSending = false;
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Reply error:', error);
+            if (this.replyStatus && this.replyStatusMsg) {
+                this.replyStatus.className = 'reply-status error';
+                this.replyStatusMsg.textContent = `❌ ${error.message || 'فشل إرسال الرد'}`;
+            }
+            Utils.toast(`❌ ${error.message || 'فشل إرسال الرد'}`, 'error');
+            this._isSending = false;
+        } finally {
+            if (sendBtn) sendBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
+        }
+    }
+    
+    // ============================================================
+    // 12. EMAIL SERVICE
+    // ============================================================
+    
+    async sendReplyEmail(toEmail, toName, subject, replyMessage, originalMessage) {
+        try {
+            console.log(`📤 Sending reply email to: ${toEmail}`);
+            
+            // Check if EmailJS is loaded
+            if (typeof emailjs === 'undefined') {
+                console.warn('⚠️ EmailJS not loaded, trying CDN...');
+                await this.loadEmailJS();
+            }
+            
+            const templateParams = {
+                to_email: toEmail,
+                to_name: toName,
+                subject: subject,
+                original_message: originalMessage,
+                reply_message: replyMessage,
+                reply_date: new Date().toLocaleString('ar-EG', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                sender_name: 'Mohamed Abdallah - الدعم الفني',
+                sender_email: 'support@mohamed.dev'
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            
+            const response = await emailjs.send(
+                this.EMAILJS_SERVICE_ID,
+                this.EMAILJS_TEMPLATE_ID,
+                templateParams,
+                this.EMAILJS_PUBLIC_KEY
+            );
+            
+            console.log('✅ Email sent successfully:', response);
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Failed to send email:', error);
+            console.error('❌ Error details:', error.text || error.message);
+            return false;
+        }
+    }
+    
+    loadEmailJS() {
+        return new Promise((resolve, reject) => {
+            if (typeof emailjs !== 'undefined') {
+                resolve();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+            script.onload = () => {
+                console.log('✅ EmailJS loaded from CDN');
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.init(this.EMAILJS_PUBLIC_KEY);
+                }
+                resolve();
+            };
+            script.onerror = () => {
+                reject(new Error('Failed to load EmailJS'));
+            };
+            document.head.appendChild(script);
+        });
+    }
+    
+    // ============================================================
+    // 13. ADD TICKET
+    // ============================================================
+    
+    addTicket(name, email, subject, message, ipAddress, userAgent, location) {
+        // Prevent duplicates
+        const duplicate = this.tickets.find(t =>
+            t.sender_email === email &&
+            t.subject === subject &&
+            t.message === message &&
+            (Date.now() - new Date(t.created_at).getTime() < 30000)
+        );
+        
+        if (duplicate) {
+            console.warn('⚠️ Duplicate ticket detected, skipping...');
+            return null;
+        }
+        
+        const newTicket = {
+            id: Date.now() + Math.random() * 1000,
+            sender_name: name.trim(),
+            sender_email: email.trim(),
+            subject: subject.trim(),
+            message: message.trim(),
+            status: 'pending',
+            reply_message: null,
+            replied_at: null,
+            ip_address: ipAddress || 'Unknown',
+            user_agent: userAgent || 'Unknown',
+            location: location || 'Unknown',
+            created_at: new Date()
+        };
+        
+        this.tickets.unshift(newTicket);
+        this.saveToStorage();
+        this.render();
+        this.saveToSupabase(newTicket);
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🎧 تذكرة دعم جديدة من: ${newTicket.sender_name}`,
+                'support',
+                newTicket.subject
+            );
+        }
+        
+        console.log(`✅ New ticket added: ${newTicket.sender_name} - ${newTicket.subject}`);
+        return newTicket;
+    }
+    
+    // ============================================================
+    // 14. DELETE TICKET
+    // ============================================================
+    
+    deleteTicket(id) {
+        const ticket = this.tickets.find(t => t.id === id);
+        if (!ticket) return;
+        
+        if (!confirm(`هل تريد حذف تذكرة "${ticket.subject}"؟`)) return;
+        
+        this.tickets = this.tickets.filter(t => t.id !== id);
+        this.saveToStorage();
+        
+        // Delete from Supabase
+        if (supabaseClient) {
+            supabaseClient
+                .from('support_tickets')
+                .delete()
+                .eq('id', id)
+                .catch(err => console.error('❌ Error deleting from Supabase:', err));
+        }
+        
+        if (this.currentTicketId === id) {
+            this.currentTicketId = null;
+            this.showEmptyDetails();
+        }
+        
+        this.render();
+        Utils.toast(`🗑️ تم حذف التذكرة`, 'info');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🗑️ حذف تذكرة: ${ticket.subject}`,
+                'support'
+            );
+        }
+    }
+    
+    clearAll() {
+        if (this.tickets.length === 0) {
+            Utils.toast('⚠️ لا توجد تذاكر لحذفها', 'warning');
+            return;
+        }
+        
+        if (!confirm(`هل تريد حذف جميع التذاكر (${this.tickets.length})؟`)) return;
+        
+        const count = this.tickets.length;
+        
+        // Delete all from Supabase
+        if (supabaseClient) {
+            this.tickets.forEach(t => {
+                supabaseClient
+                    .from('support_tickets')
+                    .delete()
+                    .eq('id', t.id)
+                    .catch(err => console.error('❌ Error deleting:', err));
+            });
+        }
+        
+        this.tickets = [];
+        this.currentTicketId = null;
+        this.saveToStorage();
+        this.render();
+        this.showEmptyDetails();
+        
+        Utils.toast(`🗑️ تم حذف ${count} تذكرة`, 'success');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🗑️ حذف جميع التذاكر (${count})`,
+                'support'
+            );
+        }
+    }
+    
+    // ============================================================
+    // 15. HELPERS
+    // ============================================================
+    
+    formatDate(date) {
+        if (!date) return 'N/A';
+        const d = date instanceof Date ? date : new Date(date);
+        return d.toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    formatTime(date) {
+        if (!date) return 'N/A';
+        const d = date instanceof Date ? date : new Date(date);
+        return d.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
+    formatDateTime(date) {
+        return `${this.formatDate(date)} - ${this.formatTime(date)}`;
+    }
+    
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    getStats() {
+        return {
+            total: this.tickets.length,
+            pending: this.tickets.filter(t => t.status === 'pending').length,
+            inProgress: this.tickets.filter(t => t.status === 'in_progress').length,
+            resolved: this.tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length
+        };
+    }
+    
+    setLoading(loading) {
+        this.isLoading = loading;
+        this.render();
+    }
+    
+    refresh() {
+        this.loadFromSupabase();
+        Utils.toast('🔄 جاري تحديث التذاكر...', 'info');
+    }
+    
+    // ============================================================
+    // 16. DESTROY
+    // ============================================================
+    
+    destroy() {
+        this._isInitialized = false;
+        console.log('🎧 Support Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 17. INITIALIZATION                                            */
+// ============================================================ */
+
+window._supportEngine = null;
+
+function getSupportEngine() {
+    if (!window._supportEngine) {
+        window._supportEngine = new SupportEngine();
+    }
+    return window._supportEngine;
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    const supportSection = document.getElementById('support-section');
+    if (supportSection) {
+        if (supportSection.classList.contains('active')) {
+            getSupportEngine();
+        } else {
+            const observer = new MutationObserver(() => {
+                if (supportSection.classList.contains('active') && !window._supportEngine) {
+                    getSupportEngine();
+                    observer.disconnect();
+                }
+            });
+            observer.observe(supportSection, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        }
+    }
+});
+
+// If DOM already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    const supportSection = document.getElementById('support-section');
+    if (supportSection && supportSection.classList.contains('active') && !window._supportEngine) {
+        getSupportEngine();
+    }
+}
+
+// ============================================================ */
+// 18. CONSOLE HELPERS                                          */
+// ============================================================ */
+
+console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   🎧 SUPPORT ENGINE v2.0 - FULL                            ║
+║                                                              ║
+║   ✅ Ticket Management                                      ║
+║   ✅ Status Tracking (pending, in_progress, resolved, closed) ║
+║   ✅ Reply System                                          ║
+║   ✅ Email Integration (EmailJS)                           ║
+║   ✅ Supabase Sync                                         ║
+║   ✅ LocalStorage Persistence                              ║
+║   ✅ Filter by Status                                      ║
+║   ✅ Stats Dashboard                                       ║
+║   ✅ Lazy Loading                                          ║
+║   ✅ 100% مطابق مع Schema و HTML                           ║
+║                                                              ║
+║   📦 Available: window._supportEngine                       ║
+║   🔧 Methods:                                              ║
+║   • addTicket(name, email, subject, msg, ip, ua, loc)     ║
+║   • deleteTicket(id)                                       ║
+║   • updateTicketStatus(id, status)                         ║
+║   • refresh()                                              ║
+║   • getStats()                                             ║
+║   • clearAll()                                             ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`);
+
+// ============================================================ */
+// نهاية SUPPORT ENGINE v2.0                                   */
+// ============================================================ */
 
 
 // ============================================================ */

@@ -1287,7 +1287,1289 @@ html[dir="rtl"] .u-text-right { text-align: left; }
 
 
 
+/* ============================================================ */
+/* 🎧 SUPPORT SECTION - خدمة العملاء والدعم الفني              */
+/* ============================================================ */
 
+#support-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* ============================================================ */
+/* 01. SECTION HEADER                                          */
+/* ============================================================ */
+
+#support-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#support-section .section-header h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#support-section .section-header h2 i {
+    color: #6366f1;
+    font-size: var(--text-xl);
+}
+
+#supportRefreshBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    min-height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+}
+
+#supportRefreshBtn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+#supportRefreshBtn i {
+    font-size: var(--text-base);
+    color: #6366f1;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#supportRefreshBtn:hover i {
+    transform: rotate(180deg) scale(1.1);
+}
+
+.support-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    color: #6366f1;
+    font-weight: var(--font-medium);
+    min-height: 32px;
+}
+
+.support-live-badge .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6366f1;
+    display: inline-block;
+    animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ============================================================ */
+/* 02. STATS GRID - الإحصائيات                                 */
+/* ============================================================ */
+
+.support-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.support-stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.support-stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+.support-stat-card .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+.support-stat-card .stat-icon.blue {
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+}
+
+.support-stat-card .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.support-stat-card .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+.support-stat-card .stat-icon.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.support-stat-card .stat-icon.red {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.support-stat-card .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.support-stat-card .stat-info .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+.support-stat-card .stat-info .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.support-stat-card .stat-info .stat-sub {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+/* ============================================================ */
+/* 03. MAIN LAYOUT - القائمة + التفاصيل                       */
+/* ============================================================ */
+
+.support-main-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: var(--space-5);
+    min-height: 500px;
+    margin-bottom: var(--space-5);
+}
+
+/* ============================================================ */
+/* 04. SIDEBAR - قائمة التذاكر                                 */
+/* ============================================================ */
+
+.support-tickets-sidebar {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 550px;
+}
+
+.support-tickets-sidebar .sidebar-header {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-color-divider);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex-shrink: 0;
+}
+
+.support-tickets-sidebar .sidebar-header > span {
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.support-tickets-sidebar .sidebar-header > span .ticket-count {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-tertiary);
+    background: var(--glass-bg);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+}
+
+.filter-btns {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+}
+
+.filter-btns .filter-btn {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.filter-btns .filter-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+.filter-btns .filter-btn.active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.tickets-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.tickets-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tickets-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tickets-list::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+}
+
+.tickets-list::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* ============================================================ */
+/* 05. TICKET ITEM - عنصر التذكرة                             */
+/* ============================================================ */
+
+.ticket-item {
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    position: relative;
+}
+
+.ticket-item:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--border-color-hover);
+    transform: translateX(4px);
+}
+
+.ticket-item.active {
+    background: var(--bg-active);
+    border-color: var(--color-primary);
+}
+
+.ticket-item .ticket-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.ticket-item .ticket-sender {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ticket-item .ticket-subject {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ticket-item .ticket-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-1);
+}
+
+.ticket-item .ticket-time {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+/* ============================================================ */
+/* 06. STATUS BADGES - شارات الحالة                           */
+/* ============================================================ */
+
+.ticket-status-badge {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    flex-shrink: 0;
+}
+
+.ticket-status-badge.pending {
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+}
+
+.ticket-status-badge.in_progress {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.ticket-status-badge.resolved {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.ticket-status-badge.closed {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+}
+
+.ticket-status-badge .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: var(--space-1);
+}
+
+.ticket-status-badge.pending .status-dot {
+    background: #6366f1;
+}
+
+.ticket-status-badge.in_progress .status-dot {
+    background: #f59e0b;
+}
+
+.ticket-status-badge.resolved .status-dot {
+    background: #10b981;
+}
+
+.ticket-status-badge.closed .status-dot {
+    background: #64748b;
+}
+
+/* ============================================================ */
+/* 07. TICKET DETAILS - منطقة التفاصيل                        */
+/* ============================================================ */
+
+.support-ticket-details {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 450px;
+    max-height: 550px;
+}
+
+.details-header {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-color-divider);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.details-header h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.details-header .ticket-status-badge {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-4);
+}
+
+.details-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.details-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.details-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.details-body::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+}
+
+/* ============================================================ */
+/* 08. DETAILS INFO - معلومات التذكرة                         */
+/* ============================================================ */
+
+.ticket-detail-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.ticket-detail-info .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.ticket-detail-info .info-item .info-label {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    font-weight: var(--font-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+}
+
+.ticket-detail-info .info-item .info-value {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    word-break: break-word;
+}
+
+.ticket-detail-info .info-item .info-value strong {
+    color: var(--text-primary);
+}
+
+.ticket-detail-info .info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.ticket-detail-message {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.ticket-detail-message .message-label {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    font-weight: var(--font-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+.ticket-detail-message .message-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--line-relaxed);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.ticket-detail-reply {
+    padding: var(--space-4);
+    background: var(--color-primary-soft);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-primary);
+    border-left: 4px solid var(--color-primary);
+}
+
+.ticket-detail-reply .reply-label {
+    font-size: var(--text-2xs);
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+.ticket-detail-reply .reply-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--line-relaxed);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ============================================================ */
+/* 09. DETAILS ACTIONS - أزرار التفاصيل                       */
+/* ============================================================ */
+
+.details-actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.details-actions .reply-ticket-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border: none;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.details-actions .reply-ticket-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.details-actions .reply-ticket-btn:active {
+    transform: scale(0.97);
+}
+
+.details-actions .delete-ticket-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.details-actions .delete-ticket-btn:hover {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.details-actions .delete-ticket-btn:active {
+    transform: scale(0.97);
+}
+
+.details-actions .status-update-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.details-actions .status-update-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+/* ============================================================ */
+/* 10. EMPTY STATE - حالة فارغة                                */
+/* ============================================================ */
+
+.details-body .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-tertiary);
+    text-align: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+}
+
+.details-body .empty-state i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+.details-body .empty-state p {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.details-body .empty-state span {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* ============================================================ */
+/* 11. REPLY CARD - كارت الرد                                 */
+/* ============================================================ */
+
+.support-reply-card {
+    margin-top: var(--space-5);
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-card), 0 0 40px var(--glow-primary);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    animation: replyCardSlideIn 0.4s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-medium) var(--ease-smooth);
+}
+
+.support-reply-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 20%, var(--color-primary-soft) 0%, transparent 60%);
+    opacity: 0.2;
+    pointer-events: none;
+    animation: replyGlowPulse 4s var(--ease-in-out) infinite;
+}
+
+@keyframes replyGlowPulse {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.05); }
+}
+
+@keyframes replyCardSlideIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.support-reply-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-card-hover), 0 0 60px var(--glow-primary-strong);
+}
+
+.support-reply-card .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.support-reply-card .reply-header h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.support-reply-card .reply-header h4 i {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+.support-reply-card .close-reply-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.support-reply-card .close-reply-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: #ef4444;
+    transform: rotate(90deg) scale(1.1);
+}
+
+.support-reply-card .reply-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.reply-sender-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+}
+
+.reply-sender-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.reply-sender-info > div span {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    font-weight: var(--font-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+}
+
+.reply-sender-info > div strong {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.reply-sender-info .full-width {
+    grid-column: 1 / -1;
+}
+
+.reply-message-area {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.reply-message-area label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.reply-message-area label i {
+    color: var(--color-primary);
+    font-size: var(--text-xs);
+}
+
+.reply-message-area textarea {
+    width: 100%;
+    padding: var(--space-4);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    resize: vertical;
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 100px;
+    line-height: var(--line-relaxed);
+}
+
+.reply-message-area textarea::placeholder {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.reply-message-area textarea:hover {
+    background: var(--bg-input-hover);
+    border-color: var(--border-color-hover);
+}
+
+.reply-message-area textarea:focus {
+    background: var(--bg-input-focus);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-ring);
+}
+
+.reply-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    margin-top: var(--space-1);
+}
+
+.reply-actions .saas-btn-secondary {
+    padding: var(--space-3) var(--space-6);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+}
+
+.reply-actions .saas-btn-secondary:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+}
+
+.reply-actions .saas-btn-primary {
+    padding: var(--space-3) var(--space-8);
+    border: none;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+.reply-actions .saas-btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+.reply-actions .saas-btn-primary:hover::before {
+    transform: translateX(100%);
+}
+
+.reply-actions .saas-btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+}
+
+.reply-actions .saas-btn-primary:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.reply-actions .saas-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.reply-actions .saas-btn-primary i {
+    font-size: var(--text-base);
+    transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.reply-actions .saas-btn-primary:hover i {
+    transform: translateX(4px) rotate(-15deg);
+}
+
+/* ============================================================ */
+/* 12. REPLY STATUS - حالة الرد                                */
+/* ============================================================ */
+
+.support-reply-card .reply-status {
+    padding: var(--space-3) var(--space-4);
+    margin-top: var(--space-3);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    background: rgba(16, 185, 129, 0.08);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    animation: replyStatusFadeIn 0.3s var(--ease-smooth);
+    position: relative;
+    z-index: 1;
+}
+
+.support-reply-card .reply-status.error {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.15);
+}
+
+@keyframes replyStatusFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.support-reply-card .reply-status .status-spinner {
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+    margin-right: var(--space-2);
+}
+
+/* ============================================================ */
+/* 13. SKELETON - هيكل التحميل                                */
+/* ============================================================ */
+
+.ticket-skeleton {
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.ticket-skeleton .skeleton-name {
+    height: 16px;
+    width: 60%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-bottom: var(--space-2);
+}
+
+.ticket-skeleton .skeleton-subject {
+    height: 12px;
+    width: 80%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-bottom: var(--space-2);
+}
+
+.ticket-skeleton .skeleton-time {
+    height: 10px;
+    width: 40%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+}
+
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ============================================================ */
+/* 14. RTL SUPPORT                                             */
+/* ============================================================ */
+
+html[dir="rtl"] .ticket-item:hover {
+    transform: translateX(-4px);
+}
+
+html[dir="rtl"] .ticket-status-badge .status-dot {
+    margin-right: 0;
+    margin-left: var(--space-1);
+}
+
+html[dir="rtl"] .reply-actions .saas-btn-primary:hover i {
+    transform: translateX(-4px) rotate(15deg);
+}
+
+/* ============================================================ */
+/* 15. RESPONSIVE - التجاوب مع الشاشات                         */
+/* ============================================================ */
+
+@media (max-width: 1024px) {
+    #support-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+    }
+    
+    #support-section .section-header h2 {
+        font-size: var(--text-xl);
+    }
+    
+    .support-main-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    
+    .support-tickets-sidebar {
+        max-height: 300px;
+    }
+    
+    .support-ticket-details {
+        max-height: 450px;
+        min-height: 350px;
+    }
+    
+    .ticket-detail-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .reply-sender-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .support-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .support-stat-card {
+        padding: var(--space-3) var(--space-4);
+    }
+    
+    .support-stat-card .stat-icon {
+        width: 36px;
+        height: 36px;
+        font-size: var(--text-base);
+    }
+    
+    .support-stat-card .stat-info .stat-value {
+        font-size: var(--text-base);
+    }
+    
+    .details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+    
+    .details-header h3 {
+        white-space: normal;
+        font-size: var(--text-sm);
+    }
+    
+    .details-actions {
+        flex-direction: column;
+    }
+    
+    .details-actions .reply-ticket-btn,
+    .details-actions .delete-ticket-btn,
+    .details-actions .status-update-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .support-reply-card {
+        padding: var(--space-4);
+    }
+    
+    .support-reply-card .reply-header h4 {
+        font-size: var(--text-base);
+    }
+    
+    .reply-actions {
+        flex-direction: column-reverse;
+        gap: var(--space-2);
+    }
+    
+    .reply-actions .saas-btn-secondary,
+    .reply-actions .saas-btn-primary {
+        width: 100%;
+        justify-content: center;
+        padding: var(--space-3) var(--space-4);
+        min-height: 48px;
+    }
+    
+    .reply-message-area textarea {
+        min-height: 80px;
+        padding: var(--space-3);
+    }
+    
+    .ticket-detail-info {
+        padding: var(--space-3);
+    }
+}
+
+@media (max-width: 480px) {
+    .support-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #support-section .section-header h2 {
+        font-size: var(--text-lg);
+    }
+    
+    .support-tickets-sidebar .sidebar-header {
+        padding: var(--space-3);
+    }
+    
+    .filter-btns .filter-btn {
+        font-size: var(--text-2xs);
+        padding: var(--space-1) var(--space-2);
+    }
+    
+    .ticket-item {
+        padding: var(--space-2) var(--space-3);
+    }
+    
+    .ticket-item .ticket-sender {
+        font-size: var(--text-xs);
+    }
+    
+    .support-ticket-details {
+        max-height: 400px;
+        min-height: 300px;
+    }
+    
+    .details-body {
+        padding: var(--space-3);
+    }
+    
+    .support-reply-card {
+        padding: var(--space-3);
+        border-radius: var(--radius-xl);
+    }
+    
+    .reply-sender-info {
+        padding: var(--space-2) var(--space-3);
+    }
+    
+    .reply-sender-info > div strong {
+        font-size: var(--text-xs);
+    }
+}
+
+/* ============================================================ */
+/* 16. THEME SUPPORT - Light Theme                             */
+/* ============================================================ */
+
+[data-theme="light"] .support-stat-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .support-tickets-sidebar {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .support-ticket-details {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .support-reply-card {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .ticket-item.active {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+[data-theme="light"] .ticket-detail-info {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .ticket-detail-message {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .ticket-detail-reply {
+    background: rgba(99, 102, 241, 0.04);
+}
+
+[data-theme="light"] .reply-sender-info {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .reply-message-area textarea {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .reply-message-area textarea:focus {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================================ */
+/* نهاية SUPPORT SECTION                                       */
+/* ============================================================ */
 
 /* ============================================================ */
 /* DONATIONS SECTION - التبرعات (كامل)                        */
