@@ -300,6 +300,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (contactForm) {
         contactForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+            // 1. تحديد زرار الإرسال وتعطيله عشان نمنع الضغط المزدوج
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true; // تعطيل الزرار
+                submitBtn.innerText = "جاري الإرسال..."; // تغيير النص
+            }
             const formData = {
                 name: contactForm.querySelector('[name="name"]').value,
                 email: contactForm.querySelector('[name="email"]').value,
@@ -313,6 +319,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 contactForm.reset();
             } else {
                 alert('حدث خطأ أثناء الإرسال.');
+            }
+            // 4. إعادة تشغيل الزرار تاني بعد ما نخلص
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Send Message"; // رجع النص الأصلي (عدله حسب المكتوب عندك)
             }
         });
     }
