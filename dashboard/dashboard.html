@@ -1654,7 +1654,7 @@
                                     </div>
                                     <div class="chat-box-footer">
                                         <input type="text" id="adminReplyInput" placeholder="اكتب ردك للعميل..." disabled>
-                                        <button class="submit-btn" id="sendReplyBtn" disabled>إرسال الرد</button>
+                                        <button class="submit-btn" id="supportSendReplyBtn" disabled>إرسال الرد</button>
                                     </div>
                                 </div>
                             </div>
@@ -1752,33 +1752,86 @@
                         </div>
                     </section>
 
-                    <!-- ==========================================================
-                    SECTION: SOCIAL (السوشيال ميديا)
-                    ========================================================== -->
-                    <section id="social-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-share-nodes"></i>
-                                <span>روابط السوشيال والمتابعين</span>
-                            </h2>
-                            <button class="btn-bulk-delete" id="clearSocialBtn" type="button"><i class="fa-solid fa-trash-can"></i> تفريغ</button>
-                        </div>
-                        <div class="card-container">
-                            <div class="card">
-                                <h3><span>إضافة منصة سوشيال (مع خانة عدد المتابعين)</span></h3>
-                                <form id="socialForm">
-                                    <input type="text" id="socialPlatform" placeholder="اسم المنصة (مثال: GitHub / Instagram / LinkedIn)" required>
-                                    <input type="text" id="socialLink" placeholder="رابط البروفايل" required>
-                                    <input type="number" id="socialFollowers" placeholder="عدد المتابعين الرقمي (مثال: 4500)" required>
-                                    <button type="submit" class="submit-btn">إضافة المنصة وحساب المجموع</button>
-                                </form>
-                            </div>
-                            <div class="card">
-                                <h3><span>الروابط والمتابعين الحاليين</span></h3>
-                                <div id="social_linksGrid" class="items-list"></div>
-                            </div>
-                        </div>
-                    </section>
+                  
+                  <!-- ==========================================================
+SECTION: SOCIAL (السوشيال ميديا)
+========================================================== -->
+<section id="social-section" class="section-view">
+    <div class="section-header">
+        <h2>
+            <i class="fa-solid fa-share-nodes"></i>
+            <span>روابط السوشيال والمتابعين</span>
+        </h2>
+        <button class="btn-bulk-delete" id="clearSocialBtn" type="button">
+            <i class="fa-solid fa-trash-can"></i> تفريغ
+        </button>
+    </div>
+    
+    <!-- Stats -->
+    <div class="social-stats-grid" id="socialStatsGrid">
+        <div class="social-stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-link"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">إجمالي المنصات</span>
+                <span class="stat-value" id="stat-total-platforms">0</span>
+                <span class="stat-sub">منصة مسجلة</span>
+            </div>
+        </div>
+        <div class="social-stat-card">
+            <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">إجمالي المتابعين</span>
+                <span class="stat-value" id="stat-total-followers">0</span>
+                <span class="stat-sub">متابع</span>
+            </div>
+        </div>
+        <div class="social-stat-card">
+            <div class="stat-icon blue"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">متوسط المتابعين</span>
+                <span class="stat-value" id="stat-avg-followers">0</span>
+                <span class="stat-sub">لكل منصة</span>
+            </div>
+        </div>
+        <div class="social-stat-card">
+            <div class="stat-icon orange"><i class="fa-solid fa-hashtag"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">المنصة الأقوى</span>
+                <span class="stat-value" id="stat-top-platform">-</span>
+                <span class="stat-sub">أعلى متابعين</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Form -->
+    <div class="social-form-card">
+        <h3 class="form-title">
+            <i class="fa-solid fa-plus-circle"></i>
+            إضافة منصة جديدة
+        </h3>
+        <form id="socialForm">
+            <div class="form-group">
+                <label for="socialPlatform">اسم المنصة</label>
+                <input type="text" id="socialPlatform" placeholder="مثال: GitHub" required>
+            </div>
+            <div class="form-group">
+                <label for="socialLink">رابط البروفايل</label>
+                <input type="url" id="socialLink" placeholder="https://github.com/username" required>
+            </div>
+            <div class="form-group">
+                <label for="socialFollowers">عدد المتابعين</label>
+                <input type="number" id="socialFollowers" placeholder="4500" required>
+            </div>
+            <button type="submit" class="add-social-btn">
+                <i class="fa-solid fa-plus"></i>
+                إضافة
+            </button>
+        </form>
+    </div>
+    
+    <!-- Grid -->
+    <div id="social_linksGrid" class="social-grid"></div>
+</section>
 
                     <!-- ==========================================================
                     SECTION: MESSAGES (الرسائل)
@@ -1794,6 +1847,44 @@
                         <div class="card card-full">
                             <h3><span>الرسائل الواردة</span></h3>
                             <div id="messagesGrid" class="items-list"></div>
+                            <div class="reply-card" id="replyCard" style="display:none;">
+    <div class="reply-header">
+        <h4><i class="fa-solid fa-reply"></i> الرد على الرسالة</h4>
+        <button class="close-reply-btn" id="closeReplyBtn" type="button">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="reply-body">
+        <div class="reply-sender-info">
+            <div class="reply-sender-name">
+                <span>المرسل:</span>
+                <strong id="replySenderName">-</strong>
+            </div>
+            <div class="reply-sender-email">
+                <span>البريد الإلكتروني:</span>
+                <strong id="replySenderEmail">-</strong>
+            </div>
+            <div class="reply-sender-subject">
+                <span>الموضوع:</span>
+                <strong id="replySenderSubject">-</strong>
+            </div>
+        </div>
+        <div class="reply-message-area">
+            <label for="replyMessageInput">نص الرد:</label>
+            <textarea id="replyMessageInput" rows="4" placeholder="اكتب ردك على هذه الرسالة..."></textarea>
+        </div>
+        <div class="reply-actions">
+            <button class="saas-btn saas-btn-secondary" id="cancelReplyBtn">إلغاء</button>
+            <button class="saas-btn saas-btn-primary" id="sendReplyBtn">
+                <i class="fa-solid fa-paper-plane"></i> إرسال الرد
+            </button>
+        </div>
+    </div>
+    <div class="reply-status" id="replyStatus" style="display:none;">
+        <span id="replyStatusMessage"></span>
+    </div>
+</div>
+                         
                         </div>
                     </section>
 

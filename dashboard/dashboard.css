@@ -1283,9 +1283,663 @@ html[dir="rtl"] .u-text-right { text-align: left; }
 
 /* ============================================================ */
 /* نهاية الأساس - END OF FOUNDATION                            */
-/* ============================================================ *//* ============================================================ */
-/* LOGS SECTION - سجل النشاطات                                  */
 /* ============================================================ */
+/* SOCIAL SECTION - روابط السوشيال ميديا                        */
+/* ============================================================ */
+/*
+   🎯 مطابقة 100% مع HTML:
+   - #social-section
+   - .section-header
+   - #clearSocialBtn
+   - #socialForm
+   - #social_linksGrid
+*/
+
+/* ============================================================ */
+/* 01. SECTION CONTAINER                                       */
+/* ============================================================ */
+
+#social-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* ============================================================ */
+/* 02. SECTION HEADER                                          */
+/* ============================================================ */
+
+#social-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#social-section .section-header h2 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#social-section .section-header h2 i {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+#clearSocialBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-tertiary);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 38px;
+}
+
+#clearSocialBtn:hover {
+    background: var(--color-danger-soft);
+       border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+#clearSocialBtn i {
+    font-size: var(--text-base);
+}
+
+#clearSocialBtn:active {
+    transform: scale(0.97);
+}
+
+#clearSocialBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ============================================================ */
+/* 03. SOCIAL STATS GRID                                       */
+/* ============================================================ */
+
+.social-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.social-stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.social-stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+.social-stat-card .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+.social-stat-card .stat-icon.purple {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.social-stat-card .stat-icon.green {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+}
+
+.social-stat-card .stat-icon.blue {
+    background: var(--color-info-soft);
+    color: var(--color-info);
+}
+
+.social-stat-card .stat-icon.orange {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+}
+
+.social-stat-card .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.social-stat-card .stat-info .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+.social-stat-card .stat-info .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.social-stat-card .stat-info .stat-sub {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+/* ============================================================ */
+/* 04. FORM CARD                                               */
+/* ============================================================ */
+
+.social-form-card {
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.social-form-card:hover {
+    border-color: var(--border-color-hover);
+}
+
+.social-form-card .form-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-4) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.social-form-card .form-title i {
+    color: var(--color-primary);
+}
+
+.social-form-card #socialForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: var(--space-3);
+    align-items: end;
+}
+
+.social-form-card .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.social-form-card .form-group label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+.social-form-card .form-group input {
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 40px;
+}
+
+.social-form-card .form-group input:hover {
+    background: var(--bg-input-hover);
+    border-color: var(--border-color-hover);
+}
+
+.social-form-card .form-group input:focus {
+    background: var(--bg-input-focus);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.social-form-card .form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.social-form-card .add-social-btn {
+    padding: var(--space-2) var(--space-6);
+    border: none;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    white-space: nowrap;
+}
+
+.social-form-card .add-social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--glow-primary);
+}
+
+.social-form-card .add-social-btn:active {
+    transform: scale(0.97);
+}
+
+.social-form-card .add-social-btn i {
+    font-size: var(--text-base);
+}
+
+/* ============================================================ */
+/* 05. SOCIAL GRID                                             */
+/* ============================================================ */
+
+#social_linksGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+    padding: var(--space-2) 0;
+}
+
+/* ============================================================ */
+/* 06. SOCIAL CARD                                             */
+/* ============================================================ */
+
+.social-item {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-fast) var(--ease-out);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    position: relative;
+    overflow: hidden;
+}
+
+.social-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+.social-item:hover::before {
+    opacity: 1;
+}
+
+.social-item:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+}
+
+.social-item .social-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.social-item .social-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.social-item:hover .social-icon-wrap {
+    transform: scale(1.05) rotate(-5deg);
+}
+
+/* Platform Colors */
+.social-item[data-platform="GitHub"] .social-icon-wrap { color: #fff; background: #24292e; border-color: #24292e; }
+.social-item[data-platform="LinkedIn"] .social-icon-wrap { color: #fff; background: #0a66c2; border-color: #0a66c2; }
+.social-item[data-platform="YouTube"] .social-icon-wrap { color: #fff; background: #ff0000; border-color: #ff0000; }
+.social-item[data-platform="Twitter"] .social-icon-wrap { color: #fff; background: #1da1f2; border-color: #1da1f2; }
+.social-item[data-platform="Instagram"] .social-icon-wrap { color: #fff; background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: #dc2743; }
+.social-item[data-platform="Facebook"] .social-icon-wrap { color: #fff; background: #1877f2; border-color: #1877f2; }
+.social-item[data-platform="TikTok"] .social-icon-wrap { color: #fff; background: #000; border-color: #000; }
+.social-item[data-platform="Snapchat"] .social-icon-wrap { color: #fff; background: #fffc00; border-color: #fffc00; }
+.social-item[data-platform="Pinterest"] .social-icon-wrap { color: #fff; background: #e60023; border-color: #e60023; }
+.social-item[data-platform="Reddit"] .social-icon-wrap { color: #fff; background: #ff4500; border-color: #ff4500; }
+.social-item[data-platform="Discord"] .social-icon-wrap { color: #fff; background: #5865f2; border-color: #5865f2; }
+.social-item[data-platform="WhatsApp"] .social-icon-wrap { color: #fff; background: #25d366; border-color: #25d366; }
+.social-item[data-platform="Telegram"] .social-icon-wrap { color: #fff; background: #0088cc; border-color: #0088cc; }
+
+.social-item .social-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.social-item .social-info .social-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    display: block;
+}
+
+.social-item .social-info .social-link {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--transition-fast) var(--ease-out);
+}
+
+.social-item .social-info .social-link:hover {
+    color: var(--color-primary);
+}
+
+.social-item .social-info .social-followers {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+}
+
+.social-item .social-info .social-followers i {
+    color: var(--color-warning);
+    font-size: var(--text-2xs);
+}
+
+.social-item .social-actions {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    border-top: 1px solid var(--border-color-divider);
+    padding-top: var(--space-2);
+}
+
+.social-item .social-actions button {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    flex: 1;
+}
+
+.social-item .social-actions .edit-social-btn {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.social-item .social-actions .edit-social-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.social-item .social-actions .delete-social-btn {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+}
+
+.social-item .social-actions .delete-social-btn:hover {
+    background: var(--color-danger);
+    color: #fff;
+}
+
+/* ============================================================ */
+/* 07. EMPTY STATE                                             */
+/* ============================================================ */
+
+.social-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+}
+
+.social-empty i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+    display: block;
+}
+
+.social-empty h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.social-empty p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    max-width: 320px;
+}
+
+/* ============================================================ */
+/* 08. LOADING SKELETON                                        */
+/* ============================================================ */
+
+.social-skeleton {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    animation: skeletonPulse 1.5s var(--ease-in-out) infinite;
+}
+
+.social-skeleton .skeleton-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    background: var(--border-color);
+}
+
+.social-skeleton .skeleton-name {
+    height: 16px;
+    width: 60%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-top: var(--space-2);
+}
+
+.social-skeleton .skeleton-link {
+    height: 12px;
+    width: 80%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-top: var(--space-1);
+}
+
+.social-skeleton .skeleton-followers {
+    height: 12px;
+    width: 40%;
+    border-radius: var(--radius-sm);
+    background: var(--border-color);
+    margin-top: var(--space-1);
+}
+
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ============================================================ */
+/* 09. RTL SUPPORT                                             */
+/* ============================================================ */
+
+html[dir="rtl"] .social-item .social-top {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .social-form-card #socialForm {
+    direction: rtl;
+}
+
+/* ============================================================ */
+/* 10. RESPONSIVE                                               */
+/* ============================================================ */
+
+@media (max-width: 1024px) {
+    #social-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+    }
+
+    #clearSocialBtn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .social-form-card #socialForm {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .social-form-card .add-social-btn {
+        grid-column: 1 / -1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .social-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .social-form-card #socialForm {
+        grid-template-columns: 1fr;
+    }
+
+    .social-form-card .add-social-btn {
+        grid-column: 1;
+    }
+
+    #social_linksGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .social-item .social-top {
+        flex-wrap: wrap;
+    }
+
+    .social-item .social-actions {
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+}
+
+@media (max-width: 480px) {
+    #social-section .section-header h2 {
+        font-size: var(--text-lg);
+    }
+
+    .social-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #social_linksGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .social-item {
+        padding: var(--space-3);
+    }
+
+    .social-form-card {
+        padding: var(--space-3);
+    }
+
+    .social-form-card .form-group input {
+        min-height: 36px;
+        font-size: var(--text-xs);
+    }
+
+    .social-form-card .add-social-btn {
+        min-height: 36px;
+        font-size: var(--text-sm);
+    }
+}
+
+/* ============================================================ */
+/* 11. THEME SUPPORT - Light Theme                             */
+/* ============================================================ */
+
+[data-theme="light"] .social-stat-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .social-form-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .social-item {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .social-item[data-platform="GitHub"] .social-icon-wrap {
+    background: #24292e;
+}
+
+/* ============================================================ */
+/* نهاية SOCIAL SECTION                                        */
+/* ============================================================ */
+
+
 /*
    🎯 مطابقة 100% مع HTML:
    - #logs-section
@@ -1769,6 +2423,613 @@ html[dir="rtl"] .u-text-right { text-align: left; }
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+/* تنسيق صندوق الرد داخل الداشبورد */
+/* ============================================================ */
+/* REPLY CARD - كارت الرد الاحترافي v2.0                      */
+/* ============================================================ */
+
+.reply-card {
+    margin-top: var(--space-6);
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-card), 0 0 40px var(--glow-primary);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    animation: replyCardSlideIn 0.4s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-medium) var(--ease-smooth);
+}
+
+/* glow effect */
+.reply-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 20%, var(--color-primary-soft) 0%, transparent 60%);
+    opacity: 0.3;
+    pointer-events: none;
+    animation: replyGlowPulse 4s var(--ease-in-out) infinite;
+}
+
+@keyframes replyGlowPulse {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.05); }
+}
+
+.reply-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-card-hover), 0 0 60px var(--glow-primary-strong);
+}
+
+@keyframes replyCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================================ */
+/* HEADER - رأس الكارت                                          */
+/* ============================================================ */
+
+.reply-card .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.reply-card .reply-header h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.reply-card .reply-header h4 i {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+    animation: replyIconPulse 2s var(--ease-in-out) infinite;
+}
+
+@keyframes replyIconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.reply-card .reply-header .reply-badge {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-semibold);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+}
+
+/* ============================================================ */
+/* CLOSE BUTTON - زر الإغلاق                                    */
+/* ============================================================ */
+
+.reply-card .close-reply-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.reply-card .close-reply-btn:hover {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.reply-card .close-reply-btn:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* ============================================================ */
+/* SENDER INFO - معلومات المرسل                                  */
+/* ============================================================ */
+
+.reply-card .reply-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.reply-card .reply-sender-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+.reply-card .reply-sender-info:hover {
+    border-color: var(--border-color-hover);
+    background: var(--glass-bg-hover);
+}
+
+.reply-card .reply-sender-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    padding: var(--space-1) 0;
+}
+
+.reply-card .reply-sender-info .info-item .info-icon {
+    color: var(--color-primary);
+    font-size: var(--text-xs);
+    width: 20px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.reply-card .reply-sender-info .info-item strong {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    word-break: break-word;
+}
+
+.reply-card .reply-sender-info .reply-sender-subject {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--border-color-divider);
+    padding-top: var(--space-3);
+    margin-top: var(--space-1);
+}
+
+/* ============================================================ */
+/* TEXTAREA - منطقة كتابة الرد                                  */
+/* ============================================================ */
+
+.reply-card .reply-message-area {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.reply-card .reply-message-area label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.reply-card .reply-message-area label i {
+    color: var(--color-primary);
+    font-size: var(--text-xs);
+}
+
+.reply-card .reply-message-area textarea {
+    width: 100%;
+    padding: var(--space-4);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    resize: vertical;
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 120px;
+    line-height: var(--line-relaxed);
+}
+
+.reply-card .reply-message-area textarea::placeholder {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.reply-card .reply-message-area textarea:hover {
+    background: var(--bg-input-hover);
+    border-color: var(--border-color-hover);
+}
+
+.reply-card .reply-message-area textarea:focus {
+    background: var(--bg-input-focus);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-ring), 0 0 30px var(--glow-primary);
+}
+
+/* ============================================================ */
+/* ACTIONS - الأزرار                                            */
+/* ============================================================ */
+
+.reply-card .reply-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    margin-top: var(--space-1);
+}
+
+/* زر الإلغاء */
+.reply-card .reply-actions .cancel-reply-btn {
+    padding: var(--space-3) var(--space-6);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+}
+
+.reply-card .reply-actions .cancel-reply-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.reply-card .reply-actions .cancel-reply-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* زر الإرسال */
+.reply-card .reply-actions .send-reply-btn {
+    padding: var(--space-3) var(--space-8);
+    border: none;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* زر الإرسال - glow effect */
+.reply-card .reply-actions .send-reply-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+.reply-card .reply-actions .send-reply-btn:hover::before {
+    transform: translateX(100%);
+}
+
+.reply-card .reply-actions .send-reply-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px var(--color-primary-glow), 0 0 60px var(--glow-primary);
+}
+
+.reply-card .reply-actions .send-reply-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.reply-card .reply-actions .send-reply-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.reply-card .reply-actions .send-reply-btn i {
+    font-size: var(--text-base);
+    transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.reply-card .reply-actions .send-reply-btn:hover i {
+    transform: translateX(4px) rotate(-15deg);
+}
+
+/* RTL Support for send button icon */
+html[dir="rtl"] .reply-card .reply-actions .send-reply-btn:hover i {
+    transform: translateX(-4px) rotate(15deg);
+}
+
+/* ============================================================ */
+/* STATUS - حالة الرد                                           */
+/* ============================================================ */
+
+.reply-card .reply-status {
+    padding: var(--space-3) var(--space-4);
+    margin-top: var(--space-3);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    background: var(--color-success-soft);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    animation: replyStatusFadeIn 0.3s var(--ease-smooth);
+}
+
+@keyframes replyStatusFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reply-card .reply-status.error {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.reply-card .reply-status .status-spinner {
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+    margin-right: var(--space-2);
+}
+
+/* ============================================================ */
+/* REPLY BUTTON - زر الرد جنب كل رسالة                          */
+/* ============================================================ */
+
+.reply-message-btn {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-full);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-family: var(--font-family);
+    opacity: 0;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 28px;
+    letter-spacing: var(--tracking-wide);
+}
+
+.message-item:hover .reply-message-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.reply-message-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+    transform: scale(1.08);
+    box-shadow: 0 0 20px var(--glow-primary);
+}
+
+.reply-message-btn:active {
+    transform: scale(0.92);
+}
+
+.reply-message-btn i {
+    font-size: var(--text-xs);
+}
+
+/* ============================================================ */
+/* RESPONSIVE                                                   */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+    .reply-card {
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+    }
+
+    .reply-card .reply-sender-info {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+        padding: var(--space-3);
+    }
+
+    .reply-card .reply-sender-info .reply-sender-subject {
+        grid-column: 1;
+        padding-top: var(--space-2);
+    }
+
+    .reply-card .reply-actions {
+        flex-direction: column-reverse;
+        gap: var(--space-2);
+    }
+
+    .reply-card .reply-actions .cancel-reply-btn,
+    .reply-card .reply-actions .send-reply-btn {
+        width: 100%;
+        justify-content: center;
+        padding: var(--space-3) var(--space-4);
+        min-height: 48px;
+    }
+
+    .reply-card .reply-header h4 {
+        font-size: var(--text-base);
+    }
+
+    .reply-card .reply-message-area textarea {
+        min-height: 100px;
+        padding: var(--space-3);
+    }
+
+    .reply-message-btn {
+        opacity: 1;
+        pointer-events: auto;
+        padding: var(--space-1) var(--space-2);
+        font-size: var(--text-2xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .reply-card {
+        padding: var(--space-3);
+        border-radius: var(--radius-lg);
+        margin-top: var(--space-3);
+    }
+
+    .reply-card .reply-header {
+        padding-bottom: var(--space-2);
+        margin-bottom: var(--space-2);
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    .reply-card .reply-header h4 {
+        font-size: var(--text-sm);
+    }
+
+    .reply-card .reply-header .reply-badge {
+        font-size: var(--text-2xs);
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .reply-card .close-reply-btn {
+        width: 32px;
+        height: 32px;
+        font-size: var(--text-base);
+    }
+
+    .reply-card .reply-sender-info .info-item {
+        font-size: var(--text-xs);
+        flex-wrap: wrap;
+    }
+
+    .reply-card .reply-actions .send-reply-btn {
+        font-size: var(--text-sm);
+        padding: var(--space-3);
+    }
+
+    .reply-card .reply-actions .cancel-reply-btn {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-4);
+    }
+
+    .reply-card .reply-status {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-3);
+    }
+}
+
+/* ============================================================ */
+/* THEME SUPPORT                                                */
+/* ============================================================ */
+
+[data-theme="light"] .reply-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="light"] .reply-card:hover {
+    border-color: var(--color-primary);
+}
+
+[data-theme="light"] .reply-card .reply-sender-info {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .reply-card .reply-sender-info:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .reply-card .reply-message-area textarea {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .reply-card .reply-message-area textarea:focus {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .reply-card .reply-actions .send-reply-btn {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+}
+
+[data-theme="light"] .reply-card .reply-actions .cancel-reply-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .reply-card .reply-actions .cancel-reply-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="oled"] .reply-card {
+    background: rgba(8, 8, 8, 0.95);
+    border-color: rgba(139, 92, 246, 0.15);
+}
+
+[data-theme="oled"] .reply-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-card-hover), 0 0 80px var(--glow-primary-strong);
+}
+
+[data-theme="royal-purple"] .reply-card {
+    border-color: rgba(157, 107, 255, 0.2);
+    box-shadow: var(--shadow-card), 0 0 50px rgba(157, 107, 255, 0.15);
+}
+
+[data-theme="royal-purple"] .reply-card:hover {
+    border-color: #9d6bff;
+    box-shadow: var(--shadow-card-hover), 0 0 80px rgba(157, 107, 255, 0.25);
+}
+
+[data-theme="royal-purple"] .reply-card .reply-actions .send-reply-btn {
+    background: linear-gradient(135deg, #9d6bff, #7c3aed);
+}
+
+/* ============================================================ */
+/* نهاية REPLY CARD v2.0                                       */
+/* ============================================================ */
 
 /* ============================================================ */
 /* 10. RTL SUPPORT                                             */

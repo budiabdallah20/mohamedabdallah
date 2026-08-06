@@ -887,6 +887,1097 @@ console.log('✅ Error handlers registered');
 
 
 
+
+// ============================================================ */
+// 📱 SOCIAL ENGINE - روابط السوشيال ميديا v3.0                */
+// ============================================================ */
+/*
+   🎯 المميزات:
+   - ✅ عرض جميع روابط السوشيال
+   - ✅ إضافة منصة جديدة
+   - ✅ تعديل منصة
+   - ✅ حذف منصة
+   - ✅ تفريغ الكل
+   - ✅ إحصائيات (إجمالي المنصات، إجمالي المتابعين، المتوسط، الأقوى)
+   - ✅ تخزين في localStorage
+   - ✅ مزامنة مع Supabase
+   - ✅ Lazy Loading
+   - ✅ معالجة الأخطاء
+   - ✅ Toast Notifications
+   - ✅ Logs Integration
+   - ✅ مطابق 100% مع Schema و HTML
+*/
+
+// ============================================================ */
+// 01. SOCIAL ENGINE CLASS                                      */
+// ============================================================ */
+
+class SocialEngine {
+    constructor() {
+        // ============================================================
+        // DOM Elements - مطابق للـ HTML
+        // ============================================================
+        this.container = document.getElementById('social_linksGrid');
+        this.form = document.getElementById('socialForm');
+        this.clearBtn = document.getElementById('clearSocialBtn');
+        
+        // Form inputs - مطابق للـ HTML
+        this.platformInput = document.getElementById('socialPlatform');
+        this.linkInput = document.getElementById('socialLink');
+        this.followersInput = document.getElementById('socialFollowers');
+        
+        // Stats elements - مطابق للـ HTML
+        this.totalPlatformsEl = document.getElementById('stat-total-platforms');
+        this.totalFollowersEl = document.getElementById('stat-total-followers');
+        this.avgFollowersEl = document.getElementById('stat-avg-followers');
+        this.topPlatformEl = document.getElementById('stat-top-platform');
+        
+        // ============================================================
+        // State
+        // ============================================================
+        this.socials = [];
+        this.isLoading = false;
+        this.currentEditId = null;
+        this._isSaving = false;
+        this._isInitialized = false;
+        
+        // ============================================================
+        // Platform Icons Mapping - مطابق لـ Schema
+        // ============================================================
+        this.platformIcons = {
+            'github': 'fa-brands fa-github',
+            'linkedin': 'fa-brands fa-linkedin',
+            'youtube': 'fa-brands fa-youtube',
+            'twitter': 'fa-brands fa-twitter',
+            'x': 'fa-brands fa-x-twitter',
+            'instagram': 'fa-brands fa-instagram',
+            'facebook': 'fa-brands fa-facebook',
+            'tiktok': 'fa-brands fa-tiktok',
+            'snapchat': 'fa-brands fa-snapchat',
+            'pinterest': 'fa-brands fa-pinterest',
+            'reddit': 'fa-brands fa-reddit',
+            'discord': 'fa-brands fa-discord',
+            'whatsapp': 'fa-brands fa-whatsapp',
+            'telegram': 'fa-brands fa-telegram',
+            'twitch': 'fa-brands fa-twitch',
+            'spotify': 'fa-brands fa-spotify',
+            'devto': 'fa-brands fa-dev',
+            'medium': 'fa-brands fa-medium',
+            'stackoverflow': 'fa-brands fa-stack-overflow',
+            'codepen': 'fa-brands fa-codepen',
+            'codesandbox': 'fa-brands fa-codesandbox',
+            'figma': 'fa-brands fa-figma',
+            'dribbble': 'fa-brands fa-dribbble',
+            'behance': 'fa-brands fa-behance',
+            'gitlab': 'fa-brands fa-gitlab',
+            'bitbucket': 'fa-brands fa-bitbucket',
+            'npm': 'fa-brands fa-npm',
+            'docker': 'fa-brands fa-docker',
+            'slack': 'fa-brands fa-slack',
+            'mastodon': 'fa-brands fa-mastodon',
+            'threads': 'fa-brands fa-threads'
+        };
+        
+        // ============================================================
+        // INIT
+        // ============================================================
+        this.init();
+    }
+    
+    // ============================================================
+    // 01. INITIALIZATION
+    // ============================================================
+    
+    init() {
+        console.log('📱 Social Engine v3.0 initializing...');
+        
+        try {
+            // التحقق من وجود العناصر
+            this.validateElements();
+            
+            // Load from storage
+            this.loadFromStorage();
+            
+            // Setup events
+            this.setupEvents();
+            
+            // Render
+            this.render();
+            
+            // Load from Supabase after delay
+            setTimeout(() => {
+                this.loadFromSupabase();
+            }, 800);
+            
+            this._isInitialized = true;
+            
+            console.log('✅ Social Engine v3.0 ready');
+            console.log(`📊 ${this.socials.length} social links loaded`);
+            
+            // Log to global
+            if (window._logsEngine) {
+                window._logsEngine.addLog(
+                    `📱 تم تحميل محرك السوشيال ميديا (${this.socials.length} منصة)`,
+                    'social'
+                );
+            }
+        } catch (error) {
+            console.error('❌ Social Engine init error:', error);
+            Utils.toast('❌ فشل تحميل محرك السوشيال ميديا', 'error');
+        }
+    }
+    
+    validateElements() {
+        const elements = [
+            { el: this.container, name: 'social_linksGrid' },
+            { el: this.form, name: 'socialForm' },
+            { el: this.clearBtn, name: 'clearSocialBtn' },
+            { el: this.platformInput, name: 'socialPlatform' },
+            { el: this.linkInput, name: 'socialLink' },
+            { el: this.followersInput, name: 'socialFollowers' },
+            { el: this.totalPlatformsEl, name: 'stat-total-platforms' },
+            { el: this.totalFollowersEl, name: 'stat-total-followers' },
+            { el: this.avgFollowersEl, name: 'stat-avg-followers' },
+            { el: this.topPlatformEl, name: 'stat-top-platform' }
+        ];
+        
+        const missing = elements.filter(e => !e.el);
+        if (missing.length > 0) {
+            console.warn('⚠️ Missing elements:', missing.map(e => e.name).join(', '));
+        }
+    }
+    
+    // ============================================================
+    // 02. STORAGE MANAGEMENT
+    // ============================================================
+    
+    loadFromStorage() {
+        try {
+            const saved = localStorage.getItem('dashboard-socials');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    this.socials = parsed.map(item => ({
+                        ...item,
+                        created_at: item.created_at ? new Date(item.created_at) : new Date()
+                    }));
+                    console.log(`📂 Loaded ${this.socials.length} socials from storage`);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not load socials from storage:', e);
+        }
+        
+        // Default socials if nothing saved
+        this.loadDefaultSocials();
+    }
+    
+    saveToStorage() {
+        try {
+            localStorage.setItem('dashboard-socials', JSON.stringify(this.socials));
+        } catch (e) {
+            console.warn('⚠️ Could not save socials to storage:', e);
+        }
+    }
+    
+    loadDefaultSocials() {
+        const now = Date.now();
+        this.socials = [
+            {
+                id: Date.now() - 100000,
+                platform: 'GitHub',
+                link: 'https://github.com/budiabdallah20',
+                followers: 2500,
+                icon: 'fa-brands fa-github',
+                is_active: true,
+                display_order: 1,
+                created_at: new Date(now - 3600000)
+            },
+            {
+                id: Date.now() - 200000,
+                platform: 'LinkedIn',
+                link: 'https://linkedin.com/in/mohamedabdallah',
+                followers: 1800,
+                icon: 'fa-brands fa-linkedin',
+                is_active: true,
+                display_order: 2,
+                created_at: new Date(now - 7200000)
+            },
+            {
+                id: Date.now() - 300000,
+                platform: 'YouTube',
+                link: 'https://youtube.com/@mohamedabdallah',
+                followers: 3500,
+                icon: 'fa-brands fa-youtube',
+                is_active: true,
+                display_order: 3,
+                created_at: new Date(now - 10800000)
+            },
+            {
+                id: Date.now() - 400000,
+                platform: 'Twitter',
+                link: 'https://twitter.com/mohamedabdallah',
+                followers: 1200,
+                icon: 'fa-brands fa-twitter',
+                is_active: true,
+                display_order: 4,
+                created_at: new Date(now - 14400000)
+            },
+            {
+                id: Date.now() - 500000,
+                platform: 'Instagram',
+                link: 'https://instagram.com/mohamedabdallah',
+                followers: 4200,
+                icon: 'fa-brands fa-instagram',
+                is_active: true,
+                display_order: 5,
+                created_at: new Date(now - 18000000)
+            }
+        ];
+        this.saveToStorage();
+        console.log('📂 Default socials loaded');
+    }
+    
+    // ============================================================
+    // 03. SUPABASE OPERATIONS - مطابق للـ Schema
+    // ============================================================
+    
+    async loadFromSupabase() {
+        try {
+            if (!supabaseClient) {
+                console.warn('⚠️ Supabase client not ready');
+                return;
+            }
+            
+            console.log('📤 Loading socials from Supabase...');
+            
+            const { data, error } = await supabaseClient
+                .from('social_links')
+                .select('*')
+                .order('display_order', { ascending: true });
+            
+            if (error) {
+                console.error('❌ Supabase load error:', error);
+                console.error('❌ Error details:', error.message);
+                return;
+            }
+            
+            console.log('📥 Data received from Supabase:', data?.length || 0, 'records');
+            
+            if (data && data.length > 0) {
+                // Create sets for duplicate detection
+                const existingIds = new Set(this.socials.map(s => s.id));
+                const existingContent = new Set(
+                    this.socials.map(s => `${s.platform.toLowerCase()}-${s.link}`)
+                );
+                
+                let newCount = 0;
+                
+                data.forEach(item => {
+                    // Skip if ID exists
+                    if (existingIds.has(item.id)) return;
+                    
+                    // Skip if content exists
+                    const contentKey = `${item.platform.toLowerCase()}-${item.link}`;
+                    if (existingContent.has(contentKey)) return;
+                    
+                    // Add new social - مطابق للـ Schema
+                    const newSocial = {
+                        id: item.id,
+                        platform: item.platform,
+                        link: item.link,
+                        followers: item.followers || 0,
+                        icon: item.icon || this.getPlatformIcon(item.platform),
+                        is_active: item.is_active !== false,
+                        display_order: item.display_order || 0,
+                        created_at: item.created_at ? new Date(item.created_at) : new Date()
+                    };
+                    
+                    this.socials.push(newSocial);
+                    existingIds.add(item.id);
+                    existingContent.add(contentKey);
+                    newCount++;
+                });
+                
+                if (newCount > 0) {
+                    this.saveToStorage();
+                    this.render();
+                    console.log(`📂 Added ${newCount} new socials from Supabase`);
+                    
+                    if (window._logsEngine) {
+                        window._logsEngine.addLog(
+                            `📱 تم استيراد ${newCount} منصة من Supabase`,
+                            'social'
+                        );
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('❌ Error loading from Supabase:', e);
+        }
+    }
+    
+    async saveToSupabase(item) {
+        try {
+            if (!supabaseClient) {
+                console.warn('⚠️ Supabase client not ready, saving to localStorage only');
+                return false;
+            }
+            
+            console.log('📤 Saving to Supabase:', item.platform);
+            
+            // Check if exists
+            const { data: existing, error: checkError } = await supabaseClient
+                .from('social_links')
+                .select('id')
+                .eq('id', item.id)
+                .limit(1);
+            
+            if (checkError) {
+                console.warn('⚠️ Could not check existing:', checkError);
+            }
+            
+            const isUpdate = existing && existing.length > 0;
+            
+            if (isUpdate) {
+                // Update - مطابق للـ Schema
+                const { error } = await supabaseClient
+                    .from('social_links')
+                    .update({
+                        platform: item.platform,
+                        link: item.link,
+                        followers: item.followers || 0,
+                        icon: item.icon || this.getPlatformIcon(item.platform),
+                        is_active: item.is_active !== false,
+                        display_order: item.display_order || 0
+                    })
+                    .eq('id', item.id);
+                
+                if (error) {
+                    console.error('❌ Failed to update social:', error);
+                    Utils.toast(`❌ فشل تحديث ${item.platform}`, 'error');
+                    return false;
+                }
+                
+                console.log('✅ Social updated in Supabase:', item.platform);
+                Utils.toast(`✅ تم تحديث ${item.platform}`, 'success');
+                return true;
+            } else {
+                // Insert - مطابق للـ Schema
+                const { error } = await supabaseClient
+                    .from('social_links')
+                    .insert([{
+                        id: item.id,
+                        platform: item.platform,
+                        link: item.link,
+                        followers: item.followers || 0,
+                        icon: item.icon || this.getPlatformIcon(item.platform),
+                        is_active: item.is_active !== false,
+                        display_order: item.display_order || 0,
+                        created_at: item.created_at?.toISOString() || new Date().toISOString()
+                    }]);
+                
+                if (error) {
+                    console.error('❌ Failed to save social:', error);
+                    Utils.toast(`❌ فشل حفظ ${item.platform}`, 'error');
+                    return false;
+                }
+                
+                console.log('✅ Social saved to Supabase:', item.platform);
+                Utils.toast(`✅ تم حفظ ${item.platform}`, 'success');
+                return true;
+            }
+        } catch (e) {
+            console.error('❌ Error saving to Supabase:', e);
+            Utils.toast('❌ خطأ في حفظ البيانات', 'error');
+            return false;
+        }
+    }
+    
+    async deleteFromSupabase(id) {
+        try {
+            if (!supabaseClient) return false;
+            
+            console.log('📤 Deleting from Supabase:', id);
+            
+            const { error } = await supabaseClient
+                .from('social_links')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                console.error('❌ Failed to delete from Supabase:', error);
+                Utils.toast('❌ فشل حذف المنصة', 'error');
+                return false;
+            }
+            
+            console.log('✅ Social deleted from Supabase:', id);
+            return true;
+        } catch (e) {
+            console.error('❌ Error deleting from Supabase:', e);
+            return false;
+        }
+    }
+    
+    async syncAllToSupabase() {
+        if (this.socials.length === 0) {
+            Utils.toast('⚠️ لا توجد منصات للمزامنة', 'warning');
+            return;
+        }
+        
+        Utils.toast('🔄 جاري المزامنة مع Supabase...', 'info');
+        
+        let successCount = 0;
+        let failCount = 0;
+        
+        for (const item of this.socials) {
+            const result = await this.saveToSupabase(item);
+            if (result) {
+                successCount++;
+            } else {
+                failCount++;
+            }
+        }
+        
+        if (failCount === 0) {
+            Utils.toast(`✅ تمت المزامنة بنجاح (${successCount} منصة)`, 'success');
+        } else {
+            Utils.toast(`⚠️ تمت المزامنة جزئياً (${successCount} نجاح، ${failCount} فشل)`, 'warning');
+        }
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `📱 مزامنة السوشيال ميديا: ${successCount} نجاح، ${failCount} فشل`,
+                'social'
+            );
+        }
+    }
+    
+    // ============================================================
+    // 04. EVENT SETUP
+    // ============================================================
+    
+    setupEvents() {
+        // Form submit
+        if (this.form) {
+            this.form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleFormSubmit();
+            });
+        }
+        
+        // Clear button
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', () => {
+                this.clearAll();
+            });
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Shift+S = Add social
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                this.platformInput?.focus();
+            }
+        });
+        
+        // Listen for social updates from website
+        document.addEventListener('dashboard:social-update', (e) => {
+            const { platform, link, followers } = e.detail || {};
+            if (platform && link) {
+                this.addSocial(platform, link, followers || 0);
+            }
+        });
+        
+        console.log('✅ Social events setup complete');
+    }
+    
+    // ============================================================
+    // 05. FORM HANDLING
+    // ============================================================
+    
+    handleFormSubmit() {
+        if (this._isSaving) {
+            Utils.toast('⏳ جاري الحفظ...', 'info');
+            return;
+        }
+        
+        const platform = this.platformInput?.value?.trim();
+        const link = this.linkInput?.value?.trim();
+        const followers = parseInt(this.followersInput?.value) || 0;
+        
+        // Validate platform
+        if (!platform) {
+            Utils.toast('⚠️ الرجاء إدخال اسم المنصة', 'warning');
+            this.platformInput?.focus();
+            return;
+        }
+        
+        // Validate link
+        if (!link) {
+            Utils.toast('⚠️ الرجاء إدخال رابط البروفايل', 'warning');
+            this.linkInput?.focus();
+            return;
+        }
+        
+        // Validate URL
+        try {
+            const url = new URL(link);
+            if (!url.protocol.startsWith('http')) {
+                throw new Error('Invalid protocol');
+            }
+        } catch {
+            Utils.toast('⚠️ الرابط غير صحيح (يجب أن يبدأ بـ http:// أو https://)', 'warning');
+            this.linkInput?.focus();
+            return;
+        }
+        
+        // Check for duplicate platform (case insensitive)
+        const duplicate = this.socials.find(s => 
+            s.platform.toLowerCase() === platform.toLowerCase() &&
+            s.id !== this.currentEditId
+        );
+        
+        if (duplicate) {
+            Utils.toast(`⚠️ منصة "${platform}" موجودة بالفعل`, 'warning');
+            this.platformInput?.focus();
+            this.platformInput?.select();
+            return;
+        }
+        
+        if (this.currentEditId) {
+            // Update existing
+            this.updateSocial(this.currentEditId, platform, link, followers);
+        } else {
+            // Add new
+            this.addSocial(platform, link, followers);
+        }
+    }
+    
+    resetForm() {
+        if (this.platformInput) this.platformInput.value = '';
+        if (this.linkInput) this.linkInput.value = '';
+        if (this.followersInput) this.followersInput.value = '';
+        this.currentEditId = null;
+        this._isSaving = false;
+        
+        const submitBtn = this.form?.querySelector('.add-social-btn');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> إضافة';
+        }
+        
+        const title = this.form?.querySelector('.form-title');
+        if (title) {
+            title.innerHTML = '<i class="fa-solid fa-plus-circle"></i> إضافة منصة جديدة';
+        }
+    }
+    
+    // ============================================================
+    // 06. CRUD OPERATIONS
+    // ============================================================
+    
+    addSocial(platform, link, followers) {
+        if (this._isSaving) return null;
+        
+        // Prevent duplicates
+        const duplicate = this.socials.find(s => 
+            s.platform.toLowerCase() === platform.toLowerCase()
+        );
+        
+        if (duplicate) {
+            Utils.toast(`⚠️ منصة "${platform}" موجودة بالفعل`, 'warning');
+            return null;
+        }
+        
+        const newItem = {
+            id: Date.now() + Math.random() * 1000,
+            platform: platform.trim(),
+            link: link.trim(),
+            followers: followers || 0,
+            icon: this.getPlatformIcon(platform),
+            is_active: true,
+            display_order: this.socials.length + 1,
+            created_at: new Date()
+        };
+        
+        this.socials.unshift(newItem);
+        this.saveToStorage();
+        this.render();
+        
+        // Save to Supabase (async)
+        this._isSaving = true;
+        this.saveToSupabase(newItem).finally(() => {
+            this._isSaving = false;
+        });
+        
+        this.resetForm();
+        
+        Utils.toast(`✅ تم إضافة ${newItem.platform}`, 'success');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `📱 تم إضافة منصة: ${newItem.platform}`,
+                'social',
+                `${newItem.followers} متابع`
+            );
+        }
+        
+        return newItem;
+    }
+    
+    updateSocial(id, platform, link, followers) {
+        if (this._isSaving) return;
+        
+        const item = this.socials.find(s => s.id === id);
+        if (!item) {
+            Utils.toast('❌ المنصة غير موجودة', 'error');
+            return;
+        }
+        
+        const oldPlatform = item.platform;
+        item.platform = platform.trim();
+        item.link = link.trim();
+        item.followers = followers || 0;
+        item.icon = this.getPlatformIcon(platform);
+        
+        this.saveToStorage();
+        this.render();
+        
+        // Save to Supabase (async)
+        this._isSaving = true;
+        this.saveToSupabase(item).finally(() => {
+            this._isSaving = false;
+        });
+        
+        this.resetForm();
+        
+        Utils.toast(`✅ تم تحديث ${item.platform}`, 'success');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `📱 تم تحديث منصة: ${oldPlatform} → ${item.platform}`,
+                'social',
+                `${item.followers} متابع`
+            );
+        }
+    }
+    
+    deleteSocial(id) {
+        const item = this.socials.find(s => s.id === id);
+        if (!item) return;
+        
+        if (!confirm(`هل تريد حذف منصة "${item.platform}"؟`)) return;
+        
+        this.socials = this.socials.filter(s => s.id !== id);
+        this.saveToStorage();
+        this.render();
+        
+        // Delete from Supabase (async)
+        this.deleteFromSupabase(id);
+        
+        Utils.toast(`🗑️ تم حذف ${item.platform}`, 'info');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🗑️ تم حذف منصة: ${item.platform}`,
+                'social'
+            );
+        }
+    }
+    
+    clearAll() {
+        if (this.socials.length === 0) {
+            Utils.toast('⚠️ لا توجد منصات لحذفها', 'warning');
+            return;
+        }
+        
+        if (!confirm(`هل تريد حذف جميع المنصات (${this.socials.length})؟`)) return;
+        
+        const count = this.socials.length;
+        
+        // Delete all from Supabase (async)
+        this.socials.forEach(item => {
+            this.deleteFromSupabase(item.id);
+        });
+        
+        this.socials = [];
+        this.saveToStorage();
+        this.render();
+        
+        Utils.toast(`🗑️ تم حذف ${count} منصة`, 'success');
+        
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `🗑️ تم حذف جميع المنصات (${count})`,
+                'social'
+            );
+        }
+    }
+    
+    // ============================================================
+    // 07. RENDER ENGINE
+    // ============================================================
+    
+    render() {
+        if (!this.container) {
+            console.warn('⚠️ #social_linksGrid not found');
+            return;
+        }
+        
+        if (this.isLoading) {
+            this.renderLoading();
+            return;
+        }
+        
+        if (this.socials.length === 0) {
+            this.renderEmpty();
+            this.updateStats();
+            this.updateClearButton();
+            return;
+        }
+        
+        // Sort by display_order
+        const sorted = [...this.socials].sort((a, b) => 
+            (a.display_order || 0) - (b.display_order || 0)
+        );
+        
+        this.container.innerHTML = '';
+        
+        sorted.forEach(item => {
+            this.container.appendChild(this.createSocialItem(item));
+        });
+        
+        this.updateStats();
+        this.updateClearButton();
+    }
+    
+    createSocialItem(item) {
+        const div = document.createElement('div');
+        div.className = 'social-item';
+        div.dataset.id = item.id;
+        div.dataset.platform = item.platform;
+        
+        const formattedFollowers = this.formatNumber(item.followers || 0);
+        const icon = item.icon || this.getPlatformIcon(item.platform);
+        const truncatedLink = this.truncateUrl(item.link);
+        
+        div.innerHTML = `
+            <div class="social-top">
+                <div class="social-icon-wrap">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="social-info">
+                    <span class="social-name">${this.escapeHtml(item.platform)}</span>
+                    <a href="${this.escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="social-link" title="${this.escapeHtml(item.link)}">
+                        ${this.escapeHtml(truncatedLink)}
+                    </a>
+                    <span class="social-followers">
+                        <i class="fa-solid fa-user-group"></i>
+                        ${formattedFollowers} متابع
+                    </span>
+                </div>
+            </div>
+            <div class="social-actions">
+                <button class="edit-social-btn" data-id="${item.id}" title="تعديل">
+                    <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+                <button class="delete-social-btn" data-id="${item.id}" title="حذف">
+                    <i class="fa-solid fa-trash"></i> حذف
+                </button>
+            </div>
+        `;
+        
+        // Edit button
+        const editBtn = div.querySelector('.edit-social-btn');
+        if (editBtn) {
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.editSocial(item.id);
+            });
+        }
+        
+        // Delete button
+        const deleteBtn = div.querySelector('.delete-social-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteSocial(item.id);
+            });
+        }
+        
+        // Click on card to open link
+        div.addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('a')) return;
+            window.open(item.link, '_blank');
+        });
+        
+        return div;
+    }
+    
+    renderEmpty() {
+        this.container.innerHTML = `
+            <div class="social-empty">
+                <i class="fa-solid fa-share-nodes"></i>
+                <h4>لا توجد منصات</h4>
+                <p>أضف روابط السوشيال ميديا الخاصة بك لتظهر في الموقع.</p>
+                <button class="saas-btn saas-btn-primary" onclick="window._socialEngine?.platformInput?.focus()">
+                    <i class="fa-solid fa-plus"></i> إضافة منصة
+                </button>
+            </div>
+        `;
+    }
+    
+    renderLoading() {
+        this.container.innerHTML = `
+            <div class="social-skeleton">
+                <div class="skeleton-icon"></div>
+                <div class="skeleton-name"></div>
+                <div class="skeleton-link"></div>
+                <div class="skeleton-followers"></div>
+            </div>
+            <div class="social-skeleton">
+                <div class="skeleton-icon"></div>
+                <div class="skeleton-name"></div>
+                <div class="skeleton-link"></div>
+                <div class="skeleton-followers"></div>
+            </div>
+            <div class="social-skeleton">
+                <div class="skeleton-icon"></div>
+                <div class="skeleton-name"></div>
+                <div class="skeleton-link"></div>
+                <div class="skeleton-followers"></div>
+            </div>
+        `;
+    }
+    
+    // ============================================================
+    // 08. EDIT SOCIAL
+    // ============================================================
+    
+    editSocial(id) {
+        const item = this.socials.find(s => s.id === id);
+        if (!item) {
+            Utils.toast('❌ المنصة غير موجودة', 'error');
+            return;
+        }
+        
+        this.currentEditId = id;
+        
+        if (this.platformInput) this.platformInput.value = item.platform;
+        if (this.linkInput) this.linkInput.value = item.link;
+        if (this.followersInput) this.followersInput.value = item.followers || 0;
+        
+        const submitBtn = this.form?.querySelector('.add-social-btn');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> تحديث';
+        }
+        
+        const title = this.form?.querySelector('.form-title');
+        if (title) {
+            title.innerHTML = `<i class="fa-solid fa-pen"></i> تعديل: ${item.platform}`;
+        }
+        
+        this.platformInput?.focus();
+        this.platformInput?.select();
+        
+        // Scroll to form
+        this.form?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        Utils.toast(`✏️ جاري تعديل ${item.platform}`, 'info');
+    }
+    
+    // ============================================================
+    // 09. STATS
+    // ============================================================
+    
+    updateStats() {
+        const total = this.socials.length;
+        const totalFollowers = this.socials.reduce((sum, s) => sum + (s.followers || 0), 0);
+        const avg = total > 0 ? Math.round(totalFollowers / total) : 0;
+        
+        // Find top platform
+        let topPlatform = '-';
+        let topFollowers = 0;
+        this.socials.forEach(s => {
+            const followers = s.followers || 0;
+            if (followers > topFollowers) {
+                topFollowers = followers;
+                topPlatform = s.platform;
+            }
+        });
+        
+        if (this.totalPlatformsEl) this.totalPlatformsEl.textContent = total;
+        if (this.totalFollowersEl) this.totalFollowersEl.textContent = this.formatNumber(totalFollowers);
+        if (this.avgFollowersEl) this.avgFollowersEl.textContent = this.formatNumber(avg);
+        if (this.topPlatformEl) this.topPlatformEl.textContent = topPlatform || '-';
+    }
+    
+    getStats() {
+        const total = this.socials.length;
+        const totalFollowers = this.socials.reduce((sum, s) => sum + (s.followers || 0), 0);
+        const avg = total > 0 ? Math.round(totalFollowers / total) : 0;
+        
+        let topPlatform = null;
+        let topFollowers = 0;
+        this.socials.forEach(s => {
+            const followers = s.followers || 0;
+            if (followers > topFollowers) {
+                topFollowers = followers;
+                topPlatform = s;
+            }
+        });
+        
+        return { total, totalFollowers, avg, topPlatform };
+    }
+    
+    // ============================================================
+    // 10. HELPERS
+    // ============================================================
+    
+    getPlatformIcon(platform) {
+        if (!platform) return 'fa-solid fa-link';
+        const key = platform.toLowerCase().trim();
+        return this.platformIcons[key] || 'fa-solid fa-link';
+    }
+    
+    formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+        return num.toString();
+    }
+    
+    truncateUrl(url) {
+        if (!url) return '';
+        try {
+            const parsed = new URL(url);
+            let path = parsed.pathname;
+            if (path.length > 25) {
+                path = path.substring(0, 22) + '...';
+            }
+            return parsed.hostname + path;
+        } catch {
+            return url.length > 40 ? url.substring(0, 37) + '...' : url;
+        }
+    }
+    
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    updateClearButton() {
+        if (this.clearBtn) {
+            this.clearBtn.disabled = this.socials.length === 0;
+        }
+    }
+    
+    setLoading(loading) {
+        this.isLoading = loading;
+        this.render();
+    }
+    
+    refresh() {
+        console.log('🔄 Refreshing socials...');
+        this.loadFromSupabase();
+        this.render();
+        Utils.toast('🔄 تم تحديث البيانات', 'info');
+    }
+    
+    // ============================================================
+    // 11. CLEANUP
+    // ============================================================
+    
+    destroy() {
+        this._isInitialized = false;
+        console.log('📱 Social Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 12. INITIALIZATION                                            */
+// ============================================================ */
+
+window._socialEngine = null;
+
+function getSocialEngine() {
+    if (!window._socialEngine) {
+        window._socialEngine = new SocialEngine();
+    }
+    return window._socialEngine;
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    const socialSection = document.getElementById('social-section');
+    if (socialSection) {
+        if (socialSection.classList.contains('active')) {
+            getSocialEngine();
+        } else {
+            const observer = new MutationObserver(() => {
+                if (socialSection.classList.contains('active') && !window._socialEngine) {
+                    getSocialEngine();
+                    observer.disconnect();
+                }
+            });
+            observer.observe(socialSection, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        }
+    }
+});
+
+// If DOM already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    const socialSection = document.getElementById('social-section');
+    if (socialSection && socialSection.classList.contains('active') && !window._socialEngine) {
+        getSocialEngine();
+    }
+}
+
+// ============================================================ */
+// 13. CONSOLE HELPERS                                          */
+// ============================================================ */
+
+console.log(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   📱 SOCIAL ENGINE v3.0 - FINAL                             ║
+║                                                              ║
+║   ✅ Social Links Management                                ║
+║   ✅ Platform Icons Auto-Detection                         ║
+║   ✅ Followers Counter                                     ║
+║   ✅ Stats (Total, Avg, Top Platform)                      ║
+║   ✅ LocalStorage Persistence                              ║
+║   ✅ Supabase Sync                                         ║
+║   ✅ Lazy Loading                                          ║
+║   ✅ Error Handling                                        ║
+║   ✅ Toast Notifications                                   ║
+║   ✅ Logs Integration                                      ║
+║   ✅ 100% مطابق مع Schema و HTML                           ║
+║                                                              ║
+║   📦 Available: window._socialEngine                        ║
+║   🔧 Methods:                                              ║
+║   • addSocial(platform, link, followers)                   ║
+║   • deleteSocial(id)                                       ║
+║   • editSocial(id)                                         ║
+║   • refresh()                                              ║
+║   • syncAllToSupabase()                                    ║
+║   • getStats()                                             ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`);
+
+// ============================================================ */
+// نهاية SOCIAL ENGINE v3.0                                    */
+// ============================================================ */
+
+
+
 // ============================================================ */
 // ✉️ MESSAGES ENGINE - رسائل الزوار                          */
 // ============================================================ */
@@ -946,7 +2037,7 @@ class MessagesEngine {
         
         // Setup events
         this.setupEvents();
-        
+         this.setupReplyEvents();
         // Render
         this.render();
          setTimeout(() => this.loadFromSupabase(), 500);
@@ -1241,65 +2332,80 @@ async loadFromSupabase() {
     // ============================================================
     // 06. CREATE MESSAGE ITEM
     // ============================================================
+   createMessageItem(msg) {
+    const isUnread = !msg.read;
+    const isReplied = msg.replied;
     
-    createMessageItem(msg) {
-        const isUnread = !msg.read;
-        const isReplied = msg.replied;
-        
-        const div = document.createElement('div');
-        div.className = `message-item ${isUnread ? 'unread' : ''}`;
-        div.dataset.id = msg.id;
-        
-        // Format date and time
-        const dateStr = this.formatDate(msg.date);
-        const timeStr = this.formatTime(msg.date);
-        
-        // Truncate message preview
-        const preview = msg.message.length > 80 
-            ? msg.message.substring(0, 80) + '...' 
-            : msg.message;
-        
-        div.innerHTML = `
-            <div class="msg-left">
-                <div class="msg-sender">
-                    ${msg.name}
-                    ${isUnread ? '<span class="unread-badge">جديد</span>' : ''}
-                    ${isReplied ? '<span class="replied-badge">تم الرد</span>' : ''}
-                </div>
-                <span class="msg-email">
-                    <i class="fa-solid fa-envelope"></i>
-                    ${msg.email}
-                </span>
-                <div class="msg-subject">${msg.subject}</div>
-                <p class="msg-preview">${preview}</p>
+    const div = document.createElement('div');
+    div.className = `message-item ${isUnread ? 'unread' : ''}`;
+    div.dataset.id = msg.id;
+    
+    // Format date and time
+    const dateStr = this.formatDate(msg.date);
+    const timeStr = this.formatTime(msg.date);
+    
+    // Truncate message preview
+    const preview = msg.message.length > 80 
+        ? msg.message.substring(0, 80) + '...' 
+        : msg.message;
+    
+    div.innerHTML = `
+        <div class="msg-left">
+            <div class="msg-sender">
+                ${msg.name}
+                ${isUnread ? '<span class="unread-badge">جديد</span>' : ''}
+                ${isReplied ? '<span class="replied-badge">تم الرد</span>' : ''}
             </div>
-            <div class="msg-right">
-                <span class="msg-time">${timeStr}</span>
-                <span class="msg-date">${dateStr}</span>
+            <span class="msg-email">
+                <i class="fa-solid fa-envelope"></i>
+                ${msg.email}
+            </span>
+            <div class="msg-subject">${msg.subject}</div>
+            <p class="msg-preview">${preview}</p>
+        </div>
+        <div class="msg-right">
+            <span class="msg-time">${timeStr}</span>
+            <span class="msg-date">${dateStr}</span>
+            <div class="msg-actions">
+                <button class="reply-message-btn" data-id="${msg.id}" title="الرد على الرسالة">
+                    <i class="fa-solid fa-reply"></i>
+                </button>
                 <button class="delete-message-btn" data-id="${msg.id}" title="حذف الرسالة">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
-        `;
-        
-        // Click to toggle read status
-        div.addEventListener('click', (e) => {
-            // Don't trigger if clicking delete button
-            if (e.target.closest('.delete-message-btn')) return;
-            this.toggleRead(msg.id);
-        });
-        
-        // Delete button
-        const deleteBtn = div.querySelector('.delete-message-btn');
-        deleteBtn.addEventListener('click', (e) => {
+        </div>
+    `;
+    
+    // 🔥 Click to toggle read status
+    div.addEventListener('click', (e) => {
+        // Don't trigger if clicking delete button or reply button
+        if (e.target.closest('.delete-message-btn')) return;
+        if (e.target.closest('.reply-message-btn')) return;
+        this.toggleRead(msg.id);
+    });
+    
+    // 🔥 Delete button
+    const deleteBtn = div.querySelector('.delete-message-btn');
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('هل تريد حذف هذه الرسالة؟')) {
+            this.deleteMessage(msg.id);
+        }
+    });
+    
+    // 🔥🔥🔥 REPLY BUTTON - الجديد
+    const replyBtn = div.querySelector('.reply-message-btn');
+    if (replyBtn) {
+        replyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (confirm('هل تريد حذف هذه الرسالة؟')) {
-                this.deleteMessage(msg.id);
-            }
+            this.openReplyCard(msg.id);
         });
-        
-        return div;
     }
+    
+    return div;
+} 
+   
     
     // ============================================================
     // 07. EMPTY STATE
@@ -1433,7 +2539,32 @@ async loadFromSupabase() {
     // ============================================================
     
     // 🔥 الإضافة الجديدة: إضافة رسالة من الزوار
-   addMessage(name, email, subject, message) {
+  addMessage(name, email, subject, message) {
+    // منع التكرار - التحقق من وجود رسالة مشابهة خلال 5 ثواني
+    const duplicate = this.messages.find(m => 
+        m.email === email.trim() && 
+        m.subject === subject.trim() && 
+        m.message === message.trim() &&
+        (Date.now() - new Date(m.date).getTime() < 5000)
+    );
+    
+    if (duplicate) {
+        console.warn('⚠️ Duplicate message detected, skipping...');
+        return null;
+    }
+
+    // منع التكرار - التحقق من نفس المحتوى بالضبط (بدون وقت)
+    const exactDuplicate = this.messages.find(m => 
+        m.email === email.trim() && 
+        m.subject === subject.trim() && 
+        m.message === message.trim()
+    );
+    
+    if (exactDuplicate) {
+        console.warn('⚠️ Exact duplicate message found, skipping...');
+        return null;
+    }
+
     const newMsg = {
         id: Date.now() + Math.random() * 1000,
         name: name.trim(),
@@ -1448,10 +2579,6 @@ async loadFromSupabase() {
     this.messages.unshift(newMsg);
     this.saveToStorage();
     this.render();
-       this.saveToSupabase(newMsg);
-
-
-    // 🔥🔥🔥 أضف هذا الجزء - التخزين في Supabase
     this.saveToSupabase(newMsg);
 
     if (window._logsEngine) {
@@ -1464,7 +2591,6 @@ async loadFromSupabase() {
 
     return newMsg;
 }
-
 // 🔥 دالة جديدة للتخزين في Supabase
 async saveToSupabase(msg) {
     try {
@@ -1634,6 +2760,227 @@ async saveToSupabase(msg) {
         this.isLoading = loading;
         this.render();
     }
+    // ============================================================
+// REPLY CARD - كارت الرد
+// ============================================================
+
+openReplyCard(messageId) {
+    const msg = this.messages.find(m => m.id === messageId);
+    if (!msg) {
+        Utils.toast('❌ الرسالة غير موجودة', 'error');
+        return;
+    }
+
+    this.currentReplyId = messageId;
+
+    document.getElementById('replySenderName').textContent = msg.name;
+    document.getElementById('replySenderEmail').textContent = msg.email;
+    document.getElementById('replySenderSubject').textContent = msg.subject;
+    document.getElementById('replyMessageInput').value = '';
+
+    const replyCard = document.getElementById('replyCard');
+    if (replyCard) {
+        replyCard.style.display = 'block';
+        replyCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    setTimeout(() => {
+        document.getElementById('replyMessageInput')?.focus();
+    }, 300);
+
+    const status = document.getElementById('replyStatus');
+    if (status) status.style.display = 'none';
+}
+
+closeReplyCard() {
+    const replyCard = document.getElementById('replyCard');
+    if (replyCard) replyCard.style.display = 'none';
+    document.getElementById('replyMessageInput').value = '';
+    this.currentReplyId = null;
+}
+
+async sendReply() {
+    console.log('📤 sendReply() called');
+
+    // منع التكرار
+    if (this._isSending) {
+        console.warn('⚠️ Already sending, please wait...');
+        return;
+    }
+
+    const messageId = this.currentReplyId;
+    if (!messageId) {
+        Utils.toast('❌ لا توجد رسالة محددة', 'error');
+        return;
+    }
+
+    const msg = this.messages.find(m => m.id === messageId);
+    if (!msg) {
+        Utils.toast('❌ الرسالة غير موجودة', 'error');
+        return;
+    }
+
+    const replyText = document.getElementById('replyMessageInput').value.trim();
+    if (!replyText) {
+        Utils.toast('⚠️ الرجاء كتابة نص الرد', 'warning');
+        document.getElementById('replyMessageInput').focus();
+        return;
+    }
+
+    // تعيين حالة الإرسال
+    this._isSending = true;
+
+    const status = document.getElementById('replyStatus');
+    const statusMsg = document.getElementById('replyStatusMessage');
+    if (status && statusMsg) {
+        status.style.display = 'block';
+        status.className = 'reply-status';
+        statusMsg.textContent = '⏳ جاري إرسال الرد...';
+    }
+
+    const sendBtn = document.getElementById('sendReplyBtn');
+    const cancelBtn = document.getElementById('cancelReplyBtn');
+    if (sendBtn) sendBtn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = true;
+
+    try {
+        console.log(`📤 Sending reply to: ${msg.name} (ID: ${messageId})`);
+
+        // 1. حفظ في Supabase (إذا كان متاحاً)
+        if (supabaseClient) {
+            console.log('📤 Saving to Supabase...');
+            
+            // تحويل الـ ID إلى رقم إذا كان نصياً
+            const numericId = typeof messageId === 'string' ? parseInt(messageId) : messageId;
+            
+            const { error } = await supabaseClient
+                .from('messages')
+                .update({
+                    status: 'replied',
+                    replied_at: new Date().toISOString(),
+                    reply_message: replyText
+                })
+                .eq('id', numericId);
+
+            if (error) {
+                console.error('❌ Supabase error:', error);
+                throw new Error('فشل حفظ الرد في قاعدة البيانات');
+            }
+            console.log('✅ Saved to Supabase');
+        } else {
+            console.warn('⚠️ Supabase not available, saving locally only');
+        }
+
+        // 2. تحديث محلياً
+        const localMsg = this.messages.find(m => m.id === messageId);
+        if (localMsg) {
+            localMsg.replied = true;
+            localMsg.replyMessage = replyText;
+            localMsg.repliedAt = new Date().toISOString();
+            this.saveToStorage();
+            console.log('✅ Updated locally');
+        }
+
+        // 3. تسجيل في Logs
+        if (window._logsEngine) {
+            window._logsEngine.addLog(
+                `✉️ تم الرد على رسالة من: ${msg.name}`,
+                'message',
+                msg.subject
+            );
+        }
+
+        // 4. إظهار نجاح
+        if (status && statusMsg) {
+            status.className = 'reply-status';
+            statusMsg.textContent = '✅ تم إرسال الرد بنجاح!';
+        }
+
+        Utils.toast(`✅ تم إرسال الرد إلى ${msg.name}`, 'success');
+        this.render();
+
+        // إغلاق الكارت بعد 2 ثانية
+        setTimeout(() => {
+            this.closeReplyCard();
+            this._isSending = false;
+        }, 2000);
+
+    } catch (error) {
+        console.error('❌ Reply error:', error);
+        if (status && statusMsg) {
+            status.className = 'reply-status error';
+            statusMsg.textContent = `❌ ${error.message || 'فشل إرسال الرد'}`;
+        }
+        Utils.toast(`❌ ${error.message || 'فشل إرسال الرد'}`, 'error');
+        this._isSending = false;
+    } finally {
+        if (sendBtn) sendBtn.disabled = false;
+        if (cancelBtn) cancelBtn.disabled = false;
+    }
+}
+
+setupReplyEvents() {
+    console.log('🔧 Setting up reply events...');
+    
+    setTimeout(() => {
+        const replyCard = document.getElementById('replyCard');
+        if (!replyCard) {
+            console.warn('⚠️ replyCard not found');
+            return;
+        }
+
+        // 🔥 البحث جوه replyCard فقط
+        const sendBtn = replyCard.querySelector('#sendReplyBtn');
+        if (sendBtn) {
+            sendBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🔵 Send button clicked');
+                this.sendReply();
+            });
+            console.log('✅ Send button attached');
+        } else {
+            console.warn('⚠️ sendReplyBtn not found in replyCard');
+        }
+
+        const cancelBtn = replyCard.querySelector('#cancelReplyBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                console.log('🔴 Cancel button clicked');
+                this.closeReplyCard();
+            });
+            console.log('✅ Cancel button attached');
+        }
+
+        const closeBtn = replyCard.querySelector('#closeReplyBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                console.log('🔴 Close button clicked');
+                this.closeReplyCard();
+            });
+            console.log('✅ Close button attached');
+        }
+
+        // Ctrl+Enter
+        const replyInput = document.getElementById('replyMessageInput');
+        if (replyInput) {
+            replyInput.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    console.log('⌨️ Ctrl+Enter pressed');
+                    this.sendReply();
+                }
+            });
+        }
+
+        // ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentReplyId) {
+                console.log('⌨️ Escape pressed - closing reply card');
+                this.closeReplyCard();
+            }
+        });
+    }, 200);
+}
     
     // ============================================================
     // 14. CLEANUP
@@ -1690,6 +3037,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
         getMessagesEngine();
     }
 }
+
 
 // ============================================================ */
 // 16. CONSOLE HELPERS                                          */
@@ -2143,38 +3491,13 @@ class LogsEngine {
     this.render();
 this.saveToSupabase(log);
     // 🔥🔥🔥 أضف هذا الجزء - التخزين في Supabase
-    this.saveToSupabase(log);
+
 
     return log;
 }
 
 // 🔥 دالة جديدة للتخزين في Supabase
-async saveToSupabase(log) {
-    try {
-        if (!supabaseClient) {
-            console.warn('⚠️ Supabase not ready, log saved to localStorage only');
-            return;
-        }
 
-        const { error } = await supabaseClient
-            .from('activity_logs')
-            .insert([{
-                id: log.id,
-                message: log.message,
-                type: log.type,
-                details: log.details || '',
-                created_at: log.date.toISOString()
-            }]);
-
-        if (error) {
-            console.error('❌ Failed to save log to Supabase:', error);
-        } else {
-            console.log('✅ Log saved to Supabase:', log.message);
-        }
-    } catch (e) {
-        console.error('❌ Error saving log to Supabase:', e);
-    }
-}
 // ============================================================
 // 🔥 التخزين في Supabase
 // ============================================================
