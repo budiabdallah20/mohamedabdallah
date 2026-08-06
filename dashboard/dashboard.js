@@ -2195,7 +2195,26 @@ class MessagesEngine {
 async saveToSupabase(msg) {
     try {
         if (!supabaseClient) {
-            console.warn('⚠️ Supabase not ready');
+            console.warn('⚠️ Supabase not ready, message saved to localStorage only');
+            return;
+        }
+
+        // 🔥 التحقق من عدم وجود الرسالة قبل الحفظ
+        const { data: existing, error: checkError } = await supabaseClient
+            .from('messages')
+            .select('id')
+            .eq('sender_email', msg.email)
+            .eq('subject', msg.subject)
+            .eq('message', msg.message)
+            .limit(1);
+
+        if (checkError) {
+            console.warn('⚠️ Could not check for duplicate:', checkError);
+        }
+
+        // إذا كانت موجودة، لا نحفظ
+        if (existing && existing.length > 0) {
+            console.warn('⚠️ Message already exists in Supabase, skipping save');
             return;
         }
 
@@ -2204,21 +2223,22 @@ async saveToSupabase(msg) {
         const { error } = await supabaseClient
             .from('messages')
             .insert([{
-                id: Math.floor(msg.id),
+                id: msg.id,
                 sender_name: msg.name,
                 sender_email: msg.email,
                 subject: msg.subject,
                 message: msg.message,
+                status: status,
                 created_at: msg.date.toISOString()
             }]);
 
         if (error) {
-            console.error('❌ Supabase error:', error);
+            console.error('❌ Failed to save message to Supabase:', error);
         } else {
             console.log('✅ Message saved to Supabase:', msg.subject);
         }
     } catch (e) {
-        console.error('❌ Error:', e);
+        console.error('❌ Error saving message to Supabase:', e);
     }
 }
 
@@ -2245,22 +2265,47 @@ async loadFromSupabase() {
         }
 
         if (data && data.length > 0) {
-            this.messages = data.map(msg => ({
-                id: msg.id,
-                name: msg.sender_name,
-                email: msg.sender_email,
-                subject: msg.subject,
-                message: msg.message,
-                date: new Date(msg.created_at),
-                read: msg.status === 'read' || msg.status === 'replied',
-                replied: msg.status === 'replied'
-            }));
-            this.saveToStorage();
-            this.render();
-            console.log(`📂 Loaded ${this.messages.length} messages from Supabase`);
+            // 🔥 منع التكرار عند التحميل
+            const existingIds = new Set(this.messages.map(m => m.id));
+            const existingContent = new Set(
+                this.messages.map(m => `${m.email}-${m.subject}-${m.message}`)
+            );
+
+            let newCount = 0;
+
+            data.forEach(msg => {
+                // تجاهل إذا الـ ID موجود
+                if (existingIds.has(msg.id)) return;
+                
+                // تجاهل إذا المحتوى مكرر
+                const contentKey = `${msg.sender_email}-${msg.subject}-${msg.message}`;
+                if (existingContent.has(contentKey)) return;
+
+                const newMsg = {
+                    id: msg.id,
+                    name: msg.sender_name,
+                    email: msg.sender_email,
+                    subject: msg.subject,
+                    message: msg.message,
+                    date: new Date(msg.created_at),
+                    read: msg.status === 'read' || msg.status === 'replied',
+                    replied: msg.status === 'replied'
+                };
+
+                this.messages.push(newMsg);
+                existingIds.add(msg.id);
+                existingContent.add(contentKey);
+                newCount++;
+            });
+
+            if (newCount > 0) {
+                this.saveToStorage();
+                this.render();
+                console.log(`📂 Added ${newCount} new messages from Supabase`);
+            }
         }
     } catch (e) {
-        console.error('❌ Error:', e);
+        console.error('❌ Error loading from Supabase:', e);
     }
 }
     
@@ -2539,21 +2584,25 @@ async loadFromSupabase() {
     // ============================================================
     
     // 🔥 الإضافة الجديدة: إضافة رسالة من الزوار
-  addMessage(name, email, subject, message) {
-    // منع التكرار - التحقق من وجود رسالة مشابهة خلال 5 ثواني
-    const duplicate = this.messages.find(m => 
+ addMessage(name, email, subject, message) {
+    // ============================================================
+    // 🔥 منع التكرار - مستويات متعددة
+    // ============================================================
+
+    // 1. منع التكرار خلال 10 ثواني (نفس المحتوى)
+    const duplicateRecent = this.messages.find(m => 
         m.email === email.trim() && 
         m.subject === subject.trim() && 
         m.message === message.trim() &&
-        (Date.now() - new Date(m.date).getTime() < 5000)
+        (Date.now() - new Date(m.date).getTime() < 10000)
     );
     
-    if (duplicate) {
-        console.warn('⚠️ Duplicate message detected, skipping...');
+    if (duplicateRecent) {
+        console.warn('⚠️ Duplicate message detected (within 10s), skipping...');
         return null;
     }
 
-    // منع التكرار - التحقق من نفس المحتوى بالضبط (بدون وقت)
+    // 2. منع التكرار المطلق (نفس المحتوى بالضبط)
     const exactDuplicate = this.messages.find(m => 
         m.email === email.trim() && 
         m.subject === subject.trim() && 
@@ -2564,6 +2613,33 @@ async loadFromSupabase() {
         console.warn('⚠️ Exact duplicate message found, skipping...');
         return null;
     }
+
+    // 3. منع التكرار - نفس البريد خلال 5 دقائق
+    const emailDuplicate = this.messages.find(m => 
+        m.email === email.trim() &&
+        (Date.now() - new Date(m.date).getTime() < 300000)
+    );
+    
+    if (emailDuplicate) {
+        console.warn('⚠️ Duplicate email detected (within 5min), skipping...');
+        return null;
+    }
+
+    // 4. منع التكرار - نفس الموضوع خلال دقيقة
+    const subjectDuplicate = this.messages.find(m => 
+        m.subject === subject.trim() &&
+        m.email === email.trim() &&
+        (Date.now() - new Date(m.date).getTime() < 60000)
+    );
+    
+    if (subjectDuplicate) {
+        console.warn('⚠️ Duplicate subject from same email (within 1min), skipping...');
+        return null;
+    }
+
+    // ============================================================
+    // ✅ إضافة الرسالة الجديدة
+    // ============================================================
 
     const newMsg = {
         id: Date.now() + Math.random() * 1000,
@@ -2589,9 +2665,9 @@ async loadFromSupabase() {
         );
     }
 
+    console.log(`✅ New message added: ${newMsg.name} - ${newMsg.subject}`);
     return newMsg;
 }
-// 🔥 دالة جديدة للتخزين في Supabase
 async saveToSupabase(msg) {
     try {
         if (!supabaseClient) {
@@ -2802,7 +2878,6 @@ closeReplyCard() {
 async sendReply() {
     console.log('📤 sendReply() called');
 
-    // منع التكرار
     if (this._isSending) {
         console.warn('⚠️ Already sending, please wait...');
         return;
@@ -2827,7 +2902,6 @@ async sendReply() {
         return;
     }
 
-    // تعيين حالة الإرسال
     this._isSending = true;
 
     const status = document.getElementById('replyStatus');
@@ -2846,11 +2920,8 @@ async sendReply() {
     try {
         console.log(`📤 Sending reply to: ${msg.name} (ID: ${messageId})`);
 
-        // 1. حفظ في Supabase (إذا كان متاحاً)
+        // 1. حفظ في Supabase
         if (supabaseClient) {
-            console.log('📤 Saving to Supabase...');
-            
-            // تحويل الـ ID إلى رقم إذا كان نصياً
             const numericId = typeof messageId === 'string' ? parseInt(messageId) : messageId;
             
             const { error } = await supabaseClient
@@ -2867,8 +2938,6 @@ async sendReply() {
                 throw new Error('فشل حفظ الرد في قاعدة البيانات');
             }
             console.log('✅ Saved to Supabase');
-        } else {
-            console.warn('⚠️ Supabase not available, saving locally only');
         }
 
         // 2. تحديث محلياً
@@ -2881,25 +2950,44 @@ async sendReply() {
             console.log('✅ Updated locally');
         }
 
-        // 3. تسجيل في Logs
+        // 3. 🔥🔥🔥 إرسال الإيميل للمرسل
+        let emailSent = false;
+        try {
+            emailSent = await this.sendReplyEmail(
+                msg.email,
+                msg.name,
+                msg.subject,
+                replyText,
+                msg.message
+            );
+        } catch (emailError) {
+            console.error('❌ Email error:', emailError);
+        }
+
+        // 4. تسجيل في Logs
         if (window._logsEngine) {
             window._logsEngine.addLog(
-                `✉️ تم الرد على رسالة من: ${msg.name}`,
+                `✉️ تم الرد على رسالة من: ${msg.name} ${emailSent ? '(📧 تم الإرسال)' : '(⚠️ بدون إيميل)'}`,
                 'message',
                 msg.subject
             );
         }
 
-        // 4. إظهار نجاح
+        // 5. إظهار نجاح
         if (status && statusMsg) {
             status.className = 'reply-status';
-            statusMsg.textContent = '✅ تم إرسال الرد بنجاح!';
+            statusMsg.textContent = emailSent 
+                ? '✅ تم إرسال الرد وإشعار المرسل بنجاح!'
+                : '✅ تم حفظ الرد (تعذر إرسال الإيميل)';
         }
 
-        Utils.toast(`✅ تم إرسال الرد إلى ${msg.name}`, 'success');
+        Utils.toast(emailSent 
+            ? `✅ تم إرسال الرد إلى ${msg.name}` 
+            : `✅ تم حفظ الرد (الإيميل لم يرسل)`, 
+            emailSent ? 'success' : 'warning'
+        );
         this.render();
 
-        // إغلاق الكارت بعد 2 ثانية
         setTimeout(() => {
             this.closeReplyCard();
             this._isSending = false;
@@ -2917,6 +3005,84 @@ async sendReply() {
         if (sendBtn) sendBtn.disabled = false;
         if (cancelBtn) cancelBtn.disabled = false;
     }
+}
+// ============================================================
+// 14. EMAIL SERVICE - إرسال الردود عبر EmailJS
+// ============================================================
+
+async sendReplyEmail(toEmail, toName, subject, replyMessage, originalMessage) {
+    try {
+        console.log(`📤 Sending reply email to: ${toEmail}`);
+        
+        // 🔥 Keys من EmailJS
+        const EMAILJS_SERVICE_ID = 'service_t51g617';
+        const EMAILJS_TEMPLATE_ID = 'reply_template';
+        const EMAILJS_PUBLIC_KEY = 'Zg7gM0yDAtCmbp4p9';
+        
+        // التحقق من وجود EmailJS
+        if (typeof emailjs === 'undefined') {
+            console.warn('⚠️ EmailJS not loaded, trying CDN...');
+            await this.loadEmailJS();
+        }
+        
+        const templateParams = {
+            to_email: toEmail,
+            to_name: toName,
+            subject: subject,
+            original_message: originalMessage,
+            reply_message: replyMessage,
+            reply_date: new Date().toLocaleString('ar-EG', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            sender_name: 'Mohamed Abdallah',
+            sender_email: 'contact@mohamed.dev'
+        };
+        
+        console.log('📤 Template params:', templateParams);
+        
+        // إرسال الإيميل
+        const response = await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            templateParams,
+            EMAILJS_PUBLIC_KEY
+        );
+        
+        console.log('✅ Email sent successfully:', response);
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Failed to send email:', error);
+        console.error('❌ Error details:', error.text || error.message);
+        return false;
+    }
+}
+
+loadEmailJS() {
+    return new Promise((resolve, reject) => {
+        if (typeof emailjs !== 'undefined') {
+            resolve();
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+        script.onload = () => {
+            console.log('✅ EmailJS loaded from CDN');
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init('Zg7gM0yDAtCmbp4p9');
+            }
+            resolve();
+        };
+        script.onerror = () => {
+            reject(new Error('Failed to load EmailJS'));
+        };
+        document.head.appendChild(script);
+    });
 }
 
 setupReplyEvents() {

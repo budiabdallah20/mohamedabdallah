@@ -15,6 +15,15 @@
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+    // تهيئة EmailJS مع Public Key
+    (function() {
+        emailjs.init('Zg7gM0yDAtCmbp4p9');
+        console.log('✅ EmailJS initialized with key: Zg7gM0yDAtCmbp4p9');
+    })();
+</script>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="dashboard.css">
