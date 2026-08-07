@@ -1,6 +1,6 @@
-// ============================================================
+// ============================================================ 
 // 🔥 جلب المشاريع من Supabase وعرضها في الموقع
-// ============================================================
+// ============================================================ 
 
 // تهيئة Supabase
 const SUPABASE_URL = 'https://txcuibshcvfusegrfcbm.supabase.co';
@@ -22,9 +22,9 @@ function getSupabaseClient() {
     return _supabaseClient;
 }
 
-// ============================================================
+// ============================================================ 
 // 🔥 الوظيفة الرئيسية - جلب المشاريع وعرضها
-// ============================================================
+// ============================================================ 
 
 async function loadProjectsFromSupabase() {
     try {
@@ -87,14 +87,16 @@ async function loadProjectsFromSupabase() {
             const techStack = project.tech_stack || [];
             const techHtml = techStack.map(t => `<span>${t}</span>`).join('');
 
-            // ✅ استخدام لوجو موحد لكل المشاريع
-            const imageUrl = './assets/logo/Mohamed-Abdallah--logo.png';
+            // ✅🔥 استخدم اللوجو بتاعك
+            const imageUrl = project.image_url && project.image_url.trim() !== ''
+                ? project.image_url
+                : './assets/logo/Mohamed-Abdallah--logo.png';
 
             return `
                 <article class="project-card">
                     <div class="project-image">
                         <img src="${imageUrl}" alt="${project.title}" loading="lazy"
-                             onerror="this.src='assets/projects/images/project-logo.png'">
+                             onerror="this.src='./assets/logo/Mohamed-Abdallah--logo.png'">
                         <div class="project-overlay">
                             <span>${project.is_featured ? '⭐ مميز' : 'مشروع'}</span>
                         </div>
@@ -130,17 +132,23 @@ async function loadProjectsFromSupabase() {
     }
 }
 
-// ============================================================
+// ============================================================ 
 // 🔥 تشغيل التحميل
-// ============================================================
+// ============================================================ 
+
+// ✅ جعل الدوال متاحة عالمياً
+window.getSupabaseClient = getSupabaseClient;
+window.loadProjectsFromSupabase = loadProjectsFromSupabase;
 
 // عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 DOM loaded, loading projects...');
     setTimeout(loadProjectsFromSupabase, 500);
 });
 
 // لو الصفحة اتحملت بالفعل
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('🔥 Page already loaded, loading projects...');
     setTimeout(loadProjectsFromSupabase, 500);
 }
 
@@ -151,3 +159,4 @@ document.addEventListener('dashboard:projects-updated', function(e) {
 });
 
 console.log('✅ Projects loader initialized');
+console.log('📦 Available: window.loadProjectsFromSupabase()');
