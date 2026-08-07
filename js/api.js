@@ -195,12 +195,7 @@ async function sendDonation(donationData) {
 // 5️⃣ دوال تحميل البيانات للموقع (GET)                       */
 // ============================================================ */
 
-// 5.1 تحميل المشاريع
-// loadProjects();  ← علقها
-// استخدم loadProjectsFromSupabase بدلاً منها
-if (typeof loadProjectsFromSupabase === 'function') {
-    loadProjectsFromSupabase();
-}
+
 
 // 5.2 تحميل المهارات
 async function loadSkills() {
