@@ -1288,6 +1288,3715 @@ html[dir="rtl"] .u-text-right { text-align: left; }
 
 
 /* ============================================================ */
+/* 📦 TRIO SECTIONS CSS - Skills, Projects, Certificates       */
+/* ============================================================ */
+/* 
+   🎯 ARCHITECTURE: 
+   - 100% مطابق مع HTML
+   - لا يوجد اختراع لأسماء جديدة
+   - معزول بالكامل داخل كل قسم
+   - متوافق مع نظام التصميم الحالي
+   - يدعم الوضع المظلم والفاتح
+   - أداء محسن وتجاوب كامل
+*/
+
+/* ============================================================ */
+/* 01. SKILLS SECTION - المهارات                              */
+/* ============================================================ */
+
+#skills-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* --------------------------------------------
+   1.1 SECTION HEADER
+-------------------------------------------- */
+
+#skills-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#skills-section .section-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#skills-section .section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#skills-section .section-title-icon {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+#skills-section .section-badge {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    padding: 2px 12px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-2);
+}
+
+#skills-section .section-description {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+#skills-section .section-header-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------
+   1.2 STATS GRID
+-------------------------------------------- */
+
+#skills-section .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+#skills-section .stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+#skills-section .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+#skills-section .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+#skills-section .stat-icon.gold {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+#skills-section .stat-icon.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+#skills-section .stat-icon.blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+#skills-section .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#skills-section .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#skills-section .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* --------------------------------------------
+   1.3 TOOLBAR
+-------------------------------------------- */
+
+#skills-section .toolbar-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+#skills-section .toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#skills-section .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2) var(--space-4);
+    min-width: 240px;
+    transition: all var(--transition-fast) var(--ease-out);
+    flex: 1;
+    position: relative;
+}
+
+#skills-section .search-box:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+#skills-section .search-box i {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+#skills-section .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    width: 100%;
+}
+
+#skills-section .search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+#skills-section .search-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .search-clear:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+#skills-section .filter-group {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#skills-section .filter-group select {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    cursor: pointer;
+    min-height: 40px;
+    min-width: 140px;
+    transition: all var(--transition-fast) var(--ease-out);
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+
+#skills-section .filter-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: var(--space-2);
+}
+
+#skills-section .filter-group select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+/* --------------------------------------------
+   1.4 BULK ACTIONS
+-------------------------------------------- */
+
+#skills-section .bulk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+}
+
+#skills-section .bulk-selected-count {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#skills-section .bulk-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#skills-section .bulk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 32px;
+}
+
+#skills-section .bulk-btn-featured {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+#skills-section .bulk-btn-featured:hover:not(:disabled) {
+    background: #f59e0b;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#skills-section .bulk-btn-hide {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.15);
+}
+
+#skills-section .bulk-btn-hide:hover:not(:disabled) {
+    background: #64748b;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#skills-section .bulk-btn-delete {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#skills-section .bulk-btn-delete:hover:not(:disabled) {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#skills-section .bulk-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* --------------------------------------------
+   1.5 SKILLS CATEGORIES
+-------------------------------------------- */
+
+#skills-section .skills-categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+#skills-section .category-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .category-card:hover {
+    border-color: var(--border-color-hover);
+}
+
+#skills-section .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--border-color-divider);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    user-select: none;
+}
+
+#skills-section .category-header:hover {
+    background: var(--glass-bg-hover);
+}
+
+#skills-section .category-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+#skills-section .category-title i {
+    font-size: var(--text-xl);
+}
+
+#skills-section .category-count {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    background: var(--glass-bg);
+    padding: 2px 12px;
+    border-radius: var(--radius-full);
+}
+
+#skills-section .category-toggle {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    transition: transform var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .category-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+
+#skills-section .category-body {
+    padding: var(--space-4);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .category-body.collapsed {
+    display: none;
+}
+
+/* --------------------------------------------
+   1.6 SKILL CARD
+-------------------------------------------- */
+
+#skills-section .skill-card {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast) var(--ease-out);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#skills-section .skill-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-card), 0 0 30px var(--glow-primary);
+}
+
+#skills-section .skill-card .skill-checkbox {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+}
+
+#skills-section .skill-card .skill-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#skills-section .skill-card .skill-featured-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-size: var(--text-2xs);
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    backdrop-filter: var(--glass-blur-sm);
+}
+
+#skills-section .skill-card .skill-hidden-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-size: var(--text-2xs);
+    background: rgba(100, 116, 139, 0.15);
+    color: #64748b;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(100, 116, 139, 0.15);
+}
+
+#skills-section .skill-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+    padding-left: 24px;
+}
+
+#skills-section .skill-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .skill-card:hover .skill-icon {
+    transform: scale(1.05) rotate(-5deg);
+}
+
+#skills-section .skill-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    flex: 1;
+}
+
+#skills-section .skill-level {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+    padding: 3px 12px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+    border: 1px solid transparent;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .skill-level.beginner {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+}
+
+#skills-section .skill-level.intermediate {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+}
+
+#skills-section .skill-level.advanced {
+    background: #f59e0b;
+    color: #1a1a1a;
+    border-color: #f59e0b;
+}
+
+#skills-section .skill-level.expert {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+#skills-section .skill-progress {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin: var(--space-2) 0;
+}
+
+#skills-section .skill-progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.8s var(--ease-smooth);
+}
+
+#skills-section .skill-desc {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: var(--space-1) 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: var(--line-relaxed);
+}
+
+#skills-section .skill-actions {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+#skills-section .skill-actions button {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-2xs);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .skill-actions .edit-btn {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+#skills-section .skill-actions .edit-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+#skills-section .skill-actions .delete-btn {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+#skills-section .skill-actions .delete-btn:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* --------------------------------------------
+   1.7 EMPTY & LOADING STATES
+-------------------------------------------- */
+
+#skills-section .empty-state {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+}
+
+#skills-section .empty-state i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+#skills-section .empty-state h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#skills-section .empty-state p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    max-width: 320px;
+}
+
+#skills-section .skeleton-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+#skills-section .skeleton-line {
+    height: 12px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+#skills-section .skeleton-line.short {
+    width: 60%;
+}
+
+@keyframes skeletonPulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* --------------------------------------------
+   1.8 SECTION FOOTER
+-------------------------------------------- */
+
+#skills-section .section-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-4);
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#skills-section .footer-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+#skills-section .btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#skills-section .btn-text:hover {
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------
+   1.9 PAGINATION
+-------------------------------------------- */
+
+#skills-section .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+}
+
+#skills-section .pagination-btn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+}
+
+#skills-section .pagination-btn:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+#skills-section .pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+#skills-section .pagination-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* --------------------------------------------
+   1.10 MODAL
+-------------------------------------------- */
+
+#skills-section .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: var(--z-modal);
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+#skills-section .modal-overlay:not([hidden]) {
+    display: flex;
+    animation: modalFadeIn 0.3s var(--ease-smooth);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#skills-section .modal-content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: var(--space-6);
+    box-shadow: var(--shadow-xl);
+}
+
+#skills-section .modal-small .modal-content {
+    max-width: 420px;
+}
+
+#skills-section .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#skills-section .modal-header h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#skills-section .modal-header h3 i {
+    color: var(--color-primary);
+}
+
+#skills-section .modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#skills-section .modal-close:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+#skills-section .modal-body {
+    padding: var(--space-2) 0;
+}
+
+#skills-section .modal-warning {
+    font-size: var(--text-sm);
+    color: #ef4444;
+    margin-top: var(--space-2);
+}
+
+#skills-section .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   1.11 FORM
+-------------------------------------------- */
+
+#skills-section .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+#skills-section .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#skills-section .form-group label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+#skills-section .form-group .required {
+    color: #ef4444;
+}
+
+#skills-section .form-group input,
+#skills-section .form-group select,
+#skills-section .form-group textarea {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+}
+
+#skills-section .form-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 8px;
+}
+
+#skills-section .form-group input:focus,
+#skills-section .form-group select:focus,
+#skills-section .form-group textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+    background: var(--bg-input-focus);
+}
+
+#skills-section .form-group input::placeholder,
+#skills-section .form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+#skills-section .form-group textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+#skills-section .form-group input[type="color"] {
+    padding: 4px;
+    height: 42px;
+    cursor: pointer;
+}
+
+#skills-section .range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+#skills-section .range-wrapper input[type="range"] {
+    flex: 1;
+    min-height: unset;
+    padding: 0;
+}
+
+#skills-section .range-value {
+    font-size: var(--text-xs);
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+    min-width: 44px;
+    text-align: right;
+}
+
+#skills-section .form-group small {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+#skills-section .form-checkboxes {
+    display: flex;
+    gap: var(--space-6);
+    margin: var(--space-3) 0;
+    flex-wrap: wrap;
+}
+
+#skills-section .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+#skills-section .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#skills-section .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   1.12 BUTTONS
+-------------------------------------------- */
+
+#skills-section .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-6);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+    text-decoration: none;
+}
+
+#skills-section .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: #fff;
+    box-shadow: 0 2px 12px var(--glow-primary);
+}
+
+#skills-section .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--glow-primary-strong);
+}
+
+#skills-section .btn-primary:active {
+    transform: scale(0.97);
+}
+
+#skills-section .btn-secondary {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#skills-section .btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+#skills-section .btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#skills-section .btn-danger:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#skills-section .btn-export {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#skills-section .btn-export:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------
+   1.13 AI PLACEHOLDER
+-------------------------------------------- */
+
+#skills-section .ai-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--glass-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+    margin-top: var(--space-4);
+}
+
+#skills-section .ai-placeholder i {
+    font-size: var(--text-xl);
+    color: var(--color-primary);
+    opacity: 0.5;
+}
+
+
+/* ============================================================ */
+/* 02. PROJECTS SECTION - المشاريع                            */
+/* ============================================================ */
+
+#projects-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* --------------------------------------------
+   2.1 SECTION HEADER (موروث من Skills مع تعديلات)
+-------------------------------------------- */
+
+#projects-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#projects-section .section-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#projects-section .section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#projects-section .section-title-icon {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+#projects-section .section-badge {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    padding: 2px 12px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-2);
+}
+
+#projects-section .section-description {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+#projects-section .section-header-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------
+   2.2 STATS GRID (موروث مع تعديلات)
+-------------------------------------------- */
+
+#projects-section .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+#projects-section .stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+#projects-section .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+#projects-section .stat-icon.blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+#projects-section .stat-icon.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+#projects-section .stat-icon.gold {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+#projects-section .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+#projects-section .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#projects-section .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#projects-section .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* --------------------------------------------
+   2.3 TOOLBAR (موروث مع تعديلات)
+-------------------------------------------- */
+
+#projects-section .toolbar-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+#projects-section .toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#projects-section .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2) var(--space-4);
+    min-width: 240px;
+    transition: all var(--transition-fast) var(--ease-out);
+    flex: 1;
+    position: relative;
+}
+
+#projects-section .search-box:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+#projects-section .search-box i {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+#projects-section .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    width: 100%;
+}
+
+#projects-section .search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+#projects-section .search-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .search-clear:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+#projects-section .filter-group {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#projects-section .filter-group select {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    cursor: pointer;
+    min-height: 40px;
+    min-width: 140px;
+    transition: all var(--transition-fast) var(--ease-out);
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+
+#projects-section .filter-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: var(--space-2);
+}
+
+#projects-section .filter-group select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+/* --------------------------------------------
+   2.4 VIEW SWITCH
+-------------------------------------------- */
+
+#projects-section .view-switch {
+    display: flex;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    padding: 2px;
+}
+
+#projects-section .view-btn {
+    padding: var(--space-1) var(--space-3);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    min-height: 32px;
+}
+
+#projects-section .view-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+#projects-section .view-btn.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --------------------------------------------
+   2.5 BULK ACTIONS (موروث)
+-------------------------------------------- */
+
+#projects-section .bulk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+}
+
+#projects-section .bulk-selected-count {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#projects-section .bulk-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#projects-section .bulk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 32px;
+}
+
+#projects-section .bulk-btn-publish {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+#projects-section .bulk-btn-publish:hover:not(:disabled) {
+    background: #10b981;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#projects-section .bulk-btn-featured {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+#projects-section .bulk-btn-featured:hover:not(:disabled) {
+    background: #f59e0b;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#projects-section .bulk-btn-delete {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#projects-section .bulk-btn-delete:hover:not(:disabled) {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#projects-section .bulk-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* --------------------------------------------
+   2.6 PROJECTS GRID
+-------------------------------------------- */
+
+#projects-section .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-5);
+}
+
+/* --------------------------------------------
+   2.7 PROJECT CARD
+-------------------------------------------- */
+
+#projects-section .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all var(--transition-fast) var(--ease-out);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+#projects-section .project-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card), 0 0 40px var(--glow-primary);
+}
+
+#projects-section .project-checkbox {
+    padding: var(--space-2) var(--space-4) 0;
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 2;
+}
+
+#projects-section .project-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#projects-section .project-featured-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    z-index: 2;
+    font-size: var(--text-2xs);
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    backdrop-filter: var(--glass-blur-sm);
+}
+
+#projects-section .project-image {
+    width: 100%;
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-surface);
+}
+
+#projects-section .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-smooth);
+}
+
+#projects-section .project-card:hover .project-image img {
+    transform: scale(1.05);
+}
+
+#projects-section .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-fast) var(--ease-out);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#projects-section .project-card:hover .project-overlay {
+    opacity: 1;
+}
+
+#projects-section .project-overlay span {
+    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    padding: 4px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-full);
+}
+
+#projects-section .project-content {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+#projects-section .project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+#projects-section .project-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#projects-section .project-status {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    text-transform: capitalize;
+}
+
+#projects-section .project-status.published {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+#projects-section .project-status.draft {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+}
+
+#projects-section .project-status.in-progress {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+#projects-section .project-status.completed {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+#projects-section .project-status.archived {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+#projects-section .project-desc {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: var(--line-relaxed);
+}
+
+#projects-section .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: var(--space-1) 0;
+}
+
+#projects-section .project-tech span {
+    font-size: var(--text-2xs);
+    background: var(--glass-bg);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .project-tech span:hover {
+    border-color: var(--border-color-hover);
+    color: var(--text-secondary);
+}
+
+#projects-section .project-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-1);
+}
+
+#projects-section .project-progress-label {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+}
+
+#projects-section .project-progress-track {
+    flex: 1;
+    margin: 0 8px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+#projects-section .project-progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.8s var(--ease-smooth);
+}
+
+#projects-section .project-buttons {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+#projects-section .project-buttons .btn-demo,
+#projects-section .project-buttons .btn-github {
+    padding: var(--space-1) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .project-buttons .btn-demo {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+#projects-section .project-buttons .btn-demo:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+}
+
+#projects-section .project-buttons .btn-github {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#projects-section .project-buttons .btn-github:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+#projects-section .project-actions {
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4) var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    margin-top: auto;
+}
+
+#projects-section .project-actions button {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-2xs);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .project-actions .edit-btn {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+#projects-section .project-actions .edit-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+#projects-section .project-actions .delete-btn {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+#projects-section .project-actions .delete-btn:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* --------------------------------------------
+   2.8 EMPTY & LOADING STATES
+-------------------------------------------- */
+
+#projects-section .empty-state {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+}
+
+#projects-section .empty-state i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+#projects-section .empty-state h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#projects-section .empty-state p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    max-width: 320px;
+}
+
+#projects-section .skeleton-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+#projects-section .skeleton-img {
+    height: 140px;
+    background: var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+}
+
+#projects-section .skeleton-line {
+    height: 12px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+#projects-section .skeleton-line.short {
+    width: 60%;
+}
+
+/* --------------------------------------------
+   2.9 SECTION FOOTER
+-------------------------------------------- */
+
+#projects-section .section-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-4);
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#projects-section .footer-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+#projects-section .btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#projects-section .btn-text:hover {
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------
+   2.10 PAGINATION
+-------------------------------------------- */
+
+#projects-section .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+}
+
+#projects-section .pagination-btn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+}
+
+#projects-section .pagination-btn:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+#projects-section .pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+#projects-section .pagination-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* --------------------------------------------
+   2.11 MODAL (موروث مع تعديلات)
+-------------------------------------------- */
+
+#projects-section .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: var(--z-modal);
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+#projects-section .modal-overlay:not([hidden]) {
+    display: flex;
+    animation: modalFadeIn 0.3s var(--ease-smooth);
+}
+
+#projects-section .modal-large .modal-content {
+    max-width: 720px;
+}
+
+#projects-section .modal-small .modal-content {
+    max-width: 420px;
+}
+
+#projects-section .modal-content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: var(--space-6);
+    box-shadow: var(--shadow-xl);
+}
+
+#projects-section .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#projects-section .modal-header h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#projects-section .modal-header h3 i {
+    color: var(--color-primary);
+}
+
+#projects-section .modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#projects-section .modal-close:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+#projects-section .modal-body {
+    padding: var(--space-2) 0;
+}
+
+#projects-section .modal-warning {
+    font-size: var(--text-sm);
+    color: #ef4444;
+    margin-top: var(--space-2);
+}
+
+#projects-section .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   2.12 MODAL TABS
+-------------------------------------------- */
+
+#projects-section .modal-tabs {
+    display: flex;
+    gap: var(--space-1);
+    margin-bottom: var(--space-5);
+    border-bottom: 1px solid var(--border-color-divider);
+    padding-bottom: var(--space-1);
+    flex-wrap: wrap;
+}
+
+#projects-section .tab-btn {
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#projects-section .tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+#projects-section .tab-btn.active {
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+    font-weight: var(--font-semibold);
+}
+
+#projects-section .tab-content {
+    display: block;
+}
+
+#projects-section .tab-content[hidden] {
+    display: none;
+}
+
+/* --------------------------------------------
+   2.13 PREVIEW CONTAINER
+-------------------------------------------- */
+
+#projects-section .preview-container {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#projects-section .preview-placeholder {
+    text-align: center;
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#projects-section .preview-placeholder i {
+    font-size: var(--text-3xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+#projects-section .preview-placeholder p {
+    font-size: var(--text-sm);
+    margin: 0;
+}
+
+#projects-section .preview-placeholder span {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------
+   2.14 AI PLACEHOLDER
+-------------------------------------------- */
+
+#projects-section .ai-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--glass-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+    margin-top: var(--space-4);
+}
+
+#projects-section .ai-placeholder i {
+    font-size: var(--text-xl);
+    color: var(--color-primary);
+    opacity: 0.5;
+}
+
+/* --------------------------------------------
+   2.15 FORM (موروث من Skills)
+-------------------------------------------- */
+
+#projects-section .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+#projects-section .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#projects-section .form-group label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+#projects-section .form-group .required {
+    color: #ef4444;
+}
+
+#projects-section .form-group input,
+#projects-section .form-group select,
+#projects-section .form-group textarea {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+}
+
+#projects-section .form-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 8px;
+}
+
+#projects-section .form-group input:focus,
+#projects-section .form-group select:focus,
+#projects-section .form-group textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+    background: var(--bg-input-focus);
+}
+
+#projects-section .form-group input::placeholder,
+#projects-section .form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+#projects-section .form-group textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+#projects-section .form-group input[type="color"] {
+    padding: 4px;
+    height: 42px;
+    cursor: pointer;
+}
+
+#projects-section .form-checkboxes {
+    display: flex;
+    gap: var(--space-6);
+    margin: var(--space-3) 0;
+    flex-wrap: wrap;
+}
+
+#projects-section .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+#projects-section .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#projects-section .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   2.16 BUTTONS (موروث من Skills)
+-------------------------------------------- */
+
+#projects-section .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-6);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+    text-decoration: none;
+}
+
+#projects-section .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: #fff;
+    box-shadow: 0 2px 12px var(--glow-primary);
+}
+
+#projects-section .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--glow-primary-strong);
+}
+
+#projects-section .btn-primary:active {
+    transform: scale(0.97);
+}
+
+#projects-section .btn-secondary {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#projects-section .btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+#projects-section .btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#projects-section .btn-danger:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#projects-section .btn-export {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#projects-section .btn-export:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+
+/* ============================================================ */
+/* 03. CERTIFICATES SECTION - الشهادات                        */
+/* ============================================================ */
+
+#certificates-section {
+    display: block;
+    width: 100%;
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+/* --------------------------------------------
+   3.1 SECTION HEADER
+-------------------------------------------- */
+
+#certificates-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#certificates-section .section-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#certificates-section .section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+#certificates-section .section-title-icon {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+}
+
+#certificates-section .section-badge {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    padding: 2px 12px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-2);
+}
+
+#certificates-section .section-description {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+#certificates-section .section-header-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------
+   3.2 STATS GRID
+-------------------------------------------- */
+
+#certificates-section .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+#certificates-section .stat-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#certificates-section .stat-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+
+#certificates-section .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+}
+
+#certificates-section .stat-icon.gold {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+#certificates-section .stat-icon.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+#certificates-section .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+#certificates-section .stat-icon.red {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+#certificates-section .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#certificates-section .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#certificates-section .stat-value {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* --------------------------------------------
+   3.3 TOOLBAR (موروث)
+-------------------------------------------- */
+
+#certificates-section .toolbar-card {
+    padding: var(--space-4) var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+#certificates-section .toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#certificates-section .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2) var(--space-4);
+    min-width: 240px;
+    transition: all var(--transition-fast) var(--ease-out);
+    flex: 1;
+    position: relative;
+}
+
+#certificates-section .search-box:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+#certificates-section .search-box i {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+#certificates-section .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    width: 100%;
+}
+
+#certificates-section .search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+#certificates-section .search-clear {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: var(--space-1);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#certificates-section .search-clear:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+#certificates-section .filter-group {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#certificates-section .filter-group select {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    cursor: pointer;
+    min-height: 40px;
+    min-width: 140px;
+    transition: all var(--transition-fast) var(--ease-out);
+    appearance: auto;
+    -webkit-appearance: auto;
+}
+
+#certificates-section .filter-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: var(--space-2);
+}
+
+#certificates-section .filter-group select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+/* --------------------------------------------
+   3.4 BULK ACTIONS (موروث)
+-------------------------------------------- */
+
+#certificates-section .bulk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+}
+
+#certificates-section .bulk-selected-count {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    font-weight: var(--font-medium);
+}
+
+#certificates-section .bulk-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+#certificates-section .bulk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-4);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 32px;
+}
+
+#certificates-section .bulk-btn-publish {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+#certificates-section .bulk-btn-publish:hover:not(:disabled) {
+    background: #10b981;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#certificates-section .bulk-btn-featured {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+#certificates-section .bulk-btn-featured:hover:not(:disabled) {
+    background: #f59e0b;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#certificates-section .bulk-btn-delete {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#certificates-section .bulk-btn-delete:hover:not(:disabled) {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#certificates-section .bulk-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* --------------------------------------------
+   3.5 CERTIFICATES GRID
+-------------------------------------------- */
+
+#certificates-section .certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-4);
+}
+
+/* --------------------------------------------
+   3.6 CERTIFICATE CARD
+-------------------------------------------- */
+
+#certificates-section .certificate-card {
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-fast) var(--ease-out);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+#certificates-section .certificate-card:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card), 0 0 40px var(--glow-primary);
+}
+
+#certificates-section .cert-checkbox {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+}
+
+#certificates-section .cert-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#certificates-section .cert-featured-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-size: var(--text-2xs);
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    backdrop-filter: var(--glass-blur-sm);
+}
+
+#certificates-section .cert-expired-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-size: var(--text-2xs);
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    backdrop-filter: var(--glass-blur-sm);
+}
+
+#certificates-section .cert-icon {
+    font-size: var(--text-3xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-1);
+}
+
+#certificates-section .cert-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#certificates-section .cert-provider {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+#certificates-section .cert-date {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+#certificates-section .cert-credential {
+    font-size: var(--text-2xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    background: var(--glass-bg);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    width: fit-content;
+}
+
+#certificates-section .cert-verify-link {
+    font-size: var(--text-2xs);
+    color: var(--color-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#certificates-section .cert-verify-link:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+#certificates-section .cert-status {
+    font-size: var(--text-2xs);
+    font-weight: var(--font-medium);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    width: fit-content;
+}
+
+#certificates-section .cert-status.published {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+#certificates-section .cert-status.draft {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+}
+
+#certificates-section .cert-status.archived {
+    background: rgba(100, 116, 139, 0.12);
+    color: #64748b;
+}
+
+#certificates-section .cert-status.expired {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+#certificates-section .cert-desc {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: var(--line-relaxed);
+}
+
+#certificates-section .cert-actions {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+}
+
+#certificates-section .cert-actions button {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-2xs);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#certificates-section .cert-actions .edit-btn {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+#certificates-section .cert-actions .edit-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+#certificates-section .cert-actions .delete-btn {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+#certificates-section .cert-actions .delete-btn:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+#certificates-section .cert-actions .preview-btn {
+    background: rgba(59, 130, 246, 0.08);
+    color: #3b82f6;
+}
+
+#certificates-section .cert-actions .preview-btn:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+#certificates-section .cert-actions .download-btn {
+    background: rgba(16, 185, 129, 0.08);
+    color: #10b981;
+}
+
+#certificates-section .cert-actions .download-btn:hover {
+    background: #10b981;
+    color: #fff;
+}
+
+/* --------------------------------------------
+   3.7 EMPTY & LOADING STATES
+-------------------------------------------- */
+
+#certificates-section .empty-state {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    grid-column: 1 / -1;
+}
+
+#certificates-section .empty-state i {
+    font-size: var(--text-4xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+#certificates-section .empty-state h4 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+#certificates-section .empty-state p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    max-width: 320px;
+}
+
+#certificates-section .skeleton-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+#certificates-section .skeleton-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+}
+
+#certificates-section .skeleton-line {
+    height: 12px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+#certificates-section .skeleton-line.short {
+    width: 60%;
+}
+
+/* --------------------------------------------
+   3.8 SECTION FOOTER
+-------------------------------------------- */
+
+#certificates-section .section-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-4);
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border-color-divider);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+#certificates-section .footer-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+#certificates-section .btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#certificates-section .btn-text:hover {
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------
+   3.9 PAGINATION
+-------------------------------------------- */
+
+#certificates-section .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+}
+
+#certificates-section .pagination-btn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+}
+
+#certificates-section .pagination-btn:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+#certificates-section .pagination-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+#certificates-section .pagination-info {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* --------------------------------------------
+   3.10 MODAL (موروث)
+-------------------------------------------- */
+
+#certificates-section .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: var(--z-modal);
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+#certificates-section .modal-overlay:not([hidden]) {
+    display: flex;
+    animation: modalFadeIn 0.3s var(--ease-smooth);
+}
+
+#certificates-section .modal-large .modal-content {
+    max-width: 720px;
+}
+
+#certificates-section .modal-small .modal-content {
+    max-width: 420px;
+}
+
+#certificates-section .modal-content {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: var(--space-6);
+    box-shadow: var(--shadow-xl);
+}
+
+#certificates-section .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-color-divider);
+}
+
+#certificates-section .modal-header h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#certificates-section .modal-header h3 i {
+    color: var(--color-primary);
+}
+
+#certificates-section .modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast) var(--ease-out);
+}
+
+#certificates-section .modal-close:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+#certificates-section .modal-body {
+    padding: var(--space-2) 0;
+}
+
+#certificates-section .modal-warning {
+    font-size: var(--text-sm);
+    color: #ef4444;
+    margin-top: var(--space-2);
+}
+
+#certificates-section .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   3.11 PREVIEW CONTAINER
+-------------------------------------------- */
+
+#certificates-section .preview-container {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#certificates-section .preview-placeholder {
+    text-align: center;
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+#certificates-section .preview-placeholder i {
+    font-size: var(--text-3xl);
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+#certificates-section .preview-placeholder p {
+    font-size: var(--text-sm);
+    margin: 0;
+}
+
+/* --------------------------------------------
+   3.12 VERIFY PLACEHOLDER
+-------------------------------------------- */
+
+#certificates-section .verify-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--glass-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-xl);
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+    margin-top: var(--space-4);
+}
+
+#certificates-section .verify-placeholder i {
+    font-size: var(--text-xl);
+    color: var(--color-primary);
+    opacity: 0.5;
+}
+
+/* --------------------------------------------
+   3.13 FORM (موروث)
+-------------------------------------------- */
+
+#certificates-section .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+#certificates-section .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+#certificates-section .form-group label {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+#certificates-section .form-group .required {
+    color: #ef4444;
+}
+
+#certificates-section .form-group input,
+#certificates-section .form-group select,
+#certificates-section .form-group textarea {
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+}
+
+#certificates-section .form-group select option {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 8px;
+}
+
+#certificates-section .form-group input:focus,
+#certificates-section .form-group select:focus,
+#certificates-section .form-group textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-ring);
+    background: var(--bg-input-focus);
+}
+
+#certificates-section .form-group input::placeholder,
+#certificates-section .form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+#certificates-section .form-group textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+#certificates-section .form-checkboxes {
+    display: flex;
+    gap: var(--space-6);
+    margin: var(--space-3) 0;
+    flex-wrap: wrap;
+}
+
+#certificates-section .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+#certificates-section .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+#certificates-section .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color-divider);
+}
+
+/* --------------------------------------------
+   3.14 BUTTONS (موروث)
+-------------------------------------------- */
+
+#certificates-section .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-6);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    min-height: 42px;
+    text-decoration: none;
+}
+
+#certificates-section .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+    color: #fff;
+    box-shadow: 0 2px 12px var(--glow-primary);
+}
+
+#certificates-section .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--glow-primary-strong);
+}
+
+#certificates-section .btn-primary:active {
+    transform: scale(0.97);
+}
+
+#certificates-section .btn-secondary {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#certificates-section .btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+#certificates-section .btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+#certificates-section .btn-danger:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#certificates-section .btn-export {
+    background: var(--glass-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#certificates-section .btn-export:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+
+/* ============================================================ */
+/* 04. RESPONSIVE - التجاوب مع جميع الشاشات                   */
+/* ============================================================ */
+
+/* --------------------------------------------
+   4.1 TABLET (1024px - 768px)
+-------------------------------------------- */
+@media (max-width: 1024px) {
+
+    #skills-section .section-header,
+    #projects-section .section-header,
+    #certificates-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+    }
+
+    #skills-section .section-header-actions,
+    #projects-section .section-header-actions,
+    #certificates-section .section-header-actions {
+        width: 100%;
+    }
+
+    #skills-section .toolbar-row,
+    #projects-section .toolbar-row,
+    #certificates-section .toolbar-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #skills-section .search-box,
+    #projects-section .search-box,
+    #certificates-section .search-box {
+        width: 100%;
+        min-width: unset;
+    }
+
+    #skills-section .filter-group,
+    #projects-section .filter-group,
+    #certificates-section .filter-group {
+        width: 100%;
+    }
+
+    #skills-section .filter-group select,
+    #projects-section .filter-group select,
+    #certificates-section .filter-group select {
+        flex: 1;
+        min-width: unset;
+    }
+
+    #projects-section .projects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+/* --------------------------------------------
+   4.2 MOBILE (768px - 480px)
+-------------------------------------------- */
+@media (max-width: 768px) {
+
+    #skills-section .stats-grid,
+    #projects-section .stats-grid,
+    #certificates-section .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #skills-section .category-body {
+        grid-template-columns: 1fr;
+    }
+
+    #projects-section .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #certificates-section .certificates-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #skills-section .modal-content,
+    #projects-section .modal-content,
+    #certificates-section .modal-content {
+        padding: var(--space-4);
+        max-width: 95%;
+        margin: var(--space-2);
+    }
+
+    #projects-section .modal-large .modal-content {
+        max-width: 95%;
+    }
+
+    #skills-section .bulk-actions,
+    #projects-section .bulk-actions,
+    #certificates-section .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #skills-section .bulk-buttons,
+    #projects-section .bulk-buttons,
+    #certificates-section .bulk-buttons {
+        justify-content: stretch;
+    }
+
+    #skills-section .bulk-btn,
+    #projects-section .bulk-btn,
+    #certificates-section .bulk-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    #skills-section .form-row,
+    #projects-section .form-row,
+    #certificates-section .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    #projects-section .modal-tabs {
+        flex-wrap: wrap;
+    }
+
+    #projects-section .tab-btn {
+        flex: 1;
+        justify-content: center;
+        font-size: var(--text-xs);
+        padding: var(--space-1) var(--space-2);
+    }
+
+    #projects-section .view-switch {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* --------------------------------------------
+   4.3 SMALL MOBILE (480px - 320px)
+-------------------------------------------- */
+@media (max-width: 480px) {
+
+    #skills-section .stats-grid,
+    #projects-section .stats-grid,
+    #certificates-section .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #certificates-section .certificates-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #skills-section .section-title,
+    #projects-section .section-title,
+    #certificates-section .section-title {
+        font-size: var(--text-lg);
+    }
+
+    #skills-section .skill-card {
+        padding: var(--space-3);
+    }
+
+    #projects-section .project-card {
+        border-radius: var(--radius-lg);
+    }
+
+    #certificates-section .certificate-card {
+        padding: var(--space-3);
+    }
+
+    #skills-section .modal-content,
+    #projects-section .modal-content,
+    #certificates-section .modal-content {
+        padding: var(--space-3);
+        border-radius: var(--radius-xl);
+    }
+
+    #skills-section .form-checkboxes,
+    #projects-section .form-checkboxes,
+    #certificates-section .form-checkboxes {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    #skills-section .section-footer,
+    #projects-section .section-footer,
+    #certificates-section .section-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+        text-align: center;
+    }
+
+    #skills-section .btn,
+    #projects-section .btn,
+    #certificates-section .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 38px;
+        padding: var(--space-2) var(--space-4);
+        font-size: var(--text-xs);
+    }
+
+    #skills-section .section-header-actions,
+    #projects-section .section-header-actions,
+    #certificates-section .section-header-actions {
+        flex-direction: column;
+    }
+}
+
+
+/* ============================================================ */
+/* 05. THEME SUPPORT - Light Theme                            */
+/* ============================================================ */
+
+[data-theme="light"] #skills-section .stat-card,
+[data-theme="light"] #projects-section .stat-card,
+[data-theme="light"] #certificates-section .stat-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] #skills-section .toolbar-card,
+[data-theme="light"] #projects-section .toolbar-card,
+[data-theme="light"] #certificates-section .toolbar-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] #skills-section .category-card,
+[data-theme="light"] #skills-section .skill-card {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] #projects-section .project-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] #certificates-section .certificate-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] #skills-section .modal-content,
+[data-theme="light"] #projects-section .modal-content,
+[data-theme="light"] #certificates-section .modal-content {
+    background: #ffffff;
+}
+
+[data-theme="light"] #skills-section .search-box,
+[data-theme="light"] #projects-section .search-box,
+[data-theme="light"] #certificates-section .search-box {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] #skills-section .form-group input,
+[data-theme="light"] #skills-section .form-group select,
+[data-theme="light"] #skills-section .form-group textarea,
+[data-theme="light"] #projects-section .form-group input,
+[data-theme="light"] #projects-section .form-group select,
+[data-theme="light"] #projects-section .form-group textarea,
+[data-theme="light"] #certificates-section .form-group input,
+[data-theme="light"] #certificates-section .form-group select,
+[data-theme="light"] #certificates-section .form-group textarea {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] #skills-section .filter-group select option,
+[data-theme="light"] #projects-section .filter-group select option,
+[data-theme="light"] #certificates-section .filter-group select option,
+[data-theme="light"] #skills-section .form-group select option,
+[data-theme="light"] #projects-section .form-group select option,
+[data-theme="light"] #certificates-section .form-group select option {
+    background: #ffffff;
+    color: #1a1a1a;
+}
+
+[data-theme="light"] #projects-section .view-switch {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] #projects-section .view-btn.active {
+    background: #ffffff;
+}
+
+[data-theme="light"] #skills-section .skeleton-card,
+[data-theme="light"] #projects-section .skeleton-card,
+[data-theme="light"] #certificates-section .skeleton-card {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] #skills-section .skeleton-line,
+[data-theme="light"] #projects-section .skeleton-line,
+[data-theme="light"] #certificates-section .skeleton-line,
+[data-theme="light"] #projects-section .skeleton-img,
+[data-theme="light"] #certificates-section .skeleton-icon {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+
+/* ============================================================ */
+/* 06. ACCESSIBILITY & REDUCED MOTION                         */
+/* ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    #skills-section *,
+    #projects-section *,
+    #certificates-section *,
+    #skills-section *::before,
+    #projects-section *::before,
+    #certificates-section *::before,
+    #skills-section *::after,
+    #projects-section *::after,
+    #certificates-section *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    #skills-section .skill-card:hover,
+    #projects-section .project-card:hover,
+    #certificates-section .certificate-card:hover {
+        transform: none !important;
+    }
+
+    #skills-section .project-image img {
+        transform: none !important;
+    }
+
+    #skills-section .skill-progress-fill,
+    #projects-section .project-progress-fill {
+        transition: none !important;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+#skills-section .btn:focus-visible,
+#projects-section .btn:focus-visible,
+#certificates-section .btn:focus-visible,
+#skills-section .bulk-btn:focus-visible,
+#projects-section .bulk-btn:focus-visible,
+#certificates-section .bulk-btn:focus-visible,
+#skills-section .search-box input:focus-visible,
+#projects-section .search-box input:focus-visible,
+#certificates-section .search-box input:focus-visible,
+#skills-section .filter-group select:focus-visible,
+#projects-section .filter-group select:focus-visible,
+#certificates-section .filter-group select:focus-visible,
+#skills-section .modal-close:focus-visible,
+#projects-section .modal-close:focus-visible,
+#certificates-section .modal-close:focus-visible,
+#projects-section .tab-btn:focus-visible,
+#projects-section .view-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+
+/* ============================================================ */
+/* نهاية CSS - TRIO SECTIONS                                  */
+/* ============================================================ */
+
+
+/* ============================================================ */
 /* 🎧 SUPPORT SECTION - خدمة العملاء والدعم الفني              */
 /* ============================================================ */
 

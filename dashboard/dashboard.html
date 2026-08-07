@@ -964,680 +964,1052 @@
                             </div>
                         </div>
                     </section>
+                    <!-- ========================================================== -->
+<!-- 📦 SECTION: SKILLS - المهارات                             -->
+<!-- ========================================================== -->
+<section id="skills-section" class="section-view" role="tabpanel" aria-label="المهارات">
 
-                    <!-- ==========================================================
-                    SECTION: SKILLS (المهارات)
-                    ========================================================== -->
-                    <section id="skills-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-layer-group"></i>
-                                <span>إدارة المهارات الاحترافية (Skills Management System)</span>
-                            </h2>
-                            <div class="header-actions">
-                                <button id="exportSkillsBtn" class="saas-btn saas-btn-secondary" type="button">
-                                    <i class="fa-solid fa-file-export"></i> تصدير المحدد
-                                </button>
-                                <button id="openSkillModalBtn" class="saas-btn saas-btn-primary" type="button">
-                                    <i class="fa-solid fa-plus"></i> إضافة مهارة جديدة
-                                </button>
-                            </div>
+    <!-- ========================================================== -->
+    <!-- HEADER                                                     -->
+    <!-- ========================================================== -->
+    <header class="section-header">
+        <div class="section-header-left">
+            <h2 class="section-title">
+                <i class="section-title-icon fa-solid fa-layer-group" aria-hidden="true"></i>
+                <span>المهارات الاحترافية</span>
+                <span class="section-badge" id="skills-total-badge" aria-label="إجمالي المهارات">0</span>
+            </h2>
+            <p class="section-description">إدارة وتنظيم المهارات التقنية والشخصية</p>
+        </div>
+        <div class="section-header-actions">
+            <button class="btn btn-export" id="skills-export-btn" type="button" aria-label="تصدير المهارات">
+                <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+                <span>تصدير</span>
+            </button>
+            <button class="btn btn-primary" id="skills-add-btn" type="button" aria-label="إضافة مهارة جديدة">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span>مهارة جديدة</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================================== -->
+    <!-- STATISTICS                                                 -->
+    <!-- ========================================================== -->
+    <div class="stats-grid" id="skills-stats" role="region" aria-label="إحصائيات المهارات">
+        <article class="stat-card">
+            <div class="stat-icon purple" aria-hidden="true"><i class="fa-solid fa-code"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">إجمالي المهارات</span>
+                <h4 class="stat-value" id="skills-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon gold" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">مهارات مميزة</span>
+                <h4 class="stat-value" id="skills-featured-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon green" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">متوسط الإتقان</span>
+                <h4 class="stat-value" id="skills-avg-level">0%</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon blue" aria-hidden="true"><i class="fa-solid fa-folder-tree"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">الفئات النشطة</span>
+                <h4 class="stat-value" id="skills-categories-count">0</h4>
+            </div>
+        </article>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TOOLBAR                                                    -->
+    <!-- ========================================================== -->
+    <div class="toolbar-card" role="toolbar" aria-label="شريط أدوات المهارات">
+        <div class="toolbar-row">
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fa-solid fa-search" aria-hidden="true"></i>
+                <input type="text" id="skills-search" placeholder="ابحث عن مهارة..." aria-label="بحث في المهارات">
+                <button class="search-clear" type="button" aria-label="مسح البحث" hidden>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-group">
+                <select id="skills-filter-category" aria-label="تصفية حسب الفئة">
+                    <option value="all">جميع الفئات</option>
+                    <option value="Web Development">تطوير الويب</option>
+                    <option value="Programming">البرمجة</option>
+                    <option value="Soft Skills">مهارات حياتية</option>
+                    <option value="Tools">أدوات</option>
+                    <option value="AI & Data">الذكاء الاصطناعي</option>
+                </select>
+                <select id="skills-filter-level" aria-label="تصفية حسب المستوى">
+                    <option value="all">جميع المستويات</option>
+                    <option value="Beginner">مبتدئ</option>
+                    <option value="Intermediate">متوسط</option>
+                    <option value="Advanced">متقدم</option>
+                    <option value="Expert">خبير</option>
+                </select>
+                <select id="skills-sort" aria-label="ترتيب المهارات">
+                    <option value="newest">الأحدث</option>
+                    <option value="oldest">الأقدم</option>
+                    <option value="alpha">أبجدياً</option>
+                    <option value="progress">نسبة الإتقان</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions" id="skills-bulk-actions">
+            <span class="bulk-selected-count" id="skills-selected-count">0 مختارة</span>
+            <div class="bulk-buttons">
+                <button class="bulk-btn bulk-btn-featured" id="skills-bulk-featured" type="button" disabled>
+                    <i class="fa-solid fa-star" aria-hidden="true"></i> تمييز
+                </button>
+                <button class="bulk-btn bulk-btn-hide" id="skills-bulk-hide" type="button" disabled>
+                    <i class="fa-solid fa-eye-slash" aria-hidden="true"></i> إخفاء
+                </button>
+                <button class="bulk-btn bulk-btn-delete" id="skills-bulk-delete" type="button" disabled>
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- CONTENT - Categories Grid                                 -->
+    <!-- ========================================================== -->
+    <div id="skills-categories-container" class="skills-categories" role="list" aria-label="فئات المهارات">
+        <!-- Rendered by JavaScript -->
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- LOADING SKELETON                                           -->
+    <!-- ========================================================== -->
+    <div id="skills-skeleton" class="skills-skeleton" aria-hidden="true" hidden>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- EMPTY STATE                                                -->
+    <!-- ========================================================== -->
+    <div id="skills-empty" class="empty-state" hidden>
+        <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+        <h4>لا توجد مهارات</h4>
+        <p>لم يتم إضافة أي مهارات حتى الآن. ابدأ بإضافة مهاراتك الأولى.</p>
+        <button class="btn btn-primary" data-action="add-skill" type="button">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i> إضافة مهارة
+        </button>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGINATION                                                 -->
+    <!-- ========================================================== -->
+    <nav class="pagination" id="skills-pagination" aria-label="تصفح المهارات" hidden>
+        <button class="pagination-btn" data-page="prev" type="button" disabled>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <span class="pagination-info">صفحة <span id="skills-current-page">1</span> من <span id="skills-total-pages">1</span></span>
+        <button class="pagination-btn" data-page="next" type="button" disabled>
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+    </nav>
+
+    <!-- ========================================================== -->
+    <!-- FOOTER                                                     -->
+    <!-- ========================================================== -->
+    <footer class="section-footer">
+        <span class="footer-info" id="skills-footer-info">عرض 0 من 0 مهارة</span>
+        <button class="btn btn-text" id="skills-refresh-btn" type="button">
+            <i class="fa-solid fa-rotate" aria-hidden="true"></i> تحديث
+        </button>
+    </footer>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Add/Edit Skill                                     -->
+    <!-- ========================================================== -->
+    <div id="skills-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="skills-modal-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="skills-modal-title">
+                    <i class="fa-solid fa-plus-circle" aria-hidden="true"></i>
+                    <span>إضافة مهارة جديدة</span>
+                </h3>
+                <button class="modal-close" id="skills-modal-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <form id="skills-form" novalidate>
+                <input type="hidden" id="skills-edit-id" value="">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="skills-name">اسم المهارة <span class="required" aria-hidden="true">*</span></label>
+                        <input type="text" id="skills-name" placeholder="مثال: React.js" required aria-required="true">
+                    </div>
+                    <div class="form-group">
+                        <label for="skills-category">الفئة <span class="required" aria-hidden="true">*</span></label>
+                        <select id="skills-category" required aria-required="true">
+                            <option value="">اختر الفئة</option>
+                            <option value="Web Development">🌐 تطوير الويب</option>
+                            <option value="Programming">💻 البرمجة</option>
+                            <option value="Soft Skills">🤝 مهارات حياتية</option>
+                            <option value="Tools">🛠️ أدوات</option>
+                            <option value="AI & Data">🧠 الذكاء الاصطناعي</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="skills-level">المستوى</label>
+                        <select id="skills-level">
+                            <option value="Beginner">🌱 مبتدئ</option>
+                            <option value="Intermediate" selected>📈 متوسط</option>
+                            <option value="Advanced">🚀 متقدم</option>
+                            <option value="Expert">🏆 خبير</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills-progress">نسبة الإتقان</label>
+                        <div class="range-wrapper">
+                            <input type="range" id="skills-progress" min="0" max="100" value="80">
+                            <span class="range-value" id="skills-progress-value">80%</span>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="skills-stats-grid">
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-indigo-soft"><i class="fa-solid fa-folder-tree"></i></div>
-                                <div>
-                                    <span class="stat-label">إجمالي الفئات الثابتة</span>
-                                    <h4 class="stat-value" id="stat-total-categories">4</h4>
-                                    <small class="stat-trend positive"><i class="fa-solid fa-check"></i> نشطة ومنظمة</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-purple-soft"><i class="fa-solid fa-code"></i></div>
-                                <div>
-                                    <span class="stat-label">إجمالي المهارات</span>
-                                    <h4 class="stat-value" id="stat-total-skills">0</h4>
-                                    <small class="stat-trend positive" id="stat-visible-trend">0 مرئية</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-amber-soft"><i class="fa-solid fa-star"></i></div>
-                                <div>
-                                    <span class="stat-label">المهارات المميزة</span>
-                                    <h4 class="stat-value" id="stat-featured-skills">0</h4>
-                                    <small class="stat-trend neutral">تظهر في الواجهة</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-emerald-soft"><i class="fa-solid fa-chart-pie"></i></div>
-                                <div>
-                                    <span class="stat-label">متوسط مستوى الإتقان</span>
-                                    <h4 class="stat-value" id="stat-avg-level">0%</h4>
-                                    <small class="stat-trend positive">معدل الأداء العام</small>
-                                </div>
-                            </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="skills-icon">الأيقونة</label>
+                        <input type="text" id="skills-icon" placeholder="fa-brands fa-react">
+                        <small>مثال: fa-brands fa-react, fa-solid fa-database</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills-color">اللون المميز</label>
+                        <input type="color" id="skills-color" value="#6366f1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="skills-desc">الوصف</label>
+                    <textarea id="skills-desc" rows="2" placeholder="وصف مختصر للمهارة..."></textarea>
+                </div>
+
+                <div class="form-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="skills-featured">
+                        <span class="checkmark"></span>
+                        ⭐ مهارة مميزة
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="skills-hidden">
+                        <span class="checkmark"></span>
+                        👁️ مخفية
+                    </label>
+                </div>
+
+                <footer class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="skills-modal-cancel">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> حفظ
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Delete Confirmation                                 -->
+    <!-- ========================================================== -->
+    <div id="skills-delete-modal" class="modal-overlay modal-small" role="dialog" aria-modal="true" aria-labelledby="skills-delete-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="skills-delete-title">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);" aria-hidden="true"></i>
+                    <span>تأكيد الحذف</span>
+                </h3>
+                <button class="modal-close" id="skills-delete-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+            <div class="modal-body">
+                <p>هل أنت متأكد من حذف هذه المهارة؟</p>
+                <p class="modal-warning">لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <footer class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="skills-delete-cancel">إلغاء</button>
+                <button type="button" class="btn btn-danger" id="skills-delete-confirm">
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- FUTURE: AI Recommendations                                 -->
+    <!-- ========================================================== -->
+    <div id="skills-ai-placeholder" class="ai-placeholder" hidden>
+        <i class="fa-solid fa-brain" aria-hidden="true"></i>
+        <span>توصيات الذكاء الاصطناعي قادمة...</span>
+    </div>
+
+</section>
+
+
+<!-- ========================================================== -->
+<!-- 📦 SECTION: PROJECTS - المشاريع                           -->
+<!-- ========================================================== -->
+<section id="projects-section" class="section-view" role="tabpanel" aria-label="المشاريع">
+
+    <!-- ========================================================== -->
+    <!-- HEADER                                                     -->
+    <!-- ========================================================== -->
+    <header class="section-header">
+        <div class="section-header-left">
+            <h2 class="section-title">
+                <i class="section-title-icon fa-solid fa-folder-open" aria-hidden="true"></i>
+                <span>المشاريع</span>
+                <span class="section-badge" id="projects-total-badge" aria-label="إجمالي المشاريع">0</span>
+            </h2>
+            <p class="section-description">إدارة المشاريع والأعمال الاحترافية</p>
+        </div>
+        <div class="section-header-actions">
+            <button class="btn btn-export" id="projects-export-btn" type="button" aria-label="تصدير المشاريع">
+                <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+                <span>تصدير</span>
+            </button>
+            <button class="btn btn-primary" id="projects-add-btn" type="button" aria-label="إضافة مشروع جديد">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span>مشروع جديد</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================================== -->
+    <!-- STATISTICS                                                 -->
+    <!-- ========================================================== -->
+    <div class="stats-grid" id="projects-stats" role="region" aria-label="إحصائيات المشاريع">
+        <article class="stat-card">
+            <div class="stat-icon blue" aria-hidden="true"><i class="fa-solid fa-diagram-project"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">المشاريع</span>
+                <h4 class="stat-value" id="projects-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon green" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">مكتملة</span>
+                <h4 class="stat-value" id="projects-completed-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon gold" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">مميزة</span>
+                <h4 class="stat-value" id="projects-featured-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon purple" aria-hidden="true"><i class="fa-solid fa-globe"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">منشورة</span>
+                <h4 class="stat-value" id="projects-published-count">0</h4>
+            </div>
+        </article>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TOOLBAR                                                    -->
+    <!-- ========================================================== -->
+    <div class="toolbar-card" role="toolbar" aria-label="شريط أدوات المشاريع">
+        <div class="toolbar-row">
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fa-solid fa-search" aria-hidden="true"></i>
+                <input type="text" id="projects-search" placeholder="ابحث عن مشروع..." aria-label="بحث في المشاريع">
+                <button class="search-clear" type="button" aria-label="مسح البحث" hidden>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-group">
+                <select id="projects-filter-status" aria-label="تصفية حسب الحالة">
+                    <option value="all">جميع الحالات</option>
+                    <option value="Published">منشور</option>
+                    <option value="Draft">مسودة</option>
+                    <option value="In Progress">قيد التطوير</option>
+                    <option value="Completed">مكتمل</option>
+                    <option value="Archived">مؤرشف</option>
+                </select>
+                <select id="projects-filter-category" aria-label="تصفية حسب التصنيف">
+                    <option value="all">جميع التصنيفات</option>
+                    <option value="Web Apps">تطبيقات ويب</option>
+                    <option value="Frontend">واجهات</option>
+                    <option value="Dashboard">لوحات تحكم</option>
+                    <option value="Landing">صفحات تعريفية</option>
+                </select>
+                <select id="projects-sort" aria-label="ترتيب المشاريع">
+                    <option value="newest">الأحدث</option>
+                    <option value="oldest">الأقدم</option>
+                    <option value="alpha">أبجدياً</option>
+                    <option value="progress">نسبة الإنجاز</option>
+                    <option value="priority">الأولوية</option>
+                </select>
+            </div>
+
+            <!-- View Switch -->
+            <div class="view-switch" role="group" aria-label="طريقة العرض">
+                <button class="view-btn active" data-view="grid" type="button" aria-label="عرض شبكي">
+                    <i class="fa-solid fa-grid-2" aria-hidden="true"></i>
+                </button>
+                <button class="view-btn" data-view="list" type="button" aria-label="عرض قائمة">
+                    <i class="fa-solid fa-list" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions" id="projects-bulk-actions">
+            <span class="bulk-selected-count" id="projects-selected-count">0 مختارة</span>
+            <div class="bulk-buttons">
+                <button class="bulk-btn bulk-btn-publish" id="projects-bulk-publish" type="button" disabled>
+                    <i class="fa-solid fa-globe" aria-hidden="true"></i> نشر
+                </button>
+                <button class="bulk-btn bulk-btn-featured" id="projects-bulk-featured" type="button" disabled>
+                    <i class="fa-solid fa-star" aria-hidden="true"></i> تمييز
+                </button>
+                <button class="bulk-btn bulk-btn-delete" id="projects-bulk-delete" type="button" disabled>
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- CONTENT - Projects Grid                                   -->
+    <!-- ========================================================== -->
+    <div id="projects-grid-container" class="projects-grid" role="list" aria-label="قائمة المشاريع">
+        <!-- Rendered by JavaScript -->
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- LOADING SKELETON                                           -->
+    <!-- ========================================================== -->
+    <div id="projects-skeleton" class="projects-skeleton" aria-hidden="true" hidden>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- EMPTY STATE                                                -->
+    <!-- ========================================================== -->
+    <div id="projects-empty" class="empty-state" hidden>
+        <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+        <h4>لا توجد مشاريع</h4>
+        <p>لم يتم إضافة أي مشاريع حتى الآن. ابدأ بإضافة مشروعك الأول.</p>
+        <button class="btn btn-primary" data-action="add-project" type="button">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i> إضافة مشروع
+        </button>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGINATION                                                 -->
+    <!-- ========================================================== -->
+    <nav class="pagination" id="projects-pagination" aria-label="تصفح المشاريع" hidden>
+        <button class="pagination-btn" data-page="prev" type="button" disabled>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <span class="pagination-info">صفحة <span id="projects-current-page">1</span> من <span id="projects-total-pages">1</span></span>
+        <button class="pagination-btn" data-page="next" type="button" disabled>
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+    </nav>
+
+    <!-- ========================================================== -->
+    <!-- FOOTER                                                     -->
+    <!-- ========================================================== -->
+    <footer class="section-footer">
+        <span class="footer-info" id="projects-footer-info">عرض 0 من 0 مشروع</span>
+        <button class="btn btn-text" id="projects-refresh-btn" type="button">
+            <i class="fa-solid fa-rotate" aria-hidden="true"></i> تحديث
+        </button>
+    </footer>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Add/Edit Project                                    -->
+    <!-- ========================================================== -->
+    <div id="projects-modal" class="modal-overlay modal-large" role="dialog" aria-modal="true" aria-labelledby="projects-modal-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="projects-modal-title">
+                    <i class="fa-solid fa-plus-circle" aria-hidden="true"></i>
+                    <span>إضافة مشروع جديد</span>
+                </h3>
+                <button class="modal-close" id="projects-modal-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <form id="projects-form" novalidate>
+                <input type="hidden" id="projects-edit-id" value="">
+
+                <!-- Tabs -->
+                <div class="modal-tabs" role="tablist" aria-label="أقسام المشروع">
+                    <button class="tab-btn active" data-tab="project-general" role="tab" aria-selected="true" aria-controls="project-general">
+                        <i class="fa-solid fa-info-circle" aria-hidden="true"></i> عام
+                    </button>
+                    <button class="tab-btn" data-tab="project-media" role="tab" aria-selected="false" aria-controls="project-media">
+                        <i class="fa-solid fa-images" aria-hidden="true"></i> وسائط
+                    </button>
+                    <button class="tab-btn" data-tab="project-links" role="tab" aria-selected="false" aria-controls="project-links">
+                        <i class="fa-solid fa-link" aria-hidden="true"></i> روابط
+                    </button>
+                    <button class="tab-btn" data-tab="project-preview" role="tab" aria-selected="false" aria-controls="project-preview">
+                        <i class="fa-solid fa-eye" aria-hidden="true"></i> معاينة
+                    </button>
+                </div>
+
+                <!-- Tab: General -->
+                <div id="project-general" class="tab-content active" role="tabpanel">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projects-name">اسم المشروع <span class="required" aria-hidden="true">*</span></label>
+                            <input type="text" id="projects-name" placeholder="مثال: Portfolio v3" required aria-required="true">
                         </div>
-
-                        <div class="saas-card skills-toolbar-card">
-                            <div class="toolbar-flex-wrap">
-                                <div class="search-input-wrapper">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    <input type="text" id="skill-search-input">
-                                </div>
-                                <div class="filter-dropdowns">
-                                    <select id="filter-category">
-                                        <option value="">جميع الفئات الثابتة</option>
-                                        <option value="Web Development">Web Development</option>
-                                        <option value="Programming">Programming</option>
-                                        <option value="Software Skills">Software Skills</option>
-                                        <option value="Tools">Tools</option>
-                                    </select>
-                                    <select id="filter-level">
-                                        <option value="">جميع المستويات</option>
-                                        <option value="Beginner">Beginner</option>
-                                        <option value="Intermediate">Intermediate</option>
-                                        <option value="Advanced">Advanced</option>
-                                        <option value="Expert">Expert</option>
-                                    </select>
-                                    <select id="sort-skills-select">
-                                        <option value="order">ترتيب العرض الافتراضي</option>
-                                        <option value="alpha">أبجدياً (A-Z)</option>
-                                        <option value="progress-desc">الأعلى إتقاناً</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="bulk-actions-bar">
-                                <span id="selected-count-label">تم تحديد 0 عناصر</span>
-                                <div>
-                                    <button class="saas-btn saas-btn-secondary" id="bulkShowBtn" type="button"><i class="fa-solid fa-eye"></i> إظهار المحدد</button>
-                                    <button class="saas-btn saas-btn-secondary" id="bulkHideBtn" type="button"><i class="fa-solid fa-eye-slash"></i> إخفاء المحدد</button>
-                                    <button class="saas-btn" id="bulkDeleteBtn" type="button"><i class="fa-solid fa-trash"></i> حذف المحدد</button>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="projects-category">التصنيف <span class="required" aria-hidden="true">*</span></label>
+                            <select id="projects-category" required aria-required="true">
+                                <option value="">اختر التصنيف</option>
+                                <option value="Web Apps">تطبيقات ويب</option>
+                                <option value="Frontend">واجهات</option>
+                                <option value="Dashboard">لوحات تحكم</option>
+                                <option value="Landing">صفحات تعريفية</option>
+                            </select>
                         </div>
+                    </div>
 
-                        <div id="categories-container"></div>
-
-                        <div id="skill-modal" class="custom-modal-backdrop">
-                            <div class="portfolio-canvas-modal-container">
-                                <div class="canvas-modal-header">
-                                    <h3 id="skill-modal-title">
-                                        <i class="fa-solid fa-circle-plus"></i> إضافة مهارة جديدة
-                                    </h3>
-                                    <button class="close-modal-btn" id="closeSkillModalBtn" type="button"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                                <div>
-                                    <form id="skill-form">
-                                        <input type="hidden" id="edit-skill-id">
-                                        <div>
-                                            <div>
-                                                <label>اسم المهارة</label>
-                                                <input type="text" id="skill-name" required placeholder="مثال: React.js">
-                                            </div>
-                                            <div>
-                                                <label>الفئة الثابتة</label>
-                                                <select id="skill-category" required>
-                                                    <option value="Web Development">Web Development</option>
-                                                    <option value="Programming">Programming</option>
-                                                    <option value="Software Skills">Software Skills</option>
-                                                    <option value="Tools">Tools</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div>
-                                                <label>مستوى المهارة</label>
-                                                <select id="skill-level">
-                                                    <option value="Beginner">Beginner</option>
-                                                    <option value="Intermediate">Intermediate</option>
-                                                    <option value="Advanced">Advanced</option>
-                                                    <option value="Expert">Expert</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label>سنوات الخبرة</label>
-                                                <input type="text" id="skill-experience" placeholder="مثال: 3 Years">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div>
-                                                <label>نسبة الإتقان (%)</label>
-                                                <input type="number" id="skill-progress" min="0" max="100" value="85">
-                                            </div>
-                                            <div>
-                                                <label>أيقونة FontAwesome</label>
-                                                <input type="text" id="skill-icon" placeholder="fa-brands fa-react">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label>وصف قصير</label>
-                                            <textarea id="skill-desc" rows="2" placeholder="وصف موجز للمهارة..."></textarea>
-                                        </div>
-                                        <div>
-                                            <label>
-                                                <input type="checkbox" id="skill-featured"> مهارة مميزة (Featured)
-                                            </label>
-                                            <label>
-                                                <input type="checkbox" id="skill-hidden"> إخفاء المهارة
-                                            </label>
-                                        </div>
-                                        <div>
-                                            <label>معاينة المهارة المضافة</label>
-                                            <div id="skill-live-preview">
-                                                <div>
-                                                    <div id="preview-icon-box"><i class="fa-solid fa-code"></i></div>
-                                                    <span id="preview-title">اسم المهارة</span>
-                                                </div>
-                                                <span id="preview-badge" class="saas-badge">Advanced</span>
-                                                <div>
-                                                    <div id="preview-progress-fill"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <button type="button" class="saas-btn saas-btn-secondary" id="cancelSkillBtn">إلغاء</button>
-                                            <button type="submit" class="saas-btn saas-btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projects-status">الحالة</label>
+                            <select id="projects-status">
+                                <option value="Draft">مسودة</option>
+                                <option value="In Progress">قيد التطوير</option>
+                                <option value="Completed">مكتمل</option>
+                                <option value="Published">منشور</option>
+                                <option value="Archived">مؤرشف</option>
+                            </select>
                         </div>
-                    </section>
-
-                    <!-- ==========================================================
-                    SECTION: PROJECTS (المشاريع)
-                    ========================================================== -->
-                    <section id="projects-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-folder-open"></i>
-                                <span>إدارة المشاريع والأعمال الاحترافية (Projects Management System)</span>
-                            </h2>
-                            <div class="header-actions">
-                                <button id="exportProjectsBtn" class="saas-btn saas-btn-secondary" type="button">
-                                    <i class="fa-solid fa-file-export"></i> تصدير البيانات
-                                </button>
-                                <button id="importProjectsBtn" class="saas-btn saas-btn-secondary" type="button">
-                                    <i class="fa-solid fa-file-import"></i> استيراد
-                                </button>
-                                <button id="openProjectModalBtn" class="saas-btn saas-btn-primary" type="button">
-                                    <i class="fa-solid fa-plus"></i> إضافة مشروع جديد
-                                </button>
-                            </div>
+                        <div class="form-group">
+                            <label for="projects-priority">الأولوية</label>
+                            <select id="projects-priority">
+                                <option value="Low">منخفضة</option>
+                                <option value="Medium" selected>متوسطة</option>
+                                <option value="High">عالية</option>
+                            </select>
                         </div>
-
-                        <div class="skills-stats-grid">
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-indigo-soft"><i class="fa-solid fa-diagram-project"></i></div>
-                                <div>
-                                    <span class="stat-label">إجمالي المشاريع</span>
-                                    <h4 class="stat-value" id="stat-total-projects">0</h4>
-                                    <small class="stat-trend positive" id="stat-visible-projects-trend">0 مرئية</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-emerald-soft"><i class="fa-solid fa-circle-check"></i></div>
-                                <div>
-                                    <span class="stat-label">المكتملة</span>
-                                    <h4 class="stat-value" id="stat-completed-projects">0</h4>
-                                    <small class="stat-trend positive">جاهزة للإنتاج</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-blue-soft"><i class="fa-solid fa-globe"></i></div>
-                                <div>
-                                    <span class="stat-label">منشورة</span>
-                                    <h4 class="stat-value" id="stat-published-projects">0</h4>
-                                    <small class="stat-trend positive">على الموقع</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-amber-soft"><i class="fa-solid fa-spinner"></i></div>
-                                <div>
-                                    <span class="stat-label">قيد التطوير</span>
-                                    <h4 class="stat-value" id="stat-progress-projects">0</h4>
-                                    <small class="stat-trend neutral">نشطة حالياً</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-purple-soft"><i class="fa-solid fa-star"></i></div>
-                                <div>
-                                    <span class="stat-label">مميزة (Featured)</span>
-                                    <h4 class="stat-value" id="stat-featured-projects">0</h4>
-                                    <small class="stat-trend positive">في الواجهة</small>
-                                </div>
-                            </div>
-                            <div class="saas-card stat-card">
-                                <div class="stat-icon-wrap bg-rose-soft"><i class="fa-solid fa-box-archive"></i></div>
-                                <div>
-                                    <span class="stat-label">المؤرشفة / المخفية</span>
-                                    <h4 class="stat-value" id="stat-archived-projects">0</h4>
-                                    <small class="stat-trend neutral" id="stat-hidden-projects">0 مخفية</small>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="projects-completion">نسبة الإنجاز (%)</label>
+                            <input type="number" id="projects-completion" min="0" max="100" value="100">
                         </div>
+                    </div>
 
-                        <div class="saas-card skills-toolbar-card">
-                            <div class="toolbar-flex-wrap">
-                                <div class="search-input-wrapper">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    <input type="text" id="project-search-input">
-                                </div>
-                                <div class="filter-dropdowns">
-                                    <select id="filter-project-category">
-                                        <option value="">جميع التصنيفات</option>
-                                        <option value="Web Apps">Web Apps</option>
-                                        <option value="Frontend">Frontend</option>
-                                        <option value="Tools & Dashboards">Tools & Dashboards</option>
-                                        <option value="Landing Pages">Landing Pages</option>
-                                    </select>
-                                    <select id="filter-project-status">
-                                        <option value="">جميع الحالات</option>
-                                        <option value="Published">منشور (Published)</option>
-                                        <option value="Draft">مسودة (Draft)</option>
-                                        <option value="In Progress">قيد التطوير (In Progress)</option>
-                                        <option value="Completed">مكتمل (Completed)</option>
-                                        <option value="Archived">مؤرشف (Archived)</option>
-                                    </select>
-                                    <select id="filter-project-priority">
-                                        <option value="">جميع الأولويات</option>
-                                        <option value="High">عالية (High)</option>
-                                        <option value="Medium">متوسطة (Medium)</option>
-                                        <option value="Low">منخفضة (Low)</option>
-                                    </select>
-                                    <select id="sort-projects-select">
-                                        <option value="newest">الأحدث إضافتاً</option>
-                                        <option value="oldest">الأقدم</option>
-                                        <option value="alpha">أبجدياً (A-Z)</option>
-                                        <option value="priority">حسب الأولوية</option>
-                                        <option value="completion">نسبة الإنجاز</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="project-bulk-bar">
-                                <span id="project-selected-count">تم تحديد 0 مشروع</span>
-                                <div>
-                                    <button class="saas-btn saas-btn-secondary" id="projectBulkPublish" type="button"><i class="fa-solid fa-globe"></i> نشر المحدد</button>
-                                    <button class="saas-btn saas-btn-secondary" id="projectBulkUnpublish" type="button"><i class="fa-solid fa-eye-slash"></i> إلغاء النشر</button>
-                                    <button class="saas-btn saas-btn-secondary" id="projectBulkFeature" type="button"><i class="fa-solid fa-star"></i> تمييز المحدد</button>
-                                    <button class="saas-btn saas-btn-secondary" id="projectBulkArchive" type="button"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
-                                    <button class="saas-btn" id="projectBulkDelete" type="button"><i class="fa-solid fa-trash"></i> حذف</button>
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        <label for="projects-tech">التقنيات المستخدمة</label>
+                        <input type="text" id="projects-tech" placeholder="React, Tailwind, Supabase (مفصولة بفاصلة)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projects-desc">الوصف</label>
+                        <textarea id="projects-desc" rows="2" placeholder="وصف مختصر للمشروع..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projects-full-desc">الوصف الكامل</label>
+                        <textarea id="projects-full-desc" rows="4" placeholder="تفاصيل المشروع، التحديات والحلول..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tab: Media -->
+                <div id="project-media" class="tab-content" role="tabpanel" hidden>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projects-image">رابط الصورة</label>
+                            <input type="url" id="projects-image" placeholder="https://images.unsplash.com/...">
                         </div>
-
-                        <div id="projects-grid-container"></div>
-
-                        <div id="project-modal" class="custom-modal-backdrop">
-                            <div class="portfolio-canvas-modal-container">
-                                <div class="canvas-modal-header">
-                                    <h3 id="project-modal-title">
-                                        <i class="fa-solid fa-circle-plus"></i> إضافة مشروع جديد
-                                    </h3>
-                                    <div>
-                                        <span id="autosave-indicator"><i class="fa-solid fa-cloud-arrow-up"></i> تم الحفظ تلقائياً</span>
-                                        <button class="close-modal-btn" id="closeProjectModalBtn" type="button"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="modal-tabs-header">
-                                        <button type="button" class="saas-btn saas-btn-primary tab-btn active-tab" data-tab="tab-general"><i class="fa-solid fa-info-circle"></i> المعلومات الأساسية</button>
-                                        <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="tab-media"><i class="fa-solid fa-images"></i> الوسائط والصور والفيديو</button>
-                                        <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="tab-links"><i class="fa-solid fa-link"></i> الروابط والـ SEO</button>
-                                        <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="tab-preview"><i class="fa-solid fa-eye"></i> المعاينة الحية</button>
-                                    </div>
-
-                                    <form id="project-form">
-                                        <input type="hidden" id="edit-project-id">
-                                        
-                                        <div id="tab-general" class="project-tab-content">
-                                            <div>
-                                                <div>
-                                                    <label>اسم المشروع</label>
-                                                    <input type="text" id="proj-name" required placeholder="مثال: Portfolio Version 2">
-                                                </div>
-                                                <div>
-                                                    <label>التصنيف</label>
-                                                    <select id="proj-category" required>
-                                                        <option value="Web Apps">Web Apps</option>
-                                                        <option value="Frontend">Frontend</option>
-                                                        <option value="Tools & Dashboards">Tools & Dashboards</option>
-                                                        <option value="Landing Pages">Landing Pages</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div>
-                                                    <label>حالة المشروع</label>
-                                                    <select id="proj-status">
-                                                        <option value="Draft">مسودة (Draft)</option>
-                                                        <option value="Published">منشور (Published)</option>
-                                                        <option value="In Progress">قيد التطوير (In Progress)</option>
-                                                        <option value="Completed">مكتمل (Completed)</option>
-                                                        <option value="Archived">مؤرشف (Archived)</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label>الأولوية</label>
-                                                    <select id="proj-priority">
-                                                        <option value="Medium">متوسطة (Medium)</option>
-                                                        <option value="High">عالية (High)</option>
-                                                        <option value="Low">منخفضة (Low)</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label>نسبة الإنجاز (%)</label>
-                                                    <input type="number" id="proj-completion" min="0" max="100" value="100">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div>
-                                                    <label>اسم العميل / الجهة</label>
-                                                    <input type="text" id="proj-client" placeholder="مثال: Personal Project">
-                                                </div>
-                                                <div>
-                                                    <label>تاريخ البدء</label>
-                                                    <input type="date" id="proj-start-date">
-                                                </div>
-                                                <div>
-                                                    <label>تاريخ الانتهاء</label>
-                                                    <input type="date" id="proj-end-date">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label>التقنيات المستخدمة (Tech Stack - مفصول بفاصلة)</label>
-                                                <input type="text" id="proj-tech" placeholder="HTML, CSS, Vanilla JS, Supabase">
-                                            </div>
-                                            <div>
-                                                <label>وصف قصير (Short Description)</label>
-                                                <textarea id="proj-desc" rows="2" placeholder="وصف موجز يظهر في البطاقة..."></textarea>
-                                            </div>
-                                            <div>
-                                                <label>الوصف الكامل (Full Case Study Description)</label>
-                                                <textarea id="proj-full-desc" rows="4" placeholder="تفاصيل متكاملة عن المشروع، التحديات والحلول..."></textarea>
-                                            </div>
-                                            <div>
-                                                <label>
-                                                    <input type="checkbox" id="proj-featured"> مشروع مميز (Featured Project)
-                                                </label>
-                                                <label>
-                                                    <input type="checkbox" id="proj-hidden"> إخفاء المشروع (Hidden)
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div id="tab-media" class="project-tab-content">
-                                            <div>
-                                                <div>
-                                                    <label><i class="fa-solid fa-image"></i> صورة مصغرة / غلاف المشروع (Thumbnail URL)</label>
-                                                    <input type="url" id="proj-thumbnail" placeholder="https://images.unsplash.com/...">
-                                                    <div>
-                                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                                        <p>اسحب وأبطر الصورة هنا أو اضغط للرفع</p>
-                                                        <input type="file" id="proj-image-file">
-                                                        <button type="button" class="saas-btn saas-btn-secondary" id="projImageUploadBtn">اختر ملفاً</button>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <label><i class="fa-solid fa-video"></i> فيديو المشروع (YouTube / Vimeo / URL)</label>
-                                                    <input type="url" id="proj-video-url" placeholder="https://www.youtube.com/watch?v=...">
-                                                    <div>
-                                                        <label>معرض الصور الإضافي (Gallery URLs - مفصولة بفاصلة)</label>
-                                                        <textarea id="proj-gallery" rows="3" placeholder="https://img1.com, https://img2.com"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="tab-links" class="project-tab-content">
-                                            <div>
-                                                <div>
-                                                    <label>رابط المعاينة المباشرة (Live Demo URL)</label>
-                                                    <input type="url" id="proj-live-url" placeholder="https://username.github.io/project">
-                                                </div>
-                                                <div>
-                                                    <label>رابط كود المصدر (GitHub URL)</label>
-                                                    <input type="url" id="proj-github-url" placeholder="https://github.com/username/repo">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div>
-                                                    <label>رابط التوثيق (Documentation URL)</label>
-                                                    <input type="url" id="proj-docs-url" placeholder="https://docs.example.com">
-                                                </div>
-                                                <div>
-                                                    <label>رابط دراسة الحالة (Case Study URL)</label>
-                                                    <input type="url" id="proj-case-url" placeholder="https://blog.example.com/case">
-                                                </div>
-                                            </div>
-                                            <h4><i class="fa-solid fa-magnifying-glass-chart"></i> تحسين محركات البحث (Project SEO)</h4>
-                                            <div>
-                                                <div>
-                                                    <label>Meta Title</label>
-                                                    <input type="text" id="proj-meta-title" placeholder="عنوان SEO للصفحة">
-                                                </div>
-                                                <div>
-                                                    <label>Slug (رابط URL المختصر)</label>
-                                                    <input type="text" id="proj-slug" placeholder="project-version-2">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label>Meta Description & Keywords</label>
-                                                <input type="text" id="proj-keywords" placeholder="react, javascript, web development, saas dashboard">
-                                            </div>
-                                        </div>
-
-                                        <div id="tab-preview" class="project-tab-content">
-                                            <div>
-                                                <div>
-                                                    <button type="button" class="saas-btn saas-btn-secondary" data-device="desktop" id="previewDesktopBtn"><i class="fa-solid fa-desktop"></i> حاسوب</button>
-                                                    <button type="button" class="saas-btn saas-btn-secondary" data-device="tablet" id="previewTabletBtn"><i class="fa-solid fa-tablet-screen-button"></i> تابلت</button>
-                                                    <button type="button" class="saas-btn saas-btn-secondary" data-device="mobile" id="previewMobileBtn"><i class="fa-solid fa-mobile-screen"></i> موبايل</button>
-                                                </div>
-                                                <div>
-                                                    <button type="button" class="saas-btn saas-btn-secondary" id="previewThemeBtn"><i class="fa-solid fa-circle-half-stroke"></i> الوضع</button>
-                                                    <button type="button" class="saas-btn saas-btn-secondary" id="previewRefreshBtn"><i class="fa-solid fa-rotate"></i> تحديث</button>
-                                                </div>
-                                            </div>
-                                            <div id="preview-device-wrapper">
-                                                <div id="live-preview-card-box">
-                                                    <div>
-                                                        <div>
-                                                            <div>
-                                                                <h4 id="prev-proj-title">اسم المشروع</h4>
-                                                                <span id="prev-proj-category">Web Apps</span>
-                                                            </div>
-                                                        </div>
-                                                        <span id="prev-proj-badge" class="saas-badge">Published</span>
-                                                    </div>
-                                                    <p id="prev-proj-desc">وصف موجز للمشروع...</p>
-                                                    <div id="prev-proj-tech">
-                                                        <span class="project-tech-badge">HTML</span>
-                                                        <span class="project-tech-badge">JS</span>
-                                                    </div>
-                                                    <div>
-                                                        <span class="proj-link-btn"><i class="fa-solid fa-globe"></i> المعاينة</span>
-                                                        <span class="proj-link-btn"><i class="fa-brands fa-github"></i> الكود</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <button type="button" class="saas-btn saas-btn-secondary" id="resetProjectFormBtn"><i class="fa-solid fa-rotate-left"></i> إعادة ضبط</button>
-                                            <div>
-                                                <button type="button" class="saas-btn saas-btn-secondary" id="closeProjectModalBtn2">إلغاء</button>
-                                                <button type="submit" class="saas-btn saas-btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المشروع</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="projects-color">اللون المميز</label>
+                            <input type="color" id="projects-color" value="#6366f1">
                         </div>
-                    </section>
+                    </div>
+                    <div class="form-group">
+                        <label for="projects-gallery">معرض الصور</label>
+                        <textarea id="projects-gallery" rows="3" placeholder="روابط الصور (مفصولة بفاصلة)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projects-video">رابط الفيديو</label>
+                        <input type="url" id="projects-video" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                </div>
 
-                    <!-- ==========================================================
-                    SECTION: CERTIFICATES (الشهادات)
-                    ========================================================== -->
-  <section id="certificates-section" class="section-view">
-     <div class="section-header">
- <h2><i class="fa-solid fa-award"></i>
-<span>نظام إدارة الشهادات الاحترافي (Certificates Management System)</span> </h2>
-  <div class="header-actions">
-  <button id="cert-export-json-btn" class="saas-btn saas-btn-secondary" type="button"><i class="fa-solid fa-file-arrow-down"></i> تصدير JSON</button>
- <button id="cert-import-json-btn" class="saas-btn saas-btn-secondary" type="button"><i class="fa-solid fa-file-arrow-up"></i> استيراد</button>
-<input type="file" id="cert-file-import-input" accept=".json">
-                                <button id="cert-add-new-btn" class="saas-btn saas-btn-primary" type="button"><i class="fa-solid fa-plus"></i> إضافة شهادة جديدة</button>
-                                <button id="cert-save-all-btn" class="saas-btn saas-btn-primary" type="button"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر</button>
-                            </div>
+                <!-- Tab: Links -->
+                <div id="project-links" class="tab-content" role="tabpanel" hidden>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projects-demo-url">رابط المعاينة</label>
+                            <input type="url" id="projects-demo-url" placeholder="https://example.com/demo">
                         </div>
+                        <div class="form-group">
+                            <label for="projects-github-url">رابط الكود</label>
+                            <input type="url" id="projects-github-url" placeholder="https://github.com/username/repo">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projects-docs-url">رابط التوثيق</label>
+                            <input type="url" id="projects-docs-url" placeholder="https://docs.example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="projects-case-url">رابط دراسة الحالة</label>
+                            <input type="url" id="projects-case-url" placeholder="https://blog.example.com/case">
+                        </div>
+                    </div>
+                </div>
 
-                        <div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-award"></i></div>
-                                <div>
-                                    <h4 id="stat-total-certs">0</h4>
-                                    <span>إجمالي الشهادات</span>
-                                </div>
-                            </div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-star"></i></div>
-                                <div>
-                                    <h4 id="stat-featured-certs">0</h4>
-                                    <span>شهادات مميزة</span>
-                                </div>
-                            </div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-globe"></i></div>
-                                <div>
-                                    <h4 id="stat-published-certs">0</h4>
-                                    <span>منشورة</span>
-                                </div>
-                            </div>
-                            <div class="saas-card">
-                                <div><i class="fa-solid fa-triangle-exclamation"></i></div>
-                                <div>
-                                    <h4 id="stat-expired-certs">0</h4>
-                                    <span>منتهية الصلاحية</span>
-                                </div>
-                            </div>
+                <!-- Tab: Preview -->
+                <div id="project-preview" class="tab-content" role="tabpanel" hidden>
+                    <div id="project-preview-container" class="preview-container">
+                        <div class="preview-placeholder">
+                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                            <p>المعاينة ستظهر هنا</p>
+                            <span>احفظ المشروع لرؤية المعاينة</span>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="saas-card">
-                            <div>
-                                <div>
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    <input type="text" id="certificates-search-input">
-                                </div>
-                                <div>
-                                    <select id="cert-filter-category">
-                                        <option value="all">جميع التصنيفات</option>
-                                        <option value="Cybersecurity">أمن وسلامة السيبرانية</option>
-                                        <option value="Frontend">تطوير واجهات</option>
-                                        <option value="AI & Data">ذكاء اصطناعي</option>
-                                    </select>
-                                    <select id="cert-filter-status">
-                                        <option value="all">جميع الحالات</option>
-                                        <option value="Published">منشور (Published)</option>
-                                        <option value="Draft">مسودة (Draft)</option>
-                                        <option value="Archived">مؤرشف (Archived)</option>
-                                    </select>
-                                    <select id="cert-sort-by">
-                                        <option value="newest">الأحدث أولاً</option>
-                                        <option value="oldest">الأقدم أولاً</option>
-                                        <option value="alphabetical">أبجدياً (Name)</option>
-                                        <option value="featured">المميزة أولاً</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="cert-bulk-actions-bar">
-                                <span id="cert-selected-count">تم تحديد 0 عناصر</span>
-                                <div>
-                                    <button id="cert-bulk-publish-btn" class="saas-btn saas-btn-secondary" type="button"><i class="fa-solid fa-globe"></i> نشر المحدد</button>
-                                    <button id="cert-bulk-hide-btn" class="saas-btn saas-btn-secondary" type="button"><i class="fa-solid fa-eye-slash"></i> إخفاء المحدد</button>
-                                    <button id="cert-bulk-archive-btn" class="saas-btn saas-btn-secondary" type="button"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
-                                    <button id="cert-bulk-delete-btn" class="saas-btn" type="button"><i class="fa-solid fa-trash"></i> حذف المحدد</button>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Checkboxes -->
+                <div class="form-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="projects-featured">
+                        <span class="checkmark"></span> ⭐ مشروع مميز
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="projects-hidden">
+                        <span class="checkmark"></span> 👁️ مخفي
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="projects-pinned">
+                        <span class="checkmark"></span> 📌 مثبت
+                    </label>
+                </div>
 
-                        <div class="saas-card">
-                            <div>
-                                <h3><i class="fa-solid fa-list-check"></i> قائمة الشهادات (Supabase & Backend Ready)</h3>
-                                <label>
-                                    <input type="checkbox" id="cert-select-all-checkbox"> تحديد الكل
-                                </label>
-                            </div>
-                            <div id="certificates-grid-container"></div>
-                        </div>
+                <footer class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="projects-modal-cancel">إلغاء</button>
+                    <button type="reset" class="btn btn-secondary" id="projects-modal-reset">
+                        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> إعادة ضبط
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> حفظ
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
 
-                        <div id="certificate-modal-overlay">
-                            <div class="saas-card">
-                                <div>
-                                    <h3 id="cert-modal-title"><i class="fa-solid fa-certificate"></i> إضافة / تعديل شهادة</h3>
-                                    <button type="button" class="saas-btn saas-btn-secondary" id="closeCertModalBtn"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                                <form id="certificate-form">
-                                    <input type="hidden" id="cert-edit-id" name="cert_edit_id">
-                                    <div>
-                                        <div>
-                                            <label>عنوان الشهادة (Certificate Title)*</label>
-                                            <input type="text" id="cert_title" name="cert_title" required placeholder="مثال: Introduction to Cybersecurity">
-                                        </div>
-                                        <div>
-                                            <label>الجهة المانحة (Provider)*</label>
-                                            <input type="text" id="cert_provider" name="cert_provider" required placeholder="مثال: Cisco">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <label>التصنيف (Category)</label>
-                                            <select id="cert_category" name="cert_category">
-                                                <option value="Cybersecurity">Cybersecurity</option>
-                                                <option value="Frontend">Frontend</option>
-                                                <option value="AI & Data">AI & Data</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label>تاريخ الإصدار</label>
-                                            <input type="date" id="cert_issue_date" name="cert_issue_date">
-                                        </div>
-                                        <div>
-                                            <label>تاريخ الانتهاء</label>
-                                            <input type="date" id="cert_expiration_date" name="cert_expiration_date">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <label>معرف الشهادة (Credential ID)</label>
-                                            <input type="text" id="cert_credential_id" name="cert_credential_id" placeholder="CSCO-2026-XYZ">
-                                        </div>
-                                        <div>
-                                            <label>رابط التحقق (Verification URL)</label>
-                                            <input type="url" id="cert_verification_url" name="cert_verification_url" placeholder="https://...">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label>وصف قصير (Short Description)</label>
-                                        <textarea id="cert_short_desc" name="cert_short_desc" rows="2"></textarea>
-                                    </div>
-                                    <div>
-                                        <label>
-                                            <input type="checkbox" id="cert_is_featured" name="cert_is_featured"> شهادة مميزة (Featured)
-                                        </label>
-                                        <label>
-                                            <input type="checkbox" id="cert_is_published" name="cert_is_published" checked> منشور (Published)
-                                        </label>
-                                    </div>
-                                    <div>
- <button type="button" class="saas-btn saas-btn-secondary" id="closeCertModalBtn2">إلغاء</button>
- <button type="submit" id="cert-submit-btn" class="saas-btn saas-btn-primary">حفظ الشهادة</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </section>
+    <!-- ========================================================== -->
+    <!-- MODAL: Delete Confirmation                                 -->
+    <!-- ========================================================== -->
+    <div id="projects-delete-modal" class="modal-overlay modal-small" role="dialog" aria-modal="true" aria-labelledby="projects-delete-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="projects-delete-title">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);" aria-hidden="true"></i>
+                    <span>تأكيد حذف المشروع</span>
+                </h3>
+                <button class="modal-close" id="projects-delete-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+            <div class="modal-body">
+                <p>هل أنت متأكد من حذف هذا المشروع؟</p>
+                <p class="modal-warning">لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <footer class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="projects-delete-cancel">إلغاء</button>
+                <button type="button" class="btn btn-danger" id="projects-delete-confirm">
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- FUTURE: AI Suggestions                                     -->
+    <!-- ========================================================== -->
+    <div id="projects-ai-placeholder" class="ai-placeholder" hidden>
+        <i class="fa-solid fa-brain" aria-hidden="true"></i>
+        <span>توصيات الذكاء الاصطناعي قادمة...</span>
+    </div>
+
+</section>
+
+
+<!-- ========================================================== -->
+<!-- 📦 SECTION: CERTIFICATES - الشهادات                       -->
+<!-- ========================================================== -->
+<section id="certificates-section" class="section-view" role="tabpanel" aria-label="الشهادات">
+
+    <!-- ========================================================== -->
+    <!-- HEADER                                                     -->
+    <!-- ========================================================== -->
+    <header class="section-header">
+        <div class="section-header-left">
+            <h2 class="section-title">
+                <i class="section-title-icon fa-solid fa-award" aria-hidden="true"></i>
+                <span>الشهادات</span>
+                <span class="section-badge" id="certificates-total-badge" aria-label="إجمالي الشهادات">0</span>
+            </h2>
+            <p class="section-description">إدارة الشهادات والإنجازات المهنية</p>
+        </div>
+        <div class="section-header-actions">
+            <button class="btn btn-export" id="certificates-export-btn" type="button" aria-label="تصدير الشهادات">
+                <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+                <span>تصدير</span>
+            </button>
+            <button class="btn btn-primary" id="certificates-add-btn" type="button" aria-label="إضافة شهادة جديدة">
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                <span>شهادة جديدة</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================================== -->
+    <!-- STATISTICS                                                 -->
+    <!-- ========================================================== -->
+    <div class="stats-grid" id="certificates-stats" role="region" aria-label="إحصائيات الشهادات">
+        <article class="stat-card">
+            <div class="stat-icon gold" aria-hidden="true"><i class="fa-solid fa-certificate"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">الشهادات</span>
+                <h4 class="stat-value" id="certificates-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon green" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">صالحة</span>
+                <h4 class="stat-value" id="certificates-valid-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon purple" aria-hidden="true"><i class="fa-solid fa-star"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">مميزة</span>
+                <h4 class="stat-value" id="certificates-featured-count">0</h4>
+            </div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-icon red" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="stat-info">
+                <span class="stat-label">منتهية</span>
+                <h4 class="stat-value" id="certificates-expired-count">0</h4>
+            </div>
+        </article>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- TOOLBAR                                                    -->
+    <!-- ========================================================== -->
+    <div class="toolbar-card" role="toolbar" aria-label="شريط أدوات الشهادات">
+        <div class="toolbar-row">
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fa-solid fa-search" aria-hidden="true"></i>
+                <input type="text" id="certificates-search" placeholder="ابحث عن شهادة..." aria-label="بحث في الشهادات">
+                <button class="search-clear" type="button" aria-label="مسح البحث" hidden>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-group">
+                <select id="certificates-filter-provider" aria-label="تصفية حسب الجهة">
+                    <option value="all">جميع الجهات</option>
+                    <option value="Cisco">Cisco</option>
+                    <option value="Google">Google</option>
+                    <option value="Microsoft">Microsoft</option>
+                    <option value="AWS">AWS</option>
+                    <option value="Coursera">Coursera</option>
+                    <option value="edX">edX</option>
+                </select>
+                <select id="certificates-filter-status" aria-label="تصفية حسب الحالة">
+                    <option value="all">جميع الحالات</option>
+                    <option value="Published">منشورة</option>
+                    <option value="Draft">مسودة</option>
+                    <option value="Archived">مؤرشفة</option>
+                    <option value="Expired">منتهية</option>
+                </select>
+                <select id="certificates-sort" aria-label="ترتيب الشهادات">
+                    <option value="newest">الأحدث</option>
+                    <option value="oldest">الأقدم</option>
+                    <option value="alpha">أبجدياً</option>
+                    <option value="expiry">تاريخ الانتهاء</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="bulk-actions" id="certificates-bulk-actions">
+            <span class="bulk-selected-count" id="certificates-selected-count">0 مختارة</span>
+            <div class="bulk-buttons">
+                <button class="bulk-btn bulk-btn-publish" id="certificates-bulk-publish" type="button" disabled>
+                    <i class="fa-solid fa-globe" aria-hidden="true"></i> نشر
+                </button>
+                <button class="bulk-btn bulk-btn-featured" id="certificates-bulk-featured" type="button" disabled>
+                    <i class="fa-solid fa-star" aria-hidden="true"></i> تمييز
+                </button>
+                <button class="bulk-btn bulk-btn-delete" id="certificates-bulk-delete" type="button" disabled>
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- CONTENT - Certificates Grid                               -->
+    <!-- ========================================================== -->
+    <div id="certificates-grid-container" class="certificates-grid" role="list" aria-label="قائمة الشهادات">
+        <!-- Rendered by JavaScript -->
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- LOADING SKELETON                                           -->
+    <!-- ========================================================== -->
+    <div id="certificates-skeleton" class="certificates-skeleton" aria-hidden="true" hidden>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        <div class="skeleton-card"><div class="skeleton-icon"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- EMPTY STATE                                                -->
+    <!-- ========================================================== -->
+    <div id="certificates-empty" class="empty-state" hidden>
+        <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+        <h4>لا توجد شهادات</h4>
+        <p>لم يتم إضافة أي شهادات حتى الآن. ابدأ بإضافة شهاداتك.</p>
+        <button class="btn btn-primary" data-action="add-certificate" type="button">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i> إضافة شهادة
+        </button>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PAGINATION                                                 -->
+    <!-- ========================================================== -->
+    <nav class="pagination" id="certificates-pagination" aria-label="تصفح الشهادات" hidden>
+        <button class="pagination-btn" data-page="prev" type="button" disabled>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <span class="pagination-info">صفحة <span id="certificates-current-page">1</span> من <span id="certificates-total-pages">1</span></span>
+        <button class="pagination-btn" data-page="next" type="button" disabled>
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+    </nav>
+
+    <!-- ========================================================== -->
+    <!-- FOOTER                                                     -->
+    <!-- ========================================================== -->
+    <footer class="section-footer">
+        <span class="footer-info" id="certificates-footer-info">عرض 0 من 0 شهادة</span>
+        <button class="btn btn-text" id="certificates-refresh-btn" type="button">
+            <i class="fa-solid fa-rotate" aria-hidden="true"></i> تحديث
+        </button>
+    </footer>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Add/Edit Certificate                                -->
+    <!-- ========================================================== -->
+    <div id="certificates-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="certificates-modal-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="certificates-modal-title">
+                    <i class="fa-solid fa-plus-circle" aria-hidden="true"></i>
+                    <span>إضافة شهادة جديدة</span>
+                </h3>
+                <button class="modal-close" id="certificates-modal-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+
+            <form id="certificates-form" novalidate>
+                <input type="hidden" id="certificates-edit-id" value="">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="certificates-title">عنوان الشهادة <span class="required" aria-hidden="true">*</span></label>
+                        <input type="text" id="certificates-title" placeholder="مثال: Introduction to Cybersecurity" required aria-required="true">
+                    </div>
+                    <div class="form-group">
+                        <label for="certificates-provider">الجهة المانحة <span class="required" aria-hidden="true">*</span></label>
+                        <input type="text" id="certificates-provider" placeholder="مثال: Cisco" required aria-required="true">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="certificates-issue-date">تاريخ الإصدار</label>
+                        <input type="date" id="certificates-issue-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="certificates-expiry-date">تاريخ الانتهاء</label>
+                        <input type="date" id="certificates-expiry-date">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="certificates-credential-id">الرمز التعريفي</label>
+                        <input type="text" id="certificates-credential-id" placeholder="CSCO-2026-XYZ">
+                    </div>
+                    <div class="form-group">
+                        <label for="certificates-verify-url">رابط التحقق</label>
+                        <input type="url" id="certificates-verify-url" placeholder="https://verify.example.com/...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="certificates-desc">الوصف</label>
+                    <textarea id="certificates-desc" rows="2" placeholder="وصف مختصر..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="certificates-skills">المهارات المرتبطة</label>
+                    <input type="text" id="certificates-skills" placeholder="مفصولة بفاصلة: React, JavaScript, CSS">
+                </div>
+
+                <div class="form-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="certificates-featured">
+                        <span class="checkmark"></span> ⭐ مميزة
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="certificates-published" checked>
+                        <span class="checkmark"></span> 🌐 منشورة
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="certificates-pinned">
+                        <span class="checkmark"></span> 📌 مثبتة
+                    </label>
+                </div>
+
+                <footer class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="certificates-modal-cancel">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" id="certificates-modal-reset">
+                        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> إعادة ضبط
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> حفظ
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Delete Confirmation                                 -->
+    <!-- ========================================================== -->
+    <div id="certificates-delete-modal" class="modal-overlay modal-small" role="dialog" aria-modal="true" aria-labelledby="certificates-delete-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="certificates-delete-title">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);" aria-hidden="true"></i>
+                    <span>تأكيد حذف الشهادة</span>
+                </h3>
+                <button class="modal-close" id="certificates-delete-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+            <div class="modal-body">
+                <p>هل أنت متأكد من حذف هذه الشهادة؟</p>
+                <p class="modal-warning">لا يمكن التراجع عن هذا الإجراء.</p>
+            </div>
+            <footer class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="certificates-delete-cancel">إلغاء</button>
+                <button type="button" class="btn btn-danger" id="certificates-delete-confirm">
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i> حذف
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- MODAL: Preview Certificate                                 -->
+    <!-- ========================================================== -->
+    <div id="certificates-preview-modal" class="modal-overlay modal-large" role="dialog" aria-modal="true" aria-labelledby="certificates-preview-title" hidden>
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="certificates-preview-title">
+                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                    <span>معاينة الشهادة</span>
+                </h3>
+                <button class="modal-close" id="certificates-preview-close" type="button" aria-label="إغلاق النافذة">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </header>
+            <div class="modal-body">
+                <div id="certificates-preview-container" class="preview-container">
+                    <div class="preview-placeholder">
+                        <i class="fa-solid fa-certificate" aria-hidden="true"></i>
+                        <p>معاينة الشهادة ستظهر هنا</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="certificates-preview-download">
+                    <i class="fa-solid fa-download" aria-hidden="true"></i> تحميل
+                </button>
+                <button type="button" class="btn btn-secondary" id="certificates-preview-print">
+                    <i class="fa-solid fa-print" aria-hidden="true"></i> طباعة
+                </button>
+                <button type="button" class="btn btn-primary" id="certificates-preview-close-btn">إغلاق</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- FUTURE: Verification API                                   -->
+    <!-- ========================================================== -->
+    <div id="certificates-verify-placeholder" class="verify-placeholder" hidden>
+        <i class="fa-solid fa-shield-check" aria-hidden="true"></i>
+        <span>API التحقق من الشهادات قادم...</span>
+    </div>
+
+</section>
+
+                   
 
                     <!-- ==========================================================
                     SECTION: SUPPORT (الدعم الفني)
