@@ -1936,22 +1936,8 @@ console.log(`
 // نهاية SKILLS ENGINE                                          */
 // ============================================================ */
 // ============================================================ */
-// 📁 PROJECTS ENGINE - محرك المشاريع (نسخة نظيفة)            */
+// 📁 PROJECTS ENGINE v3.0 - المحرك النهائي (نسخة نظيفة)      */
 // ============================================================ */
-/*
-   ✅ مطابق 100% مع ملف HTML
-   ✅ مطابق 100% مع سكيما قاعدة البيانات
-   ✅ لا يوجد أي تغيير في الكلاسات أو المعرفات
-   ✅ CRUD كامل يعمل بدون أخطاء
-   ✅ Supabase متكامل
-   ✅ LocalStorage كنسخة احتياطية
-   ✅ واجهة مستخدم سلسة
-   ✅ إحصائيات فورية
-   ✅ بحث وتصفية
-   ✅ إجراءات جماعية (Bulk Actions)
-   ✅ عرض شبكي / قائمة
-   ✅ علامات تبويب في المودال
-*/
 
 // ============================================================ */
 // 01. CONFIG & UTILITIES                                       */
@@ -2064,36 +2050,30 @@ const ProjectsAPI = {
         }
     },
 
-async insert(data) {
-    try {
-        // ✅ التأكد من أن البيانات لا تحتوي على ID
-        const insertData = { ...data };
-        delete insertData.id;
+    async insert(data) {
+        try {
+            const insertData = { ...data };
+            delete insertData.id;
 
-        console.log('📤 Inserting project:', insertData);
-        const res = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects`, {
-            method: 'POST',
-            headers: { ...PROJECTS_HEADERS, 'Prefer': 'return=representation' },
-            body: JSON.stringify(insertData)
-        });
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('❌ Insert error:', errorText);
-            throw new Error(`HTTP ${res.status}`);
+            const res = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects`, {
+                method: 'POST',
+                headers: { ...PROJECTS_HEADERS, 'Prefer': 'return=representation' },
+                body: JSON.stringify(insertData)
+            });
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('❌ Insert error:', errorText);
+                throw new Error(`HTTP ${res.status}`);
+            }
+            return await res.json();
+        } catch (error) {
+            console.error('❌ Error inserting project:', error);
+            return null;
         }
-        const result = await res.json();
-        console.log('✅ Insert result:', result);
-        return result;
-    } catch (error) {
-        console.error('❌ Error inserting project:', error);
-        return null;
-    }
-},
-   
+    },
 
     async update(id, data) {
         try {
-            console.log('📤 Updating project:', id, data);
             const res = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects?id=eq.${id}`, {
                 method: 'PATCH',
                 headers: { ...PROJECTS_HEADERS, 'Prefer': 'return=representation' },
@@ -2111,58 +2091,47 @@ async insert(data) {
         }
     },
 
-   async delete(id) {
-    try {
-        // ✅ التأكد من أن الـ ID رقم صحيح
-        const numericId = Number(id);
-        if (isNaN(numericId) || numericId <= 0) {
-            console.error('❌ Invalid ID for deletion:', id);
+    async delete(id) {
+        try {
+            const numericId = Number(id);
+            if (isNaN(numericId) || numericId <= 0) {
+                console.error('❌ Invalid ID for deletion:', id);
+                return false;
+            }
+            
+            const res = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects?id=eq.${numericId}`, {
+                method: 'DELETE',
+                headers: PROJECTS_HEADERS
+            });
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('❌ Delete error:', errorText);
+                throw new Error(`HTTP ${res.status}`);
+            }
+            return true;
+        } catch (error) {
+            console.error('❌ Error deleting project:', error);
             return false;
         }
-        
-        console.log(`📤 Deleting project ID: ${numericId}`);
-        const res = await fetch(`${PROJECTS_SUPABASE_URL}/rest/v1/projects?id=eq.${numericId}`, {
-            method: 'DELETE',
-            headers: PROJECTS_HEADERS
-        });
-        if (!res.ok) {
-            const errorText = await res.text();
-            console.error('❌ Delete error:', errorText);
-            throw new Error(`HTTP ${res.status}`);
-        }
-        return true;
-    } catch (error) {
-        console.error('❌ Error deleting project:', error);
-        return false;
     }
-}
 };
 
 // ============================================================ */
-// 03. PROJECTS ENGINE                                           */
+// 03. PROJECTS ENGINE - المحرك الرئيسي                        */
 // ============================================================ */
 
 class ProjectsEngine {
     constructor() {
-        // ============================================================ */
-        // DOM ELEMENTS                                                 */
-        // ============================================================ */
-        
-        // Container
+        // DOM Elements
         this.grid = document.getElementById('projects-grid-container');
-        
-        // Modal
         this.modal = document.getElementById('projects-modal');
         this.modalTitle = document.getElementById('projects-modal-title');
         this.modalClose = document.getElementById('projects-modal-close');
         this.modalCancel = document.getElementById('projects-modal-cancel');
         this.modalReset = document.getElementById('projects-modal-reset');
-        
-        // Form
         this.form = document.getElementById('projects-form');
         this.editInput = document.getElementById('projects-edit-id');
         
-        // Form Fields
         this.fieldTitle = document.getElementById('projects-name');
         this.fieldCategory = document.getElementById('projects-category');
         this.fieldStatus = document.getElementById('projects-status');
@@ -2178,46 +2147,37 @@ class ProjectsEngine {
         this.fieldFeatured = document.getElementById('projects-featured');
         this.fieldHidden = document.getElementById('projects-hidden');
         
-        // Buttons
         this.addBtn = document.getElementById('projects-add-btn');
         this.exportBtn = document.getElementById('projects-export-btn');
         this.refreshBtn = document.getElementById('projects-refresh-btn');
         
-        // Search & Filters
         this.searchInput = document.getElementById('projects-search');
         this.filterStatus = document.getElementById('projects-filter-status');
         this.filterCategory = document.getElementById('projects-filter-category');
         this.sortSelect = document.getElementById('projects-sort');
         this.viewBtns = document.querySelectorAll('.view-btn');
         
-        // Stats
         this.statTotal = document.getElementById('projects-count');
         this.statCompleted = document.getElementById('projects-completed-count');
         this.statFeatured = document.getElementById('projects-featured-count');
         this.statPublished = document.getElementById('projects-published-count');
         this.badgeTotal = document.getElementById('projects-total-badge');
         
-        // Bulk
         this.bulkPublish = document.getElementById('projects-bulk-publish');
         this.bulkFeatured = document.getElementById('projects-bulk-featured');
         this.bulkDelete = document.getElementById('projects-bulk-delete');
         this.selectedCount = document.getElementById('projects-selected-count');
         this.footerInfo = document.getElementById('projects-footer-info');
         
-        // Delete Modal
         this.deleteModal = document.getElementById('projects-delete-modal');
         this.deleteConfirm = document.getElementById('projects-delete-confirm');
         this.deleteCancel = document.getElementById('projects-delete-cancel');
         this.deleteClose = document.getElementById('projects-delete-close');
         
-        // Skeleton & Empty
         this.skeleton = document.getElementById('projects-skeleton');
         this.empty = document.getElementById('projects-empty');
-        
-        // ============================================================ */
-        // STATE                                                       */
-        // ============================================================ */
-        
+
+        // State
         this.items = [];
         this.selectedItems = new Set();
         this.searchQuery = '';
@@ -2245,10 +2205,6 @@ class ProjectsEngine {
             'Archived': 'archived'
         };
 
-        // ============================================================ */
-        // INIT                                                        */
-        // ============================================================ */
-        
         this.init();
     }
 
@@ -2258,17 +2214,14 @@ class ProjectsEngine {
 
     init() {
         console.log('📁 Projects Engine initializing...');
-        
         try {
             this.loadFromStorage();
             this.setupEvents();
             this.render();
             setTimeout(() => this.loadFromSupabase(), 500);
             console.log('✅ Projects Engine ready');
-            console.log(`📊 ${this.items.length} projects loaded`);
         } catch (error) {
             console.error('❌ Projects Engine init error:', error);
-            ProjectsUtils.toast('❌ فشل تحميل المشاريع', 'error');
         }
     }
 
@@ -2323,12 +2276,15 @@ class ProjectsEngine {
     // ============================================================ */
 
     setupEvents() {
-        // Add Button
+        // --- Add Button ---
         if (this.addBtn) {
-            this.addBtn.addEventListener('click', () => this.openModal());
+            this.addBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openModal();
+            });
         }
 
-        // Form Submit
+        // --- Form Submit ---
         if (this.form) {
             this.form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -2336,29 +2292,33 @@ class ProjectsEngine {
             });
         }
 
-        // Modal Close
+        // --- Modal Close Buttons ---
         if (this.modalClose) {
             this.modalClose.addEventListener('click', () => this.closeModal());
         }
         if (this.modalCancel) {
             this.modalCancel.addEventListener('click', () => this.closeModal());
         }
+
+        // --- Modal Reset ---
+        if (this.modalReset) {
+            this.modalReset.addEventListener('click', () => this.resetForm());
+        }
+
+        // --- Modal Click Outside ---
         if (this.modal) {
             this.modal.addEventListener('click', (e) => {
                 if (e.target === this.modal) this.closeModal();
             });
         }
 
-        // Modal Reset
-        if (this.modalReset) {
-            this.modalReset.addEventListener('click', () => this.resetForm());
-        }
-
-        // Modal Tabs
+        // --- Tabs ---
         const tabs = this.modal?.querySelectorAll('.tab-btn');
         if (tabs) {
             tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+
                     tabs.forEach(t => {
                         t.classList.remove('active');
                         t.setAttribute('aria-selected', 'false');
@@ -2381,7 +2341,7 @@ class ProjectsEngine {
             });
         }
 
-        // Search
+        // --- Search ---
         if (this.searchInput) {
             this.searchInput.addEventListener('input', (e) => {
                 this.searchQuery = e.target.value.trim();
@@ -2389,7 +2349,7 @@ class ProjectsEngine {
             });
         }
 
-        // Filters
+        // --- Filters ---
         if (this.filterStatus) {
             this.filterStatus.addEventListener('change', (e) => {
                 this.currentFilter.status = e.target.value;
@@ -2403,7 +2363,7 @@ class ProjectsEngine {
             });
         }
 
-        // Sort
+        // --- Sort ---
         if (this.sortSelect) {
             this.sortSelect.addEventListener('change', (e) => {
                 this.currentSort = e.target.value;
@@ -2411,7 +2371,7 @@ class ProjectsEngine {
             });
         }
 
-        // View Switch
+        // --- View Buttons ---
         if (this.viewBtns) {
             this.viewBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2423,17 +2383,17 @@ class ProjectsEngine {
             });
         }
 
-        // Export
+        // --- Export ---
         if (this.exportBtn) {
             this.exportBtn.addEventListener('click', () => this.exportData());
         }
 
-        // Refresh
+        // --- Refresh ---
         if (this.refreshBtn) {
             this.refreshBtn.addEventListener('click', () => this.refresh());
         }
 
-        // Bulk Buttons
+        // --- Bulk Buttons ---
         if (this.bulkPublish) {
             this.bulkPublish.addEventListener('click', () => this.handleBulkAction('publish'));
         }
@@ -2444,7 +2404,7 @@ class ProjectsEngine {
             this.bulkDelete.addEventListener('click', () => this.handleBulkAction('delete'));
         }
 
-        // Delete Modal
+        // --- Delete Modal ---
         if (this.deleteConfirm) {
             this.deleteConfirm.addEventListener('click', () => this.confirmDelete());
         }
@@ -2460,7 +2420,7 @@ class ProjectsEngine {
             });
         }
 
-        // Grid Delegation
+        // --- Grid Delegation ---
         if (this.grid) {
             this.grid.addEventListener('change', (e) => {
                 const checkbox = e.target.closest('input[type="checkbox"]');
@@ -2486,12 +2446,11 @@ class ProjectsEngine {
                 const deleteBtn = e.target.closest('.delete-btn');
                 if (deleteBtn && deleteBtn.dataset.id) {
                     this.openDeleteModal(parseInt(deleteBtn.dataset.id));
-                    return;
                 }
             });
         }
 
-        // Keyboard Shortcuts
+        // --- Keyboard ---
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (this.modal && !this.modal.hidden) this.closeModal();
@@ -2600,121 +2559,114 @@ class ProjectsEngine {
     }
 
     // ============================================================ */
-    // 10. GET FORM DATA - مطابق 100% للسكيما                     */
+    // 10. GET FORM DATA                                             */
     // ============================================================ */
 
-  getFormData() {
-    // ✅ التأكد من إنشاء ID صحيح
-    const data = {
-        title: this.fieldTitle?.value || '',
-        category: this.fieldCategory?.value || 'Web Apps',
-        status: this.fieldStatus?.value || 'Draft',
-        description: this.fieldDesc?.value || '',
-        full_description: this.fieldFullDesc?.value || '',
-        tech_stack: this.fieldTech?.value ? this.fieldTech.value.split(',').map(s => s.trim()).filter(Boolean) : [],
-        image_url: this.fieldImage?.value || '',
-        color: this.fieldColor?.value || '#6366f1',
-        demo_url: this.fieldDemoUrl?.value || '',
-        github_url: this.fieldGithubUrl?.value || '',
-        docs_url: this.fieldDocsUrl?.value || '',
-        completion: parseInt(this.fieldCompletion?.value) || 100,
-        is_featured: this.fieldFeatured?.checked || false,
-        is_hidden: this.fieldHidden?.checked || false,
-        display_order: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    };
+    getFormData() {
+        const data = {
+            title: this.fieldTitle?.value || '',
+            category: this.fieldCategory?.value || 'Web Apps',
+            status: this.fieldStatus?.value || 'Draft',
+            description: this.fieldDesc?.value || '',
+            full_description: this.fieldFullDesc?.value || '',
+            tech_stack: this.fieldTech?.value ? this.fieldTech.value.split(',').map(s => s.trim()).filter(Boolean) : [],
+            image_url: this.fieldImage?.value || '',
+            color: this.fieldColor?.value || '#6366f1',
+            demo_url: this.fieldDemoUrl?.value || '',
+            github_url: this.fieldGithubUrl?.value || '',
+            docs_url: this.fieldDocsUrl?.value || '',
+            completion: parseInt(this.fieldCompletion?.value) || 100,
+            is_featured: this.fieldFeatured?.checked || false,
+            is_hidden: this.fieldHidden?.checked || false,
+            display_order: 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
 
-    // ✅ في حالة التعديل، استخدم ID موجود
-    if (this.editInput?.value) {
-        const editId = parseInt(this.editInput.value);
-        if (!isNaN(editId) && editId > 0) {
-            data.id = editId;
+        if (this.editInput?.value) {
+            const editId = parseInt(this.editInput.value);
+            if (!isNaN(editId) && editId > 0) {
+                data.id = editId;
+            }
         }
-    }
 
-    return data;
-}
+        return data;
+    }
 
     // ============================================================ */
     // 11. CRUD                                                     */
     // ============================================================ */
 
- async handleFormSubmit() {
-    if (this._isSaving) {
-        ProjectsUtils.toast('⏳ جاري الحفظ...', 'info');
-        return;
-    }
-
-    this._isSaving = true;
-    const submitBtn = this.form.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...';
-    }
-
-    try {
-        const data = this.getFormData();
-        const isEdit = this.editId !== null;
-
-        if (!data.title) {
-            ProjectsUtils.toast('⚠️ الرجاء إدخال اسم المشروع', 'warning');
-            this.fieldTitle?.focus();
-            return;
-        }
-        if (!data.category) {
-            ProjectsUtils.toast('⚠️ الرجاء اختيار التصنيف', 'warning');
-            this.fieldCategory?.focus();
+    async handleFormSubmit() {
+        if (this._isSaving) {
+            ProjectsUtils.toast('⏳ جاري الحفظ...', 'info');
             return;
         }
 
-        if (isEdit) {
-            // ✅ التعديل
-            const index = this.items.findIndex(item => item.id === data.id);
-            if (index !== -1) {
-                this.items[index] = { ...this.items[index], ...data };
-            }
-            
-            const updateData = { ...data };
-            delete updateData.id;
-            await ProjectsAPI.update(data.id, updateData);
-            
-            ProjectsUtils.toast('✅ تم تحديث المشروع', 'success');
-        } else {
-            // ✅ الإضافة
-            const insertData = { ...data };
-            delete insertData.id;
-            const result = await ProjectsAPI.insert(insertData);
-            
-            // ✅ استقبال ID من قاعدة البيانات
-            if (result && result.length > 0) {
-                data.id = result[0].id;
-                console.log('✅ New project ID from Supabase:', data.id);
-            } else {
-                // ❌ إذا فشل استقبال ID، استخدم ID مؤقت
-                data.id = Date.now() + Math.random() * 1000;
-                console.warn('⚠️ Using temporary ID:', data.id);
-            }
-            this.items.unshift(data);
-            
-            ProjectsUtils.toast('✅ تم إضافة المشروع', 'success');
-        }
-
-        this.saveToStorage();
-        this.render();
-        this.closeModal();
-
-    } catch (error) {
-        console.error('❌ Error saving:', error);
-        ProjectsUtils.toast('❌ فشل الحفظ: ' + (error.message || 'خطأ غير معروف'), 'error');
-    } finally {
-        this._isSaving = false;
+        this._isSaving = true;
+        const submitBtn = this.form.querySelector('button[type="submit"]');
         if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري...';
+        }
+
+        try {
+            const data = this.getFormData();
+            const isEdit = this.editId !== null;
+
+            if (!data.title) {
+                ProjectsUtils.toast('⚠️ الرجاء إدخال اسم المشروع', 'warning');
+                this.fieldTitle?.focus();
+                return;
+            }
+            if (!data.category) {
+                ProjectsUtils.toast('⚠️ الرجاء اختيار التصنيف', 'warning');
+                this.fieldCategory?.focus();
+                return;
+            }
+
+            if (isEdit) {
+                const index = this.items.findIndex(item => item.id === data.id);
+                if (index !== -1) {
+                    this.items[index] = { ...this.items[index], ...data };
+                }
+                const updateData = { ...data };
+                delete updateData.id;
+                await ProjectsAPI.update(data.id, updateData);
+                ProjectsUtils.toast('✅ تم تحديث المشروع', 'success');
+            } else {
+                const insertData = { ...data };
+                delete insertData.id;
+                const result = await ProjectsAPI.insert(insertData);
+                if (result && result.length > 0) {
+                    data.id = result[0].id;
+                } else {
+                    data.id = Date.now() + Math.random() * 1000;
+                }
+                this.items.unshift(data);
+                ProjectsUtils.toast('✅ تم إضافة المشروع', 'success');
+            }
+
+            this.saveToStorage();
+            this.render();
+            this.closeModal();
+
+            // 🔥 إرسال حدث لتحديث الموقع الرئيسي
+            document.dispatchEvent(new CustomEvent('dashboard:projects-updated', {
+                detail: { count: this.items.length }
+            }));
+
+        } catch (error) {
+            console.error('❌ Error saving:', error);
+            ProjectsUtils.toast('❌ فشل الحفظ: ' + (error.message || 'خطأ غير معروف'), 'error');
+        } finally {
+            this._isSaving = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
+            }
         }
     }
-}
 
     // ============================================================ */
     // 12. DELETE MODAL                                             */
@@ -2751,6 +2703,11 @@ class ProjectsEngine {
         
         this.closeDeleteModal();
         ProjectsUtils.toast(`🗑️ تم حذف "${item.title}"`, 'info');
+
+        // 🔥 إرسال حدث لتحديث الموقع الرئيسي
+        document.dispatchEvent(new CustomEvent('dashboard:projects-updated', {
+            detail: { count: this.items.length }
+        }));
     }
 
     // ============================================================ */
@@ -2842,7 +2799,6 @@ class ProjectsEngine {
     getFilteredItems() {
         let filtered = [...this.items];
 
-        // Search
         if (this.searchQuery) {
             const query = this.searchQuery.toLowerCase();
             filtered = filtered.filter(item =>
@@ -2852,17 +2808,14 @@ class ProjectsEngine {
             );
         }
 
-        // Status filter
         if (this.currentFilter.status && this.currentFilter.status !== 'all') {
             filtered = filtered.filter(item => item.status === this.currentFilter.status);
         }
 
-        // Category filter
         if (this.currentFilter.category && this.currentFilter.category !== 'all') {
             filtered = filtered.filter(item => item.category === this.currentFilter.category);
         }
 
-        // Sort
         switch (this.currentSort) {
             case 'newest':
                 filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -2875,8 +2828,6 @@ class ProjectsEngine {
                 break;
             case 'progress':
                 filtered.sort((a, b) => (b.completion || 0) - (a.completion || 0));
-                break;
-            default:
                 break;
         }
 
@@ -2922,80 +2873,78 @@ class ProjectsEngine {
         });
     }
 
-   async handleBulkAction(action) {
-    // ✅ التأكد من وجود عناصر محددة
-    if (this.selectedItems.size === 0) {
-        ProjectsUtils.toast('⚠️ الرجاء تحديد مشاريع أولاً', 'warning');
-        return;
-    }
+    async handleBulkAction(action) {
+        if (this.selectedItems.size === 0) {
+            ProjectsUtils.toast('⚠️ الرجاء تحديد مشاريع أولاً', 'warning');
+            return;
+        }
 
-    // ✅ تحويل الـ IDs إلى أرقام صحيحة
-    const ids = [...this.selectedItems].filter(id => !isNaN(id) && id > 0);
-    
-    if (ids.length === 0) {
-        ProjectsUtils.toast('⚠️ لا توجد IDs صحيحة للحذف', 'warning');
-        return;
-    }
+        const ids = [...this.selectedItems].filter(id => !isNaN(id) && id > 0);
+        
+        if (ids.length === 0) {
+            ProjectsUtils.toast('⚠️ لا توجد IDs صحيحة', 'warning');
+            return;
+        }
 
-    const count = ids.length;
+        const count = ids.length;
 
-    switch (action) {
-        case 'delete':
-            if (!confirm(`هل تريد حذف ${count} مشروع؟`)) return;
-            
-            let successCount = 0;
-            for (const id of ids) {
-                const success = await ProjectsAPI.delete(id);
-                if (success) {
-                    this.items = this.items.filter(i => i.id !== id);
-                    successCount++;
+        switch (action) {
+            case 'delete':
+                if (!confirm(`هل تريد حذف ${count} مشروع؟`)) return;
+                
+                let successCount = 0;
+                for (const id of ids) {
+                    const success = await ProjectsAPI.delete(id);
+                    if (success) {
+                        this.items = this.items.filter(i => i.id !== id);
+                        successCount++;
+                    }
                 }
-            }
-            
-            this.selectedItems.clear();
-            this.saveToStorage();
-            this.render();
-            
-            if (successCount > 0) {
-                ProjectsUtils.toast(`🗑️ تم حذف ${successCount} مشروع`, 'info');
-            } else {
-                ProjectsUtils.toast('❌ فشل حذف المشاريع', 'error');
-            }
-            break;
-            
-        case 'publish':
-            for (const id of ids) {
-                const item = this.items.find(i => i.id === id);
-                if (item) {
-                    const newStatus = item.status === 'Published' ? 'Draft' : 'Published';
-                    item.status = newStatus;
-                    await ProjectsAPI.update(id, { status: newStatus });
+                
+                this.selectedItems.clear();
+                this.saveToStorage();
+                this.render();
+                
+                if (successCount > 0) {
+                    ProjectsUtils.toast(`🗑️ تم حذف ${successCount} مشروع`, 'info');
+                    document.dispatchEvent(new CustomEvent('dashboard:projects-updated', {
+                        detail: { count: this.items.length }
+                    }));
+                } else {
+                    ProjectsUtils.toast('❌ فشل حذف المشاريع', 'error');
                 }
-            }
-            this.selectedItems.clear();
-            this.saveToStorage();
-            this.render();
-            ProjectsUtils.toast(`🌐 تم تحديث حالة النشر لـ ${count} مشروع`, 'success');
-            break;
-            
-        case 'featured':
-            for (const id of ids) {
-                const item = this.items.find(i => i.id === id);
-                if (item) {
-                    item.is_featured = !item.is_featured;
-                    await ProjectsAPI.update(id, { is_featured: item.is_featured });
+                break;
+                
+            case 'publish':
+                for (const id of ids) {
+                    const item = this.items.find(i => i.id === id);
+                    if (item) {
+                        const newStatus = item.status === 'Published' ? 'Draft' : 'Published';
+                        item.status = newStatus;
+                        await ProjectsAPI.update(id, { status: newStatus });
+                    }
                 }
-            }
-            this.selectedItems.clear();
-            this.saveToStorage();
-            this.render();
-            ProjectsUtils.toast(`⭐ تم تحديث حالة التمييز لـ ${count} مشروع`, 'success');
-            break;
-            
-        default:
-            break;
+                this.selectedItems.clear();
+                this.saveToStorage();
+                this.render();
+                ProjectsUtils.toast(`🌐 تم تحديث حالة النشر لـ ${count} مشروع`, 'success');
+                break;
+                
+            case 'featured':
+                for (const id of ids) {
+                    const item = this.items.find(i => i.id === id);
+                    if (item) {
+                        item.is_featured = !item.is_featured;
+                        await ProjectsAPI.update(id, { is_featured: item.is_featured });
+                    }
+                }
+                this.selectedItems.clear();
+                this.saveToStorage();
+                this.render();
+                ProjectsUtils.toast(`⭐ تم تحديث حالة التمييز لـ ${count} مشروع`, 'success');
+                break;
+        }
     }
-}
 
     // ============================================================ */
     // 17. UI STATES                                                */
@@ -3037,19 +2986,20 @@ class ProjectsEngine {
         ProjectsUtils.toast('🔄 جاري تحديث المشاريع...', 'info');
         this.loadFromSupabase();
     }
-    // داخل class ProjectsEngine
-// داخل class ProjectsEngine في ملف dashboard.js
 
-loadDefaultProjects() {
-    // ✅ الحل النهائي: لا نقوم بتحميل أي مشاريع افتراضية إطلاقاً
-    this.items = [];
-    this.saveToStorage();
-    console.log('📂 تم التحميل: لا توجد مشاريع افتراضية. الداشبورد فارغ وجاهز.');
-}
+    // ============================================================ */
+    // 19. LOAD DEFAULT PROJECTS - (فارغة تماماً)                  */
+    // ============================================================ */
+
+    loadDefaultProjects() {
+        this.items = [];
+        this.saveToStorage();
+        console.log('📂 تم التحميل: لا توجد مشاريع افتراضية.');
+    }
 }
 
 // ============================================================ */
-// 19. INITIALIZATION                                            */
+// 20. INITIALIZATION                                            */
 // ============================================================ */
 
 let projectsEngineInstance = null;
@@ -3086,22 +3036,22 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 
 // ============================================================ */
-// 20. CONSOLE HELPERS                                          */
+// 21. CONSOLE HELPERS                                          */
 // ============================================================ */
 
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║   📁 PROJECTS ENGINE v2.0 - محرك المشاريع                  ║
+║   📁 PROJECTS ENGINE v3.0 - المحرك النهائي                 ║
 ║                                                              ║
-║   ✅ مطابق 100% مع ملف HTML                                 ║
-║   ✅ مطابق 100% مع سكيما قاعدة البيانات                    ║
 ║   ✅ CRUD كامل                                              ║
 ║   ✅ Supabase متكامل                                        ║
 ║   ✅ LocalStorage كنسخة احتياطية                            ║
 ║   ✅ بحث وتصفية                                             ║
 ║   ✅ Bulk Actions                                           ║
-║   ✅ عرض شبكي / قائمة                                       ║
+║   ✅ المودال لا يغلق عند التبديل بين التبويبات              ║
+║   ✅ المودال يغلق فقط عند حفظ بنجاح أو إلغاء               ║
+║   ✅ إرسال حدث لتحديث الموقع الرئيسي                       ║
 ║                                                              ║
 ║   📦 Available: window._projectsEngine                      ║
 ║   🔧 Methods: refresh(), exportData(), openModal()          ║
@@ -3110,9 +3060,8 @@ console.log(`
 `);
 
 // ============================================================ */
-// نهاية PROJECTS ENGINE                                        */
+// نهاية PROJECTS ENGINE v3.0                                   */
 // ============================================================ */
-
 
 
 
