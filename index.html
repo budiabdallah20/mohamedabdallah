@@ -72,6 +72,7 @@
     </div>
 
     <!-- Header & Navbar -->
+
     <header class="header">
         <nav class="navbar">
             <a href="#home" class="navbar-logo navbar__logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -829,7 +830,7 @@ async function loadProjectsFromSupabase() {
             // ✅ الصورة من قاعدة البيانات مباشرة
             const imageUrl = project.image_url && project.image_url.trim() !== ''
                 ? project.image_url
-                : 'assets/projects/images/default.jpg';
+                : './assets/logo/Mohamed-Abdallah--logo.png';
 
             return `
                 <article class="project-card">
