@@ -196,39 +196,7 @@ async function sendDonation(donationData) {
 // ============================================================ */
 
 // 5.1 تحميل المشاريع
-async function loadProjects() {
-    try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*`, { headers: supabaseHeaders });
-        if (!res.ok) return;
-        const projects = await res.json();
-        
-        const grid = document.getElementById("dynamic-projects-grid");
-        if (!grid || !projects.length) return;
 
-        grid.innerHTML = projects.map(proj => `
-            <article class="project-card">
-                <div class="project-image">
-                    <img src="${proj.image || 'assets/projects/images/portfolio.png'}" alt="${proj.title}" loading="lazy">
-                    <div class="project-overlay"><span>${proj.category || 'Featured'} Project</span></div>
-                </div>
-                <div class="project-content">
-                    <span class="project-status completed">${proj.status || 'Completed'}</span>
-                    <h3>${proj.title}</h3>
-                    <p>${proj.description}</p>
-                    <div class="project-tech">
-                        ${(proj.tags || []).map(tag => `<span>${tag}</span>`).join('')}
-                    </div>
-                    <div class="project-buttons">
-                        ${proj.demo_url ? `<a href="${proj.demo_url}" target="_blank" class="btn-view"><i class="fa-solid fa-eye"></i> Live Demo</a>` : ''}
-                        ${proj.github_url ? `<a href="${proj.github_url}" target="_blank" class="btn-github"><i class="fa-brands fa-github"></i> GitHub Repo</a>` : ''}
-                    </div>
-                </div>
-            </article>
-        `).join('');
-    } catch (err) {
-        console.error("Error loading projects:", err);
-    }
-}
 
 // 5.2 تحميل المهارات
 async function loadSkills() {

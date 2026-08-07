@@ -88,7 +88,7 @@ async function loadProjectsFromSupabase() {
             const techHtml = techStack.map(t => `<span>${t}</span>`).join('');
 
             // ✅ استخدام لوجو موحد لكل المشاريع
-            const imageUrl = 'assets/projects/images/project-logo.png';
+            const imageUrl = './assets/logo/Mohamed-Abdallah--logo.png';
 
             return `
                 <article class="project-card">
