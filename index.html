@@ -8,6 +8,7 @@
     
     <!-- SEO Basics -->
     <title>Mohamed Abdallah </title>
+    <link rel="icon" type="image/png" href="./assets/logo/Mohamed-Abdallah--logo.png">
     <meta name="description" content="Portfolio of Mohamed Abdallah, a Frontend Developer and Cybersecurity enthusiast based in Egypt. View my projects, skills, and certifications.">
     <meta name="keywords" content="Mohamed Abdallah, Frontend Developer, Web Developer, Cybersecurity, Portfolio, HTML, CSS, JavaScript, Egypt">
     <meta name="author" content="Mohamed Abdallah">
@@ -19,7 +20,7 @@
     <meta property="og:title" content="Mohamed Abdallah | Portfolio">
     <meta property="og:description" content="Frontend Developer building high-performance web experiences with a security-first mindset.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-domain-here.com">
+    <meta property="og:url" content="https://mohamedabdallahdev.vercel.app/">
     <meta property="og:image" content="./assets/images/profile/hero.jpg">
 
     <!-- Fonts -->
@@ -73,9 +74,13 @@
     <!-- Header & Navbar -->
     <header class="header">
         <nav class="navbar">
-            <a href="#home" class="navbar-logo navbar__logo">
-                <span data-i18n="nav_logo" id="dynamic-nav-logo">Mohamed Abdallah</span>
-            </a>
+            <a href="#home" class="navbar-logo navbar__logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+    <!-- صورة اللوجو -->
+    <img src="./assets/logo/Mohamed-Abdallah--logo.png" alt="Mohamed Abdallah Logo" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px;">
+    
+    <!-- اسم الموقع -->
+    <span data-i18n="nav_logo" id="dynamic-nav-logo">Mohamed Abdallah</span>
+</a>
 
             <ul class="navbar__menu">
                 <li class="navbar__item"><a href="#home" class="navbar__link active" data-i18n="nav_home">Home</a></li>
