@@ -3671,6 +3671,174 @@ html[dir="rtl"] .u-text-right { text-align: left; }
     gap: var(--space-3);
     flex-wrap: wrap;
 }
+/* ============================================================ */
+/* 🏅 تحسين كارت الشهادات                                     */
+/* ============================================================ */
+
+/* كارت الشهادة */
+.certificate-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.certificate-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* رأس الكارت */
+.certificate-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.certificate-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.certificate-card .card-provider {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+}
+
+/* حالة الشهادة */
+.certificate-card .card-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.certificate-card .card-status.published {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.certificate-card .card-status.draft {
+    background: rgba(251, 191, 36, 0.15);
+    color: #f59e0b;
+}
+
+.certificate-card .card-status.expired {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* وصف الشهادة */
+.certificate-card .card-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+/* تاريخ الشهادة */
+.certificate-card .card-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* أزرار الكارت */
+.certificate-card .card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.certificate-card .card-actions button {
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.certificate-card .card-actions .btn-edit {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.certificate-card .card-actions .btn-edit:hover {
+    opacity: 0.8;
+}
+
+.certificate-card .card-actions .btn-delete {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.certificate-card .card-actions .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+/* تحسينات الأزرار العامة */
+.btn-refresh, .btn-sync {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-refresh {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.btn-refresh:hover {
+    opacity: 0.85;
+    transform: scale(0.98);
+}
+
+.btn-sync {
+    background: #10b981;
+    color: #fff;
+}
+
+.btn-sync:hover {
+    opacity: 0.85;
+    transform: scale(0.98);
+}
+
+/* حالة التحميل */
+.btn-refresh.loading, .btn-sync.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.btn-refresh.loading i, .btn-sync.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
 /* --------------------------------------------
    3.2 STATS GRID

@@ -3199,35 +3199,128 @@ const CertsAPI = {
         }
     },
 
-    async insert(data) {
-        try {
-            const res = await fetch(`${CERTS_SUPABASE_URL}/rest/v1/certificates`, {
-                method: 'POST',
-                headers: { ...CERTS_HEADERS, 'Prefer': 'return=representation' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch (error) {
-            console.error('❌ Error inserting certificate:', error);
-            return null;
-        }
-    },
+  // ============================================================ */
+// 🔥 INSERT CERTIFICATE - مع دعم الصورة                      */
+// ============================================================ */
 
-    async update(id, data) {
-        try {
-            const res = await fetch(`${CERTS_SUPABASE_URL}/rest/v1/certificates?id=eq.${id}`, {
-                method: 'PATCH',
-                headers: { ...CERTS_HEADERS, 'Prefer': 'return=representation' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch (error) {
-            console.error('❌ Error updating certificate:', error);
-            return null;
+// ============================================================ */
+// 🔥 INSERT CERTIFICATE - بدون is_pinned                      */
+// ============================================================ */
+
+// ============================================================ */
+// 🔥 INSERT CERTIFICATE - بدون skills و is_pinned            */
+// ============================================================ */
+
+async insert(data) {
+    try {
+        const headers = window.supabaseHeaders || {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+        };
+        
+        const SUPABASE_URL = window.SUPABASE_URL || 'https://txcuibshcvfusegrfcbm.supabase.co';
+        
+        // ✅ الحقول المسموح بها (من غير skills و is_pinned)
+        const allowedFields = [
+            'title', 'provider', 'description', 'issue_date', 
+            'expiry_date', 'credential_id', 'verify_url',
+            'is_published', 'is_featured',
+            'image_url', 'created_at', 'updated_at'
+        ];
+        
+        const cleanData = {};
+        for (const key of allowedFields) {
+            if (data[key] !== undefined && data[key] !== null) {
+                cleanData[key] = data[key];
+            }
         }
-    },
+        
+        cleanData.created_at = new Date().toISOString();
+        cleanData.updated_at = new Date().toISOString();
+        
+        console.log('📤 Inserting certificate:', cleanData);
+        
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/certificates`, {
+            method: 'POST',
+            headers: { ...headers, 'Prefer': 'return=representation' },
+            body: JSON.stringify(cleanData)
+        });
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('❌ Insert error:', errorText);
+            throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        
+        return await res.json();
+        
+    } catch (error) {
+        console.error('❌ Error inserting certificate:', error);
+        throw error;
+    }
+},
+
+   // ============================================================ */
+// 🔥 UPDATE CERTIFICATE - مع دعم الصورة                      */
+// ============================================================ */
+
+// ============================================================ */
+// 🔥 UPDATE CERTIFICATE - بدون is_pinned                      */
+// ============================================================ */
+// ============================================================ */
+// 🔥 UPDATE CERTIFICATE - بدون skills و is_pinned            */
+// ============================================================ */
+
+async update(id, data) {
+    try {
+        const headers = window.supabaseHeaders || {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+        };
+        
+        const SUPABASE_URL = window.SUPABASE_URL || 'https://txcuibshcvfusegrfcbm.supabase.co';
+        
+        // ✅ الحقول المسموح بها (من غير skills و is_pinned)
+        const allowedFields = [
+            'title', 'provider', 'description', 'issue_date', 
+            'expiry_date', 'credential_id', 'verify_url',
+            'is_published', 'is_featured',
+            'image_url', 'updated_at'
+        ];
+        
+        const cleanData = {};
+        for (const key of allowedFields) {
+            if (data[key] !== undefined && data[key] !== null) {
+                cleanData[key] = data[key];
+            }
+        }
+        
+        cleanData.updated_at = new Date().toISOString();
+        
+        console.log('📤 Updating certificate:', id, cleanData);
+        
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/certificates?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: { ...headers, 'Prefer': 'return=representation' },
+            body: JSON.stringify(cleanData)
+        });
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('❌ Update error:', errorText);
+            throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        
+        return await res.json();
+        
+    } catch (error) {
+        console.error('❌ Error updating certificate:', error);
+        throw error;
+    }
+},
+
 
     async delete(id) {
         try {
@@ -3664,26 +3757,39 @@ class CertificatesEngine {
         if (this.editInput) this.editInput.value = item.id;
     }
 
-    getFormData() {
-        const data = { id: CertsUtils.generateId() };
-        if (this.editInput && this.editInput.value) {
-            data.id = parseInt(this.editInput.value);
-        }
+   // ============================================================ */
+// 🔥 GET FORM DATA - بدون is_pinned                          */
+// ============================================================ */
 
-        if (this.fieldTitle) data.title = this.fieldTitle.value || '';
-        if (this.fieldProvider) data.provider = this.fieldProvider.value || '';
-        if (this.fieldIssueDate) data.issue_date = this.fieldIssueDate.value || null;
-        if (this.fieldExpiryDate) data.expiry_date = this.fieldExpiryDate.value || null;
-        if (this.fieldCredentialId) data.credential_id = this.fieldCredentialId.value || '';
-        if (this.fieldVerifyUrl) data.verify_url = this.fieldVerifyUrl.value || '';
-        if (this.fieldDesc) data.description = this.fieldDesc.value || '';
-        if (this.fieldSkills) data.skills = this.fieldSkills.value.split(',').map(s => s.trim()).filter(Boolean);
-        if (this.fieldFeatured) data.is_featured = this.fieldFeatured.checked;
-        if (this.fieldPublished) data.is_published = this.fieldPublished.checked;
-        if (this.fieldPinned) data.is_pinned = this.fieldPinned.checked;
+// ============================================================ */
+// 🔥 GET FORM DATA - بدون skills و is_pinned                 */
+// ============================================================ */
 
-        return data;
+getFormData() {
+    const data = {
+        title: this.fieldTitle?.value || '',
+        provider: this.fieldProvider?.value || '',
+        description: this.fieldDesc?.value || '',
+        issue_date: this.fieldIssueDate?.value || null,
+        expiry_date: this.fieldExpiryDate?.value || null,
+        credential_id: this.fieldCredentialId?.value || '',
+        verify_url: this.fieldVerifyUrl?.value || '',
+        is_published: this.fieldPublished?.checked !== false,
+        is_featured: this.fieldFeatured?.checked || false,
+        // skills اتحذفت
+        // is_pinned اتحذفت
+        image_url: document.getElementById('certificates-image-url')?.value || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+    
+    if (this.editInput?.value) {
+        data.id = parseInt(this.editInput.value);
     }
+    
+    return data;
+}
+    
 
     // ============================================================ */
     // CRUD                                                       */
@@ -4198,7 +4304,100 @@ class CertificatesEngine {
         CertsUtils.toast('🔄 جاري تحديث الشهادات...', 'info');
         this.loadFromSupabase();
     }
+    
 }
+// ============================================================ */
+// 🏅 دوال تحديث ومزامنة الشهادات                            */
+// ============================================================ */
+
+// 1. دالة تحديث الكارت (إعادة رسم)
+function refreshCertificatesCard() {
+    console.log('🔄 تحديث كارت الشهادات...');
+    
+    if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+        // جلب البيانات من localStorage
+        const data = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+        window._certificatesEngine.items = data;
+        window._certificatesEngine.render();
+        console.log('✅ تم تحديث الكارت:', data.length, 'شهادة');
+        Utils.toast('🔄 تم تحديث الكارت', 'info');
+    } else {
+        console.warn('⚠️ Certificates Engine غير موجود');
+        Utils.toast('⚠️ يرجى تحميل الصفحة أولاً', 'warning');
+    }
+}
+
+// 2. دالة المزامنة مع Supabase
+async function syncCertificatesWithSupabase() {
+    console.log('☁️ جاري المزامنة مع Supabase...');
+    
+    const btn = document.getElementById('certificates-sync-btn');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fa-solid fa-spinner"></i> جاري المزامنة...';
+    }
+    
+    try {
+        // جلب من Supabase
+        const res = await fetch('https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates?select=*&order=created_at.desc', {
+            headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+            }
+        });
+        const data = await res.json();
+        
+        if (data && data.length > 0) {
+            // تحديث localStorage
+            localStorage.setItem('dashboard-certificates', JSON.stringify(data));
+            
+            // تحديث Engine
+            if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+                window._certificatesEngine.items = data;
+                window._certificatesEngine.render();
+            }
+            
+            console.log('✅ تمت المزامنة:', data.length, 'شهادة');
+            Utils.toast(`✅ تمت المزامنة (${data.length} شهادة)`, 'success');
+            
+            // تحديث الموقع الأساسي
+            if (typeof loadCertificates === 'function') {
+                loadCertificates();
+                console.log('✅ تم تحديث الموقع الأساسي');
+            }
+        } else {
+            console.log('⚠️ لا توجد شهادات في Supabase');
+            Utils.toast('⚠️ لا توجد شهادات للمزامنة', 'warning');
+        }
+    } catch (error) {
+        console.error('❌ خطأ في المزامنة:', error);
+        Utils.toast('❌ فشل المزامنة', 'error');
+    }
+    
+    if (btn) {
+        btn.classList.remove('loading');
+        btn.innerHTML = '<i class="fa-solid fa-cloud-upload-alt"></i> مزامنة مع قاعدة البيانات';
+    }
+}
+
+// 3. ربط الأزرار
+document.addEventListener('DOMContentLoaded', function() {
+    // زر تحديث الكارت
+    const refreshBtn = document.getElementById('certificates-refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', refreshCertificatesCard);
+    }
+    
+    // زر المزامنة
+    const syncBtn = document.getElementById('certificates-sync-btn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', syncCertificatesWithSupabase);
+    }
+});
+
+// جعل الدوال عالمية
+window.refreshCertificatesCard = refreshCertificatesCard;
+window.syncCertificatesWithSupabase = syncCertificatesWithSupabase;
 
 // ============================================================ */
 // 05. INITIALIZATION                                            */
@@ -4236,6 +4435,66 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
         initCertificatesEngine();
     }
 }
+// ============================================================ */
+// 📷 إدارة صور الشهادات                                       */
+// ============================================================ */
+
+// 1. معاينة الصورة عند الاختيار
+function previewCertificateImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('certificate-image-preview');
+        const imageUrlInput = document.getElementById('certificates-image-url');
+        
+        // تخزين الصورة كـ Base64
+        const base64Image = e.target.result;
+        imageUrlInput.value = base64Image;
+        
+        // عرض المعاينة
+        preview.innerHTML = `
+            <img src="${base64Image}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        `;
+    };
+    reader.readAsDataURL(file);
+}
+
+// 2. تحميل الصورة عند التعديل
+function loadCertificateImage(imageUrl) {
+    const preview = document.getElementById('certificate-image-preview');
+    const imageUrlInput = document.getElementById('certificates-image-url');
+    
+    if (imageUrl && imageUrl.startsWith('data:image')) {
+        imageUrlInput.value = imageUrl;
+        preview.innerHTML = `
+            <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        `;
+    } else {
+        preview.innerHTML = `
+            <span style="color: var(--text-muted); font-size: 12px;">لا توجد صورة</span>
+        `;
+    }
+}
+
+// 3. تعديل دالة fillForm لتشمل الصورة
+// ابحث عن function fillForm(item) وأضف هذا السطر:
+// loadCertificateImage(item.image_url);
+
+// 4. تعديل دالة getFormData لتشمل الصورة
+// ابحث عن function getFormData() وأضف هذا السطر:
+// image_url: document.getElementById('certificates-image-url')?.value || '',
+
+// 5. تعديل دالة createCertificateCard لعرض الصورة
+// ابحث عن createCertificateCard وأضف:
+/*
+${item.image_url ? `
+    <div class="cert-image" style="width:100%; height:150px; overflow:hidden; border-radius:8px; margin-bottom:10px;">
+        <img src="${item.image_url}" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+` : ''}
+*/
 
 // ============================================================ */
 // 06. CONSOLE HELPERS                                          */

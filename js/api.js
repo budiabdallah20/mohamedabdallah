@@ -1,5 +1,5 @@
 // ============================================================ */
-// 🚀 API - SUPABASE CONNECTION v3.0 (المصدر الوحيد للحقيقة)  */
+// 🚀 API - SUPABASE CONNECTION v3.5 (النسخة النهائية)        */
 // ============================================================ */
 
 // ============================================================ */
@@ -82,7 +82,6 @@ async function sendSupportTicket(formData) {
         const data = await response.json();
         console.log('✅ Ticket saved:', data);
 
-        // إشعار للداشبورد
         document.dispatchEvent(new CustomEvent('dashboard:new-ticket', {
             detail: completeData
         }));
@@ -189,7 +188,7 @@ async function sendDonation(donationData) {
 }
 
 // ============================================================ */
-// 06. LOAD PROJECTS - ✅ نسخة واحدة فقط                       */
+// 06. LOAD PROJECTS                                            */
 // ============================================================ */
 
 async function loadProjects() {
@@ -258,7 +257,7 @@ async function loadProjects() {
 }
 
 // ============================================================ */
-// 07. LOAD SKILLS - ✅ نسخة واحدة فقط                         */
+// 07. LOAD SKILLS                                              */
 // ============================================================ */
 
 async function loadSkills() {
@@ -317,7 +316,7 @@ async function loadSkills() {
 }
 
 // ============================================================ */
-// 08. LOAD CERTIFICATES - ✅ نسخة واحدة فقط                   */
+// 08. LOAD CERTIFICATES - مع دعم الصورة                      */
 // ============================================================ */
 
 async function loadCertificates() {
@@ -340,34 +339,64 @@ async function loadCertificates() {
         if (!container) return;
         
         if (!certs || certs.length === 0) {
-            // الاحتفاظ بالمحتوى الافتراضي
             return;
         }
         
-        const certsHTML = certs.map(cert => `
-            <div class="certificate-card">
-                <div class="certificate-icon">
-                    <i class="fa-solid fa-award"></i>
-                </div>
-                <h3>${cert.title}</h3>
-                <p>${cert.description || ''}</p>
-                ${cert.skills ? `
-                    <div class="learning-tags">
-                        ${cert.skills.map(s => `<span>${s}</span>`).join('')}
-                    </div>
-                ` : ''}
-                ${cert.issue_date ? `<small>📅 ${new Date(cert.issue_date).toLocaleDateString('ar-EG')}</small>` : ''}
-            </div>
-        `).join('');
-        
-        container.innerHTML = `
+        let html = `
             <div class="certificates__header">
                 <span class="section-subtitle">الشهادات</span>
                 <h2 class="certificates__title">الإنجازات والتعلم</h2>
                 <p>شهاداتي المهنية والدورات التي أكملتها</p>
             </div>
-            ${certsHTML}
+            <div class="certificates-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:1.5rem; margin-top:1.5rem;">
         `;
+        
+        certs.forEach(cert => {
+            // معالجة الصورة
+            let imageHtml = '';
+            if (cert.image_url && cert.image_url.startsWith('data:image')) {
+                imageHtml = `
+                    <div class="cert-image-wrap" style="width:100%; height:180px; overflow:hidden; border-radius:12px 12px 0 0; background:var(--bg-secondary);">
+                        <img src="${cert.image_url}" alt="${cert.title}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                `;
+            } else {
+                imageHtml = `
+                    <div class="cert-image-wrap" style="width:100%; height:180px; overflow:hidden; border-radius:12px 12px 0 0; background:var(--bg-secondary); display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-certificate" style="font-size:3rem; opacity:0.2; color:var(--text-muted);"></i>
+                    </div>
+                `;
+            }
+            
+            // معالجة المهارات
+            let skillsHtml = '';
+            if (cert.skills && cert.skills.length > 0) {
+                skillsHtml = `
+                    <div class="learning-tags" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+                        ${cert.skills.map(s => `<span style="background:var(--bg-secondary); padding:0.25rem 0.75rem; border-radius:20px; font-size:0.75rem; color:var(--text-secondary);">${s}</span>`).join('')}
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="certificate-card" style="background:var(--card-bg); border-radius:12px; overflow:hidden; border:1px solid var(--border-color); transition:all 0.3s ease;">
+                    ${imageHtml}
+                    <div style="padding:1.5rem;">
+                        <div class="certificate-icon" style="margin-bottom:0.5rem;">
+                            <i class="fa-solid fa-award" style="color:var(--color-primary);"></i>
+                        </div>
+                        <h3 style="font-size:1.1rem; margin-bottom:0.5rem; color:var(--text-primary);">${cert.title}</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:0.5rem;">${cert.description || 'شهادة مهنية'}</p>
+                        ${cert.provider ? `<small style="color:var(--text-muted); display:block; margin-bottom:0.25rem;">🏢 ${cert.provider}</small>` : ''}
+                        ${cert.issue_date ? `<small style="color:var(--text-muted); display:block;">📅 ${new Date(cert.issue_date).toLocaleDateString('ar-EG')}</small>` : ''}
+                        ${skillsHtml}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        container.innerHTML = html;
         
     } catch (error) {
         console.error('❌ Error loading certificates:', error);
@@ -480,7 +509,7 @@ async function incrementSocialClick(id) {
 }
 
 // ============================================================ */
-// 13. TRACK VISITOR - ✅ نسخة واحدة فقط                       */
+// 13. TRACK VISITOR                                            */
 // ============================================================ */
 
 async function trackVisitor() {
@@ -504,7 +533,63 @@ async function trackVisitor() {
 }
 
 // ============================================================ */
-// 14. EXPOSE TO GLOBAL WINDOW                                  */
+// 14. 🔥 NOTIFY CERTIFICATES UPDATED - جديد                   */
+// ============================================================ */
+
+function notifyCertificatesUpdated() {
+    console.log('🔄 إرسال إشعار تحديث الشهادات...');
+    document.dispatchEvent(new CustomEvent('dashboard:certificates-updated', {
+        detail: { 
+            source: 'api.js', 
+            timestamp: new Date().toISOString(),
+            action: 'refresh'
+        }
+    }));
+}
+
+// ============================================================ */
+// 15. 🔥 SYNC CERTIFICATES - جديد                             */
+// ============================================================ */
+
+async function syncCertificates() {
+    console.log('☁️ مزامنة الشهادات مع Supabase...');
+    
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/certificates?select=*&order=created_at.desc`, {
+            headers: supabaseHeaders
+        });
+        
+        if (!res.ok) {
+            console.warn('⚠️ Failed to sync certificates');
+            return;
+        }
+        
+        const certs = await res.json();
+        console.log('✅ Synced:', certs?.length || 0, 'certificates');
+        
+        // تحديث localStorage
+        if (certs && certs.length > 0) {
+            localStorage.setItem('dashboard-certificates', JSON.stringify(certs));
+        }
+        
+        // إرسال إشعار
+        notifyCertificatesUpdated();
+        
+        // تحديث الموقع
+        if (typeof loadCertificates === 'function') {
+            setTimeout(loadCertificates, 300);
+        }
+        
+        return certs;
+        
+    } catch (error) {
+        console.error('❌ Error syncing certificates:', error);
+        return null;
+    }
+}
+
+// ============================================================ */
+// 16. EXPOSE TO GLOBAL WINDOW                                  */
 // ============================================================ */
 
 window.sendSupportTicket = sendSupportTicket;
@@ -518,15 +603,41 @@ window.loadDonations = loadDonations;
 window.loadSocialMedia = loadSocialMedia;
 window.incrementSocialClick = incrementSocialClick;
 window.trackVisitor = trackVisitor;
+window.notifyCertificatesUpdated = notifyCertificatesUpdated;
+window.syncCertificates = syncCertificates;
 
 // ============================================================ */
-// 15. INITIALIZATION - تشغيل كل شيء عند تحميل الصفحة         */
+// 17. 🔥 استماع لتحديثات الداشبورد - جديد                    */
+// ============================================================ */
+
+document.addEventListener('dashboard:certificates-updated', function(e) {
+    console.log('🔄 استلام تحديث من الداشبورد للشهادات:', e.detail);
+    if (typeof loadCertificates === 'function') {
+        setTimeout(loadCertificates, 500);
+    }
+});
+
+document.addEventListener('dashboard:projects-updated', function(e) {
+    console.log('🔄 استلام تحديث من الداشبورد للمشاريع:', e.detail);
+    if (typeof loadProjects === 'function') {
+        setTimeout(loadProjects, 500);
+    }
+});
+
+document.addEventListener('dashboard:skills-updated', function(e) {
+    console.log('🔄 استلام تحديث من الداشبورد للمهارات:', e.detail);
+    if (typeof loadSkills === 'function') {
+        setTimeout(loadSkills, 500);
+    }
+});
+
+// ============================================================ */
+// 18. INITIALIZATION                                           */
 // ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 API - Initializing...');
 
-    // تحميل البيانات
     setTimeout(() => {
         loadProjects();
         loadSkills();
@@ -696,31 +807,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================ */
-// 16. CONSOLE HELPERS                                          */
+// 19. CONSOLE HELPERS                                          */
 // ============================================================ */
 
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║   🚀 API - FULLY CONNECTED v3.0                            ║
+║   🚀 API - FULLY CONNECTED v3.5                            ║
 ║                                                              ║
 ║   ✅ sendSupportTicket()  - تذاكر الدعم                     ║
 ║   ✅ sendContactMessage() - رسائل التواصل                   ║
 ║   ✅ sendDonation()       - التبرعات                        ║
 ║   ✅ loadProjects()       - المشاريع                        ║
 ║   ✅ loadSkills()         - المهارات                        ║
-║   ✅ loadCertificates()   - الشهادات                        ║
+║   ✅ loadCertificates()   - الشهادات (مع الصور)            ║
 ║   ✅ loadSettings()       - إعدادات الموقع                  ║
 ║   ✅ loadDonations()      - التبرعات                        ║
 ║   ✅ loadSocialMedia()    - السوشيال ميديا                  ║
 ║   ✅ trackVisitor()       - تسجيل الزوار                    ║
-║                                                              ║
-║   🔗 Connected to: ${SUPABASE_URL}                         ║
+║   ✅ syncCertificates()   - مزامنة الشهادات 🆕             ║
+║   ✅ notifyCertificatesUpdated() - إشعار تحديث 🆕          ║
 ║                                                              ║
 ║   📡 Dashboard Events:                                      ║
 ║   • dashboard:new-ticket                                    ║
 ║   • dashboard:new-message                                   ║
 ║   • dashboard:donation-received                             ║
+║   • dashboard:certificates-updated 🆕                      ║
+║   • dashboard:projects-updated 🆕                          ║
+║   • dashboard:skills-updated 🆕                            ║
 ║   • dashboard:log                                           ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝

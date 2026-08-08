@@ -348,6 +348,26 @@
                     <p data-i18n="cert_desc">I am continuously improving my skills through real-world projects...</p>
                 </div>
                 <div class="certificate-card">
+                      <!-- إضافة صورة الشهادة -->
+    <div class="certificate-image-wrap" style="
+        width: 100%; 
+        height: 180px; 
+        overflow: hidden; 
+        border-radius: 12px 12px 0 0;
+        background: var(--bg-secondary);
+    ">
+        <img id="cert-img-{{id}}" src="" alt="{{title}}" 
+             style="width:100%; height:100%; object-fit:cover; display:none;">
+        <div class="cert-placeholder" style="
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100%;
+            color: var(--text-muted);
+        ">
+            <i class="fa-solid fa-certificate" style="font-size: 2rem; opacity: 0.3;"></i>
+        </div>
+    </div>
                     <div class="certificate-icon">
                         <i class="fa-solid fa-award"></i>
                     </div>
