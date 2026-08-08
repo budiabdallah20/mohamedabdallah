@@ -9277,3 +9277,276 @@ setTimeout(async () => {
         console.log('✅ Write successful!');
     }
 }, 3000);
+
+// ============================================================ */
+// 🏅 CERTIFICATES FIX - حل مشاكل الشهادات                    */
+// ============================================================ */
+
+(function() {
+    'use strict';
+    
+    console.log('🏅 جاري إصلاح مشاكل الشهادات...');
+    
+    // ============================================================ */
+    // 01. دالة强制 حذف الشهادة من Supabase                       */
+    // ============================================================ */
+    
+    window.forceDeleteCertificate = async function(id) {
+        if (!id) {
+            console.error('❌ الرجاء إدخال ID الشهادة');
+            return false;
+        }
+        
+        console.log('🗑️ جاري حذف الشهادة:', id);
+        
+        try {
+            // 1. حذف من Supabase
+            const res = await fetch(`https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+                }
+            });
+            
+            if (res.ok) {
+                console.log('✅ تم حذف الشهادة من Supabase');
+            } else {
+                console.log('⚠️ Supabase: ' + res.status);
+            }
+            
+            // 2. حذف من localStorage
+            let certs = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+            certs = certs.filter(c => c.id !== id);
+            localStorage.setItem('dashboard-certificates', JSON.stringify(certs));
+            console.log('✅ تم حذف الشهادة من localStorage');
+            
+            // 3. تحديث الواجهة
+            if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+                window._certificatesEngine.items = window._certificatesEngine.items.filter(c => c.id !== id);
+                window._certificatesEngine.render();
+                console.log('✅ تم تحديث الواجهة');
+            }
+            
+            // 4. إعادة تحميل الشهادات في الموقع
+            if (typeof loadCertificates === 'function') {
+                setTimeout(loadCertificates, 500);
+            }
+            
+            return true;
+            
+        } catch (error) {
+            console.error('❌ خطأ:', error);
+            return false;
+        }
+    };
+    
+    // ============================================================ */
+    // 02. دالة مسح جميع الشهادات الوهمية                         */
+    // ============================================================ */
+    
+    window.clearAllCertificates = async function() {
+        console.log('🗑️ جاري مسح جميع الشهادات...');
+        
+        // 1. جلب جميع الشهادات من localStorage
+        let certs = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+        
+        if (certs.length === 0) {
+            console.log('⚠️ لا توجد شهادات في localStorage');
+            return;
+        }
+        
+        console.log('📊 عدد الشهادات:', certs.length);
+        
+        // 2. حذف كل شهادة من Supabase
+        for (const cert of certs) {
+            try {
+                await fetch(`https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates?id=eq.${cert.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+                    }
+                });
+                console.log('✅ تم حذف:', cert.title);
+            } catch (e) {
+                console.log('⚠️ فشل حذف:', cert.title);
+            }
+        }
+        
+        // 3. مسح localStorage
+        localStorage.removeItem('dashboard-certificates');
+        console.log('✅ تم مسح localStorage');
+        
+        // 4. تحديث الواجهة
+        if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+            window._certificatesEngine.items = [];
+            window._certificatesEngine.render();
+            console.log('✅ تم تحديث الواجهة');
+        }
+        
+        // 5. إعادة تحميل الشهادات
+        if (typeof loadCertificates === 'function') {
+            setTimeout(loadCertificates, 500);
+        }
+        
+        console.log('✅ تم مسح جميع الشهادات');
+    };
+    
+    // ============================================================ */
+    // 03. دالة إضافة شهادة جديدة (للتأكد من عملها)              */
+    // ============================================================ */
+    
+    window.addTestCertificate = async function() {
+        console.log('📝 جاري إضافة شهادة اختبار...');
+        
+        const testCert = {
+            id: Date.now() + Math.random() * 1000,
+            title: 'شهادة اختبار - ' + new Date().toLocaleString(),
+            provider: 'Supabase Test',
+            description: 'هذه شهادة اختبار للتأكد من عمل الإضافة',
+            issue_date: new Date().toISOString().split('T')[0],
+            is_published: true,
+            is_featured: false,
+            skills: ['HTML', 'CSS', 'JavaScript'],
+            created_at: new Date().toISOString()
+        };
+        
+        try {
+            // 1. حفظ في Supabase
+            const res = await fetch('https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify(testCert)
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                console.log('✅ تم إضافة الشهادة في Supabase');
+                console.log('📋 البيانات:', data);
+                
+                // 2. إضافة في localStorage
+                let certs = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+                certs.unshift(testCert);
+                localStorage.setItem('dashboard-certificates', JSON.stringify(certs));
+                console.log('✅ تم إضافة الشهادة في localStorage');
+                
+                // 3. تحديث الواجهة
+                if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+                    window._certificatesEngine.items.unshift(testCert);
+                    window._certificatesEngine.render();
+                    console.log('✅ تم تحديث الواجهة');
+                }
+                
+                // 4. إعادة تحميل الشهادات في الموقع
+                if (typeof loadCertificates === 'function') {
+                    setTimeout(loadCertificates, 500);
+                }
+                
+                console.log('✅ تمت الإضافة بنجاح!');
+                return testCert;
+            } else {
+                console.log('❌ فشل الإضافة: ' + res.status);
+                return null;
+            }
+        } catch (error) {
+            console.error('❌ خطأ:', error);
+            return null;
+        }
+    };
+    
+    // ============================================================ */
+    // 04. دالة عرض الشهادات الموجودة                             */
+    // ============================================================ */
+    
+    window.showCertificates = function() {
+        console.log('📊 عرض الشهادات:');
+        
+        // 1. من localStorage
+        let localCerts = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+        console.log('   📁 localStorage: ' + localCerts.length + ' شهادة');
+        localCerts.forEach(c => {
+            console.log('      - ' + c.title + ' (ID: ' + c.id + ')');
+        });
+        
+        // 2. من Supabase
+        console.log('   📁 جلب من Supabase...');
+        fetch('https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates?select=*&limit=10', {
+            headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('   📁 Supabase: ' + (data ? data.length : 0) + ' شهادة');
+            if (data && data.length > 0) {
+                data.forEach(c => {
+                    console.log('      - ' + c.title + ' (ID: ' + c.id + ')');
+                });
+            }
+        })
+        .catch(err => {
+            console.log('   ❌ خطأ في جلب البيانات: ' + err.message);
+        });
+    };
+    
+    // ============================================================ */
+    // 05. دالة إعادة تحميل الشهادات                               */
+    // ============================================================ */
+    
+    window.reloadCertificates = function() {
+        console.log('🔄 إعادة تحميل الشهادات...');
+        
+        // 1. تحديث localStorage من Supabase
+        fetch('https://txcuibshcvfusegrfcbm.supabase.co/rest/v1/certificates?select=*&is_published=eq.true', {
+            headers: {
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y3VpYnNoY3ZmdXNlZ3JmY2JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwODY5MDgsImV4cCI6MjEwMDY2MjkwOH0.ceecXsQc9-exY_pwIZah9VMWehIkiu3xPkLhHoIP_LI'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                localStorage.setItem('dashboard-certificates', JSON.stringify(data));
+                console.log('✅ تم تحديث localStorage: ' + data.length + ' شهادة');
+                
+                // تحديث الواجهة
+                if (typeof window._certificatesEngine !== 'undefined' && window._certificatesEngine) {
+                    window._certificatesEngine.items = data;
+                    window._certificatesEngine.render();
+                    console.log('✅ تم تحديث الواجهة');
+                }
+            }
+        })
+        .catch(err => {
+            console.log('❌ خطأ: ' + err.message);
+        });
+        
+        // 2. تحميل في الموقع
+        if (typeof loadCertificates === 'function') {
+            loadCertificates();
+            console.log('✅ تم تحميل الشهادات في الموقع');
+        }
+    };
+    
+    // ============================================================ */
+    // 06. عرض المساعدة                                             */
+    // ============================================================ */
+    
+    console.log('✅ تم إضافة دوال التحكم في الشهادات:');
+    console.log('');
+    console.log('📖 الأوامر المتاحة:');
+    console.log('   • showCertificates()        - عرض جميع الشهادات');
+    console.log('   • reloadCertificates()      - إعادة تحميل الشهادات');
+    console.log('   • addTestCertificate()      - إضافة شهادة اختبار');
+    console.log('   • forceDeleteCertificate(ID)- حذف شهادة معينة');
+    console.log('   • clearAllCertificates()    - مسح جميع الشهادات');
+    console.log('');
+    
+})();

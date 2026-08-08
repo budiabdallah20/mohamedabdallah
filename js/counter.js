@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const response = await fetch('http://localhost:5000/api/social-stats');
+        const response = await fetch('http://localhost:5500/api/social-stats');
         const data = await response.json();
 
         // نفترض إن عندك عناصر في HTML للأرقام دي، بنحدثها هنا تلقائي:
