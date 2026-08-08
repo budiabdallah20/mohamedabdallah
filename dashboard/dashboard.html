@@ -133,837 +133,760 @@
                     <!-- ==========================================================
                     SECTION: HOME (الرئيسية)
                     ========================================================== -->
-                    <section id="home-section" class="section-view active">
+        <!-- ==========================================================
+SECTION: HOME (الرئيسية) - النسخة الجديدة
+========================================================== -->
+<section id="home-section" class="section-view active">
 
-                        <!-- Section Header -->
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-chart-line"></i>
-                                <span>مركز ذكاء لوحة التحكم (Home Intelligence Center)</span>
-                            </h2>
-                            <div class="header-actions">
-                                <button class="saas-btn saas-btn-secondary" id="refreshHomeBtn" type="button" data-tooltip="تحديث البيانات">
-                                    <i class="fa-solid fa-arrows-rotate"></i> تحديث
-                                </button>
-                                <button class="saas-btn saas-btn-primary" id="globalSearchBtn" type="button" data-tooltip="بحث عام في لوحة التحكم">
-                                    <i class="fa-solid fa-magnifying-glass"></i> بحث عام
-                                </button>
-                            </div>
-                        </div>
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2>
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>لوحة التحكم الرئيسية</span>
+        </h2>
+        <div class="header-actions">
+            <button class="saas-btn saas-btn-secondary" id="refreshHomeBtn" type="button">
+                <i class="fa-solid fa-arrows-rotate"></i> تحديث الكل
+            </button>
+            <button class="saas-btn saas-btn-primary" id="globalSearchBtn" type="button">
+                <i class="fa-solid fa-magnifying-glass"></i> بحث عام
+            </button>
+        </div>
+    </div>
 
-                        <!-- Hero Card -->
-                        <header class="home-hero-card glass-panel">
-                            <div class="hero-top-bar">
-                                <div class="hero-identity">
-                                    <div class="user-avatar-wrapper">
-                                        <img id="home-user-avatar" src="./about.webp" alt="Mohamed Abdallah" class="home-avatar">
-                                        <span class="status-indicator online" data-tooltip="متصل الآن"></span>
-                                    </div>
-                                    <div class="hero-text-details">
-                                        <div class="greeting-badge">
-                                            <span class="sparkle-icon"></span>
-                                            <span id="home-dynamic-greeting">Welcome back</span>
-                                        </div>
-                                        <h1 id="home-user-name" class="hero-title">Mohamed Abdallah</h1>
-                                        <p class="hero-subtitle">Portfolio Dashboard Center</p>
-                                        <div class="location-badge">
-                                            <i class="fa-solid fa-location-dot"></i>
-                                            <span id="user-location">سويس، مصر</span>
-                                            <span class="location-divider">•</span>
-                                            <span id="user-timezone">UTC +2</span>
-                                        </div>
-                                        <div class="connection-status">
-                                            <span class="status-dot online"></span>
-                                            <span id="connection-status-text">متصل</span>
-                                            <span class="status-divider">•</span>
-                                            <span id="last-active-time">نشط الآن</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="hero-meta-pills">
-                                    <div class="meta-pill"><span>v2.5.0-pro</span></div>
-                                    <div class="meta-pill weather-widget" id="weather-widget" data-tooltip="الطقس في سويس، مصر">
-                                        <i class="fa-solid fa-cloud-sun"></i>
-                                        <span id="weather-temp">26°C</span>
-                                        <span class="weather-divider">|</span>
-                                        <span id="weather-condition">مشمس</span>
-                                        <span class="weather-divider">|</span>
-                                        <span id="weather-location">🇪🇬 سويس، مصر</span>
-                                    </div>
-                                    <div class="meta-pill" data-tooltip="المتابعين على GitHub">
-                                        <i class="fa-brands fa-github"></i>
-                                        <span id="github-followers">2.5k</span>
-                                    </div>
-                                    <div class="meta-pill" data-tooltip="المتابعين على LinkedIn">
-                                        <i class="fa-brands fa-linkedin"></i>
-                                        <span id="linkedin-connections">1.8k</span>
-                                    </div>
-                                    <div class="meta-pill"><span id="home-theme-indicator">Dark Mode</span></div>
-                                    <div class="meta-pill"><span id="home-lang-indicator">English</span></div>
-                                    <div class="meta-pill badge-available" data-tooltip="متاح للعمل الحر">
-                                        <span class="status-dot available"></span>
-                                        متاح للعمل
-                                    </div>
-                                    <div class="meta-pill badge-premium" data-tooltip="حساب مميز">
-                                        <i class="fa-solid fa-crown"></i>
-                                        Pro
-                                    </div>
-                                    <a href="#" class="saas-btn saas-btn-primary" id="downloadCVBtn" type="button" data-tooltip="تنزيل السيرة الذاتية">
-                                        <i class="fa-solid fa-file-pdf"></i>
-                                        <span>السيرة الذاتية</span>
-                                    </a>
-                                    <div class="meta-pill"><span id="home-last-login">Just Now</span></div>
-                                </div>
-                            </div>
+    <!-- ========================================================== -->
+    <!-- CARD العلوي - الملف الشخصي + الإحصائيات السريعة          -->
+    <!-- ========================================================== -->
+    <div class="home-profile-card glass-panel">
+        <div class="profile-row">
+            <!-- الصورة والاسم -->
+            <div class="profile-info">
+                <div class="avatar-wrapper">
+                    <img id="home-user-avatar" src="./about.webp" alt="Mohamed Abdallah" class="avatar-img">
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="profile-details">
+                    <div class="greeting-badge">
+                        <span id="home-dynamic-greeting">👋 مرحباً بعودتك</span>
+                    </div>
+                    <h1 id="home-user-name" class="profile-name">Mohamed Abdallah</h1>
+                    <p class="profile-title">مطور واجهات أمامية • طالب رياضيات وعلوم حاسب</p>
+                    <div class="profile-meta">
+                        <span><i class="fa-solid fa-location-dot"></i> <span id="user-location">السويس، مصر</span></span>
+                        <span class="divider">•</span>
+                        <span><i class="fa-regular fa-calendar"></i> <span id="user-age">19 سنة</span></span>
+                        <span class="divider">•</span>
+                        <span><i class="fa-regular fa-envelope"></i> <span id="user-email">budiabdallah922@gmail.com</span></span>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="hero-action-bar">
-                                <div class="hero-time-widget">
-                                    <span id="home-live-date">Loading date...</span>
-                                    <span id="home-live-time">00:00:00 AM</span>
-                                </div>
-                                <div class="hero-search-box">
-                                    <input type="text" id="home-quick-search" placeholder="ابحث عن المقاييس، المشاريع، المهارات..." aria-label="بحث سريع">
-                                    <kbd class="search-shortcut">⌘K</kbd>
-                                </div>
-                                <div class="user-stats-mini">
-                                    <div class="stat-item" data-tooltip="إجمالي المشاريع">
-                                        <span class="stat-number" id="user-projects-count">12</span>
-                                        <span class="stat-label">مشروع</span>
-                                    </div>
-                                    <div class="stat-divider"></div>
-                                    <div class="stat-item" data-tooltip="سنوات الخبرة">
-                                        <span class="stat-number" id="user-experience-years">3+</span>
-                                        <span class="stat-label">سنوات</span>
-                                    </div>
-                                    <div class="stat-divider"></div>
-                                    <div class="stat-item" data-tooltip="المشاريع المنجزة">
-                                        <span class="stat-number" id="user-completed-projects">8</span>
-                                        <span class="stat-label">منجز</span>
-                                    </div>
-                                </div>
-                                <div class="hero-button-group">
-                                    <button class="saas-btn saas-btn-secondary" id="shareProfileBtn" type="button" data-tooltip="مشاركة الملف الشخصي">
-                                        <i class="fa-solid fa-share-nodes"></i>
-                                        <span>مشاركة</span>
-                                    </button>
-                                    <button id="btn-refresh-dashboard" class="saas-btn saas-btn-secondary" type="button">Refresh</button>
-                                    <a id="btn-preview-website" href="../index.html" target="_blank" class="saas-btn saas-btn-secondary">Preview</a>
-                                    <a id="btn-open-website" href="../index.html" target="_blank" class="saas-btn saas-btn-primary">Open Site</a>
-                                </div>
-                            </div>
-                        </header>
+            <!-- الأزرار السريعة -->
+            <div class="profile-actions">
+                <button class="action-btn" id="shareProfileBtn" title="مشاركة الملف الشخصي">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
+                <button class="action-btn" id="downloadCVBtn" title="تحميل السيرة الذاتية">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </button>
+                <a href="../index.html" target="_blank" class="action-btn primary" title="فتح الموقع">
+                    <i class="fa-solid fa-globe"></i>
+                </a>
+                <button class="action-btn" id="btn-refresh-dashboard" title="تحديث لوحة التحكم">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+            </div>
+        </div>
 
-                        <!-- Intelligence Engines Grid -->
-                        <div class="intelligence-engines-grid">
-                            <article class="intelligence-card glass-panel" id="card-portfolio-completion">
-                                <div class="card-header-compact">
-                                    <div class="header-title-group">
-                                        <i class="ri-pie-chart-2-line"></i>
-                                        <div>
-                                            <h3>Portfolio Completion</h3>
-                                            <p>Setup & Readiness Gauge</p>
-                                        </div>
-                                    </div>
-                                    <span class="status-badge badge-success" id="completion-status-badge">Calculating</span>
-                                </div>
-                                <div class="completion-body">
-                                    <div class="progress-ring-container">
-                                        <div class="loading-spinner" id="completion-spinner" style="display:none;">
-                                            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-                                        </div>
-                                        <svg class="progress-ring" width="130" height="130">
-                                            <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.08)" stroke-width="10" fill="transparent" r="52" cx="65" cy="65">
-                                            <circle id="completion-progress-circle" class="progress-ring-fill" stroke="url(#completion-gradient)" stroke-width="10" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" fill="transparent" r="52" cx="65" cy="65">
-                                            <defs>
-                                                <linearGradient id="completion-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                    <stop offset="0%" stop-color="#6366f1">
-                                                    <stop offset="100%" stop-color="#a855f7">
-                                                </linearGradient>
-                                            </defs>
-                                        </svg>
-                                        <div class="ring-text">
-                                            <span id="completion-percentage-val" class="ring-number">0%</span>
-                                            <span class="ring-label">Complete</span>
-                                        </div>
-                                    </div>
-                                    <div class="completion-details">
-                                        <div class="completion-stats-mini">
-                                            <div class="mini-stat">
-                                                <span class="label">Completed Items</span>
-                                                <span id="completion-items-done" class="val text-success">0/0</span>
-                                            </div>
-                                            <div class="mini-stat">
-                                                <span class="label">Pending Action</span>
-                                                <span id="completion-items-pending" class="val text-warning">0</span>
-                                            </div>
-                                        </div>
-                                        <div class="completion-next-action">
-                                            <p class="suggestion-title"><i class="ri-lightbulb-line"></i> Top Recommendation:</p>
-                                            <p id="completion-top-suggestion">Analyzing CMS records...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+        <!-- شريط الحالة السريع -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">الحالة</span>
+                <span class="status-value available"><span class="dot"></span> متاح للعمل</span>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <span class="status-label">آخر نشاط</span>
+                <span class="status-value" id="last-active-time">الآن</span>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <span class="status-label">الوقت</span>
+                <span class="status-value" id="home-live-time">00:00:00</span>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <span class="status-label">التاريخ</span>
+                <span class="status-value" id="home-live-date">تحميل...</span>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <span class="status-label">الثيم</span>
+                <span class="status-value" id="home-theme-indicator">🌙 مظلم</span>
+            </div>
+            <div class="status-divider"></div>
+            <div class="status-item">
+                <span class="status-label">اللغة</span>
+                <span class="status-value" id="home-lang-indicator">🇸🇦 العربية</span>
+            </div>
+        </div>
+        <!-- ========================================================== -->
+<!-- جوجل مابس + الطقس                                         -->
+<!-- ========================================================== -->
+<div class="location-weather-row">
+    
+    <!-- خريطة جوجل -->
+    <div class="map-container glass-panel">
+        <div class="map-header">
+            <h4><i class="fa-solid fa-map-location-dot"></i> موقعي</h4>
+            <button class="refresh-location" id="refreshLocationBtn" title="تحديث الموقع">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+        </div>
+        <div id="googleMap" style="width:100%; height:250px; border-radius:12px; background:var(--bg-secondary);"></div>
+        <div class="map-footer">
+            <span id="map-location-text">📍 السويس، مصر</span>
+            <a href="https://www.google.com/maps?q=29.9668,32.5498" target="_blank" class="open-maps-btn">
+                فتح في جوجل مابس <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+        </div>
+    </div>
 
-                            <article class="intelligence-card glass-panel" id="card-dashboard-score">
-                                <div class="card-header-compact">
-                                    <div class="header-title-group">
-                                        <i class="ri-award-line"></i>
-                                        <div>
-                                            <h3>Dashboard Quality Score</h3>
-                                            <p>100-Point Portfolio Standard</p>
-                                        </div>
-                                    </div>
-                                    <div class="trend-indicator positive" id="score-trend-indicator"><span id="score-trend-val">+0 pts</span></div>
-                                </div>
-                                <div class="score-body">
-                                    <div class="score-display-box">
-                                        <div class="main-score-number">
-                                            <span id="dashboard-score-val">0</span>
-                                            <span class="max-score">/100</span>
-                                        </div>
-                                        <div class="score-rating-pills">
-                                            <span id="score-rating-label">Evaluating...</span>
-                                        </div>
-                                    </div>
-                                    <div class="score-breakdown-list">
-                                        <div class="score-bar-item">
-                                            <div class="bar-info">
-                                                <span>Content Quality</span>
-                                                <span id="content-quality-pct">0%</span>
-                                            </div>
-                                            <div class="bar-track">
-                                                <div id="content-quality-bar" class="bar-fill fill-indigo"></div>
-                                            </div>
-                                        </div>
-                                        <div class="score-bar-item">
-                                            <div class="bar-info">
-                                                <span>Website Health & SEO</span>
-                                                <span id="website-health-pct">0%</span>
-                                            </div>
-                                            <div class="bar-track">
-                                                <div id="website-health-bar" class="bar-fill fill-emerald"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="score-footnote">
-                                        <i class="ri-shield-check-line"></i>
-                                        <span id="score-audit-summary">System score dynamically recalculated.</span>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
+    <!-- الطقس -->
+    <div class="weather-container glass-panel">
+        <div class="weather-header">
+            <h4><i class="fa-solid fa-cloud-sun"></i> حالة الطقس</h4>
+            <span class="weather-update" id="weather-update-time">تم التحديث: الآن</span>
+        </div>
+        <div class="weather-body" id="weatherWidget">
+            <div class="weather-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>جاري تحميل الطقس...</span>
+            </div>
+        </div>
+        <div class="weather-footer">
+            <span id="weather-location-display">📍 السويس، مصر</span>
+            <button class="refresh-weather" id="refreshWeatherBtn">
+                <i class="fa-solid fa-rotate"></i> تحديث
+            </button>
+        </div>
+    </div>
+<!-- في شريط الحالة - أضف هذه العناصر -->
+<div class="status-item">
+    <span class="status-label">🌍 الحالة</span>
+    <span class="status-value" id="location-status-badge">
+        <span class="dot"></span> جاري التحميل...
+    </span>
+</div>
+<div class="status-divider"></div>
+<div class="status-item">
+    <span class="status-label">🏠 المكان</span>
+    <span class="status-value" id="home-indicator">
+        <span class="dot"></span> جاري التحميل...
+    </span>
+</div>
+</div>  
 
-                        <!-- KPI Section -->
-                        <div class="kpi-section-title">
-                            <h2>Live Performance & Content Metrics</h2>
-                            <span class="last-updated-tag">Live Auto-Syncing</span>
-                        </div>
+        <!-- شريط البحث السريع -->
+        <div class="search-bar">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="home-quick-search" placeholder="ابحث عن مشروع، مهارة، شهادة، أو أي شيء...">
+            <kbd>⌘K</kbd>
+        </div>
+    </div>
 
-                        <div class="kpi-cards-grid">
-                            <!-- KPI Projects -->
-                            <div class="kpi-card glass-panel" id="kpi-projects">
-                                <div class="kpi-top">
-                                    <div class="kpi-icon-box bg-indigo-soft"><i class="ri-folder-code-line"></i></div>
-                                    <div class="kpi-badges"><span class="status-badge badge-neutral" id="kpi-featured-projects-count" data-tooltip="0 مميز">0 Featured</span></div>
-                                </div>
-                                <div class="kpi-middle">
-                                    <h4 class="kpi-title">Projects</h4>
-                                    <div class="kpi-value-row">
-                                        <span class="kpi-number" id="counter-projects">0</span>
-                                        <span class="kpi-trend positive" id="trend-projects">Dynamic</span>
-                                    </div>
-                                    <p class="kpi-desc" id="desc-projects">Total portfolio project showpieces</p>
-                                </div>
-                                <div class="kpi-bottom">
-                                    <div class="kpi-progress-bar"><div id="bar-projects" class="progress-fill bg-indigo"></div></div>
-                                    <div class="kpi-footer-meta">
-                                        <span id="sub-draft-projects">0 Drafts</span>
-                                        <a href="#projects-section" class="kpi-action-link" data-tooltip="إدارة المشاريع">Manage</a>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- ========================================================== -->
+    <!-- شبكة الإحصائيات السريعة (عدادات)                          -->
+    <!-- ========================================================== -->
+    <div class="quick-stats-grid">
+        <div class="stat-card glass-panel" id="stat-projects">
+            <div class="stat-icon blue"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-projects-count">0</span>
+                <span class="stat-label">المشاريع</span>
+                <span class="stat-change positive">+<span id="stat-projects-change">0</span> هذا الشهر</span>
+            </div>
+            <a href="#projects-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                            <!-- KPI Skills -->
-                            <div class="kpi-card glass-panel" id="kpi-skills">
-                                <div class="kpi-top">
-                                    <div class="kpi-icon-box bg-purple-soft"><i class="ri-code-s-slash-line"></i></div>
-                                    <div class="kpi-badges"><span class="status-badge badge-neutral" id="kpi-featured-skills-count">0 Featured</span></div>
-                                </div>
-                                <div class="kpi-middle">
-                                    <h4 class="kpi-title">Technical Skills</h4>
-                                    <div class="kpi-value-row">
-                                        <span class="kpi-number" id="counter-skills">0</span>
-                                        <span class="kpi-trend positive" id="trend-skills" data-tooltip="نشط">Active</span>
-                                    </div>
-                                    <p class="kpi-desc" id="desc-skills">Technologies, frameworks & tools</p>
-                                </div>
-                                <div class="kpi-bottom">
-                                    <div class="kpi-progress-bar"><div id="bar-skills" class="progress-fill bg-purple"></div></div>
-                                    <div class="kpi-footer-meta">
-                                        <span>Stack Competency</span>
-                                        <a href="#skills-section" class="kpi-action-link" data-tooltip="إدارة المهارات">Manage</a>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="stat-card glass-panel" id="stat-skills">
+            <div class="stat-icon purple"><i class="fa-solid fa-code"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-skills-count">0</span>
+                <span class="stat-label">المهارات</span>
+                <span class="stat-change positive">+<span id="stat-skills-change">0</span> هذا الشهر</span>
+            </div>
+            <a href="#skills-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                            <!-- KPI Certificates -->
-                            <div class="kpi-card glass-panel" id="kpi-certificates">
-                                <div class="kpi-top">
-                                    <div class="kpi-icon-box bg-amber-soft"><i class="ri-medal-line"></i></div>
-                                    <div class="kpi-badges"><span class="status-badge badge-neutral" id="kpi-featured-certs-count">0 Featured</span></div>
-                                </div>
-                                <div class="kpi-middle">
-                                    <h4 class="kpi-title">Certifications</h4>
-                                    <div class="kpi-value-row">
-                                        <span class="kpi-number" id="counter-certificates">0</span>
-                                        <span class="kpi-trend positive">Verified</span>
-                                    </div>
-                                    <p class="kpi-desc" id="desc-certificates">Verified achievements & courses</p>
-                                </div>
-                                <div class="kpi-bottom">
-                                    <div class="kpi-progress-bar"><div id="bar-certificates" class="progress-fill bg-amber"></div></div>
-                                    <div class="kpi-footer-meta">
-                                        <span>Credentials Credibility</span>
-                                        <a href="#certificates-section" class="kpi-action-link" data-tooltip="إدارة الشهادات">Manage</a>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="stat-card glass-panel" id="stat-certificates">
+            <div class="stat-icon gold"><i class="fa-solid fa-award"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-certificates-count">0</span>
+                <span class="stat-label">الشهادات</span>
+                <span class="stat-change positive">+<span id="stat-certificates-change">0</span> هذا الشهر</span>
+            </div>
+            <a href="#certificates-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                            <!-- KPI Messages -->
-                            <div class="kpi-card glass-panel" id="kpi-messages">
-                                <div class="kpi-top">
-                                    <div class="kpi-icon-box bg-rose-soft"><i class="ri-mail-unread-line"></i></div>
-                                    <div class="kpi-badges"><span class="status-badge badge-warning" id="kpi-unread-messages-count" data-tooltip="0 غير مقروءة">0 Unread</span></div>
-                                </div>
-                                <div class="kpi-middle">
-                                    <h4 class="kpi-title">Inbound Messages</h4>
-                                    <div class="kpi-value-row">
-                                        <span class="kpi-number" id="counter-messages">0</span>
-                                        <span class="kpi-trend neutral" id="trend-messages">Total</span>
-                                    </div>
-                                    <p class="kpi-desc" id="desc-messages">Contact form submissions</p>
-                                </div>
-                                <div class="kpi-bottom">
-                                    <div class="kpi-progress-bar"><div id="bar-messages" class="progress-fill bg-rose"></div></div>
-                                    <div class="kpi-footer-meta">
-                                        <span id="sub-unread-messages">0 Action required</span>
-                                        <a href="#messages-section" class="kpi-action-link" data-tooltip="الذهاب إلى صندوق الوارد">Inbox</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <div class="stat-card glass-panel" id="stat-visitors">
+            <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-visitors-count">0</span>
+                <span class="stat-label">الزوار</span>
+                <span class="stat-change positive">+<span id="stat-visitors-change">0</span> اليوم</span>
+            </div>
+            <a href="#" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                        <!-- Quick Launch Panel -->
-                        <div class="glass-panel quick-launch-panel">
-                            <div class="panel-header">
-                                <h3><i class="fa-solid fa-rocket"></i> Quick Operations Launchpad</h3>
-                            </div>
-                            <div class="quick-action-grid">
-                                <button class="quick-action-card" id="quickOpenSiteBtn" type="button" data-tooltip="فتح الموقع الرئيسي">
-                                    <i class="fa-solid fa-globe"></i>
-                                    <span>فتح الموقع</span>
-                                </button>
-                                <button class="quick-action-card" id="quickPreviewBtn" type="button" data-tooltip="معاينة الموقع في تبويب جديد">
-                                    <i class="fa-solid fa-laptop-code"></i>
-                                    <span>معاينة حية</span>
-                                </button>
-                                <button class="quick-action-card" id="quickBackupBtn" type="button" data-tooltip="إنشاء نسخة احتياطية للبيانات">
-                                    <i class="fa-solid fa-database"></i>
-                                    <span>نسخ احتياطي</span>
-                                </button>
-                                <button class="quick-action-card" id="quickPublishBtn" type="button" data-tooltip="نشر التحديثات على الموقع">
-                                    <i class="fa-solid fa-rocket"></i>
-                                    <span>نشر التحديثات</span>
-                                </button>
-                                <button class="quick-action-card" data-section="projects-section" type="button" data-tooltip="إضافة مشروع جديد">
-                                    <i class="fa-solid fa-folder-plus"></i>
-                                    <span>إضافة مشروع</span>
-                                </button>
-                                <button class="quick-action-card" data-section="skills-section" type="button" data-tooltip="إضافة مهارة جديدة">
-                                    <i class="fa-solid fa-bolt"></i>
-                                    <span>إضافة مهارة</span>
-                                </button>
-                                <button class="quick-action-card" data-section="certificates-section" type="button" data-tooltip="إضافة شهادة جديدة">
-                                    <i class="fa-solid fa-award"></i>
-                                    <span>إضافة شهادة</span>
-                                </button>
-                                <button class="quick-action-card" id="quickMediaBtn" type="button" data-tooltip="فتح مكتبة الوسائط">
-                                    <i class="fa-solid fa-images"></i>
-                                    <span>مكتبة الوسائط</span>
-                                </button>
-                            </div>
-                        </div>
+        <div class="stat-card glass-panel" id="stat-messages">
+            <div class="stat-icon rose"><i class="fa-solid fa-envelope"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-messages-count">0</span>
+                <span class="stat-label">الرسائل</span>
+                <span class="stat-change warning"><span id="stat-messages-unread">0</span> غير مقروءة</span>
+            </div>
+            <a href="#messages-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                        <!-- Insights Banner -->
-                        <div class="dashboard-banner-insights" id="smartInsightsContainer">
-                            <div class="insight-header">
-                                <i class="fa-solid fa-brain"></i>
-                                <h3>محرك الذكاء والتوصيات التلقائية</h3>
-                                <span class="status-badge badge-success" id="insights-status">
-                                    <i class="fa-solid fa-circle"></i> Live
-                                </span>
-                            </div>
-                            <div class="insights-list" id="insightsList">
-                                <div class="insight-item loading-skeleton">جاري تحليل بيانات لوحة التحكم...</div>
-                            </div>
-                        </div>
+        <div class="stat-card glass-panel" id="stat-donations">
+            <div class="stat-icon emerald"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-donations-count">$0</span>
+                <span class="stat-label">التبرعات</span>
+                <span class="stat-change positive">+<span id="stat-donations-change">0</span> هذا الشهر</span>
+            </div>
+            <a href="#donations-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                        <!-- Analytics Charts -->
-                        <div class="analytics-charts-grid">
-                            <div class="card chart-card">
-                                <div class="card-title">
-                                    <h3><i class="fa-solid fa-chart-pie"></i> إحصائيات الزوار والتفاعل</h3>
-                                    <button class="chart-refresh-btn" data-chart="visitors" data-tooltip="تحديث المخطط" aria-label="تحديث مخطط الزوار">
-                                        <i class="fa-solid fa-rotate"></i>
-                                    </button>
-                                </div>
-                                <div class="canvas-container">
-                                    <div class="loading-spinner" id="visitors-chart-spinner" style="display:none;">
-                                        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-                                    </div>
-                                    <canvas id="visitorsChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="card chart-card">
-                                <div class="card-title">
-                                    <h3><i class="fa-solid fa-chart-column"></i> نمو المشاريع والمهارات</h3>
-                                    <button class="chart-refresh-btn" data-chart="growth" data-tooltip="تحديث المخطط" aria-label="تحديث مخطط النمو">
-                                        <i class="fa-solid fa-rotate"></i>
-                                    </button>
-                                </div>
-                                <div class="canvas-container">
-                                    <div class="loading-spinner" id="growth-chart-spinner" style="display:none;">
-                                        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-                                    </div>
-                                    <canvas id="growthChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
+        <div class="stat-card glass-panel" id="stat-tickets">
+            <div class="stat-icon orange"><i class="fa-solid fa-headset"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-tickets-count">0</span>
+                <span class="stat-label">تذاكر الدعم</span>
+                <span class="stat-change warning"><span id="stat-tickets-pending">0</span> معلقة</span>
+            </div>
+            <a href="#support-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
 
-                        <!-- Goals & Achievements -->
-                        <div class="goals-achievements-grid">
-                            <div class="card">
-                                <div class="card-title">
-                                    <h3><i class="fa-solid fa-bullseye"></i> أهداف البورتفوليو</h3>
-                                    <span id="overallGoalsProgressText" class="badge">0%</span>
-                                </div>
-                                <div class="goals-list" id="goalsListContainer">
-                                    <div class="loading-skeleton">جاري تحميل الأهداف...</div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-title">
-                                    <h3><i class="fa-solid fa-trophy"></i> الأوسمة والإنجازات المحققة</h3>
-                                    <span class="status-badge badge-neutral" id="achievements-count">0</span>
-                                </div>
-                                <div class="achievements-grid" id="achievementsContainer">
-                                    <div class="loading-skeleton">جاري تحميل الإنجازات...</div>
-                                </div>
-                            </div>
-                        </div>
+        <div class="stat-card glass-panel" id="stat-social">
+            <div class="stat-icon cyan"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="stat-content">
+                <span class="stat-number" id="stat-social-count">0</span>
+                <span class="stat-label">متابعين</span>
+                <span class="stat-change positive">+<span id="stat-social-change">0</span> هذا الشهر</span>
+            </div>
+            <a href="#social-section" class="stat-link"><i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+    </div>
 
-                        <!-- Activity Panel -->
-                        <div class="glass-panel activity-panel">
-                            <div class="panel-header">
-                                <h3>Intelligence Engine Diagnostics</h3>
-                                <span class="live-pulse-badge"><span class="pulse-dot"></span> Dynamic Hook Active</span>
-                            </div>
-                            <div class="audit-log-list" id="home-engine-audit-logs">
-                                <div class="audit-item">
-                                    <i class="ri-checkbox-circle-fill text-success"></i>
-                                    <div class="audit-details">
-                                        <span class="audit-msg">Home Engine Initialized and synced with Supabase Data Store.</span>
-                                        <span class="audit-time">Just now</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- ========================================================== -->
+    <!-- محرك التوصيات التلقائية (AI Insights)                    -->
+    <!-- ========================================================== -->
+    <div class="insights-panel glass-panel">
+        <div class="insights-header">
+            <div class="header-left">
+                <i class="fa-solid fa-brain"></i>
+                <h3>محرك التوصيات الذكية</h3>
+                <span class="live-badge"><span class="pulse"></span> مباشر</span>
+            </div>
+            <button class="refresh-insights" id="refreshInsightsBtn">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+        </div>
+        <div class="insights-list" id="insightsList">
+            <!-- سيتم توليدها بواسطة JavaScript -->
+            <div class="insight-item">
+                <span class="insight-icon">💡</span>
+                <div class="insight-content">
+                    <p class="insight-title">جاري تحليل البيانات...</p>
+                    <p class="insight-desc">يرجى الانتظار للحصول على توصيات ذكية</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    </section>
+    <!-- ========================================================== -->
+    <!-- النشاطات الأخيرة (Activity Log)                          -->
+    <!-- ========================================================== -->
+    <div class="activity-panel glass-panel">
+        <div class="activity-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> آخر النشاطات</h3>
+            <a href="#logs-section" class="view-all">عرض الكل <i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+        <div class="activity-list" id="home-activity-list">
+            <div class="activity-item">
+                <span class="activity-dot"></span>
+                <div class="activity-details">
+                    <span class="activity-text">تم تحميل لوحة التحكم</span>
+                    <span class="activity-time">الآن</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- ==========================================================
-                    SECTION: UPDATER (محرر الكود)
-                    ========================================================== -->
-                    <section id="updater-section" class="section-view">
-                        <div class="dev-workspace-root">
-                            <aside class="dev-panel-side">
-                                <div class="dev-panel-header">
-                                    <span class="dev-title">Prompt Studio</span>
-                                    <span class="dev-badge">v2.4</span>
-                                </div>
-                                <div class="dev-group">
-                                    <label class="dev-label">Prompt Editor</label>
-                                    <textarea rows="3" class="dev-textarea" id="promptEditor"></textarea>
-                                    <div class="dev-row-btns">
-                                        <button class="dev-btn dev-btn-primary" id="copyPromptBtn" type="button">Copy Prompt</button>
-                                        <button class="dev-btn dev-btn-secondary" id="clearPromptBtn" type="button">Clear</button>
-                                    </div>
-                                </div>
-                                <div class="dev-group">
-                                    <label class="dev-label">History & Favorites</label>
-                                    <div class="dev-list-item">Refactor React component to TS</div>
-                                    <div class="dev-list-item">Generate Tailwind CSS glass effect</div>
-                                </div>
-                                <div class="dev-group">
-                                    <label class="dev-label">Prompt Templates</label>
-                                    <select class="dev-select" id="promptTemplates">
-                                        <option>Select Template...</option>
-                                        <option>Hero Section</option>
-                                        <option>Navbar & Menu</option>
-                                        <option>Footer Layout</option>
-                                        <option>Contact Form</option>
-                                        <option>Modern Card</option>
-                                    </select>
-                                </div>
-                                <div class="dev-shortcuts">
-                                    <span class="dev-label">Keyboard Shortcuts</span>
-                                    <div class="dev-shortcuts-grid">
-                                        <span>Save: <code>Ctrl+S</code></span>
-                                        <span>Find: <code>Ctrl+F</code></span>
-                                        <span>Undo: <code>Ctrl+Z</code></span>
-                                        <span>Redo: <code>Ctrl+Y</code></span>
-                                    </div>
-                                </div>
-                            </aside>
+</section>
+<!-- ==========================================================
+SECTION: UPDATER (محرر الكود) - النسخة الجديدة
+========================================================== -->
+<section id="updater-section" class="section-view">
+    
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2>
+            <i class="fa-solid fa-terminal"></i>
+            <span>محرر الكود المتقدم</span>
+        </h2>
+        <div class="header-actions">
+            <button class="saas-btn saas-btn-secondary" id="clearCodeBtn" type="button">
+                <i class="fa-solid fa-trash-can"></i> مسح
+            </button>
+            <button class="saas-btn saas-btn-primary" id="saveCodeBtn" type="button">
+                <i class="fa-solid fa-floppy-disk"></i> حفظ
+            </button>
+        </div>
+    </div>
 
-                            <div class="dev-main-area">
-                                <div class="dev-toolbar">
-                                    <div class="dev-toolbar-group">
-                                        <button class="dev-btn" id="formatCodeBtn" type="button">Format</button>
-                                        <button class="dev-btn" id="beautifyCodeBtn" type="button">Beautify</button>
-                                        <button class="dev-btn" id="minifyCodeBtn" type="button">Minify</button>
-                                        <button class="dev-btn" id="copyCodeBtn" type="button">Copy</button>
-                                        <button class="dev-btn" id="downloadCodeBtn" type="button">Download</button>
-                                        <button class="dev-btn dev-btn-danger" id="clearCodeBtn" type="button">Clear</button>
-                                    </div>
-                                    <select class="dev-select-lang" id="codeLanguageSelect">
-                                        <option>HTML</option>
-                                        <option>CSS</option>
-                                        <option>JavaScript</option>
-                                        <option>JSON</option>
-                                    </select>
-                                </div>
+    <!-- ========================================================== -->
+    <!-- محرر الكود الرئيسي                                        -->
+    <!-- ========================================================== -->
+    <div class="code-editor-wrapper glass-panel">
 
-                                <div class="dev-code-box">
-                                    <div class="dev-lines" id="codeLineNumbers">1<br>2<br>3<br>4</div>
-                                    <div class="dev-code-text" id="codeEditorContent">&lt;div class="dashboard-card"&gt;<br>&nbsp;&nbsp;&lt;h2&gt;Welcome&lt;/h2&gt;<br>&lt;/div&gt;</div>
-                                </div>
+        <!-- شريط الأدوات -->
+        <div class="editor-toolbar">
+            <div class="toolbar-left">
+                <button class="tool-btn" id="formatCodeBtn" title="تنسيق الكود"><i class="fa-solid fa-wand-magic-sparkles"></i> تنسيق</button>
+                <button class="tool-btn" id="beautifyCodeBtn" title="تجميل الكود"><i class="fa-solid fa-paintbrush"></i> تجميل</button>
+                <button class="tool-btn" id="minifyCodeBtn" title="تصغير الكود"><i class="fa-solid fa-compress"></i> تصغير</button>
+                <span class="toolbar-divider"></span>
+                <button class="tool-btn" id="copyCodeBtn" title="نسخ الكود"><i class="fa-regular fa-copy"></i> نسخ</button>
+                <button class="tool-btn" id="downloadCodeBtn" title="تحميل الكود"><i class="fa-solid fa-download"></i> تحميل</button>
+            </div>
+            <div class="toolbar-right">
+                <select id="codeLanguageSelect" class="lang-select">
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="json">JSON</option>
+                    <option value="python">Python</option>
+                    <option value="sql">SQL</option>
+                </select>
+                <span class="line-count" id="codeLineCount">السطور: 0</span>
+            </div>
+        </div>
 
-                                <div class="dev-bottom-console-grid">
-                                    <div class="dev-sub-panel">
-                                        <span class="dev-label">Console</span>
-                                        <div class="dev-console-text" id="devConsoleOutput">[SUCCESS] Compiled successfully.</div>
-                                    </div>
-                                    <div class="dev-sub-panel">
-                                        <span class="dev-label">Statistics</span>
-                                        <div class="dev-stats-grid" id="codeStats">
-                                            <span>Lines: 4</span>
-                                            <span>Words: 12</span>
-                                            <span>Chars: 45</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <!-- منطقة الكود -->
+        <div class="code-area">
+            <div class="line-numbers" id="codeLineNumbers">
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+                <span>4</span>
+                <span>5</span>
+            </div>
+            <div class="code-input-wrapper">
+                <textarea id="codeEditorContent" class="code-textarea" spellcheck="false" placeholder="// اكتب الكود هنا...">&lt;div class=&quot;dashboard-card&quot;&gt;
+  &lt;h2&gt;مرحباً بك في محرر الكود&lt;/h2&gt;
+  &lt;p&gt;يمكنك كتابة أي كود هنا وتنسيقه بسهولة&lt;/p&gt;
+&lt;/div&gt;</textarea>
+            </div>
+        </div>
 
-                            <aside class="dev-panel-side">
-                                <div class="dev-panel-header">
-                                    <span class="dev-title">Dev Tools</span>
-                                </div>
-                                <div class="dev-group">
-                                    <label class="dev-label">AI Actions</label>
-                                    <div class="dev-tools-grid">
-                                        <button class="dev-tool-btn" id="aiGenerateBtn" type="button">Generate Code</button>
-                                        <button class="dev-tool-btn" id="aiFixBtn" type="button">Fix Code</button>
-                                        <button class="dev-tool-btn" id="aiOptimizeBtn" type="button">Optimize Code</button>
-                                        <button class="dev-tool-btn" id="aiExplainBtn" type="button">Explain Code</button>
-                                    </div>
-                                </div>
-                                <div class="dev-group">
-                                    <label class="dev-label">Recent Snippets</label>
-                                    <div class="dev-snippet-card">
-                                        <span>Glassmorphism Card</span>
-                                        <button class="dev-btn" id="snippetCopyBtn" type="button">Copy</button>
-                                    </div>
-                                </div>
-                            </aside>
-                        </div>
-                    </section>
+        <!-- شريط الحالة السفلي -->
+        <div class="editor-statusbar">
+            <span id="codeStats">📊 السطور: 4 | الكلمات: 12 | الأحرف: 45</span>
+            <span id="devConsoleOutput" class="console-output">✅ تم التحميل بنجاح</span>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- لوحة التحكم السريعة (Prompt Studio)                      -->
+    <!-- ========================================================== -->
+    <div class="prompt-studio glass-panel">
+        <div class="prompt-header">
+            <h3><i class="fa-solid fa-robot"></i> Prompt Studio</h3>
+            <span class="badge">AI Powered</span>
+        </div>
+
+        <div class="prompt-body">
+            <div class="prompt-input-area">
+                <label>📝 اكتب طلبك (Prompt):</label>
+                <textarea id="promptEditor" rows="3" placeholder="مثال: أنشئ لي كود HTML لقسم الهيرو..."></textarea>
+                <div class="prompt-actions">
+                    <button class="prompt-btn" id="copyPromptBtn"><i class="fa-regular fa-copy"></i> نسخ</button>
+                    <button class="prompt-btn" id="clearPromptBtn"><i class="fa-solid fa-trash-can"></i> مسح</button>
+                    <button class="prompt-btn primary" id="aiGenerateBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> توليد</button>
+                </div>
+            </div>
+
+            <div class="prompt-templates">
+                <label>📋 قوالب جاهزة:</label>
+                <div class="template-grid" id="promptTemplatesGrid">
+                    <button class="template-btn" data-template="hero">قسم الهيرو</button>
+                    <button class="template-btn" data-template="navbar">شريط التنقل</button>
+                    <button class="template-btn" data-template="footer">تذييل الصفحة</button>
+                    <button class="template-btn" data-template="contact">نموذج تواصل</button>
+                    <button class="template-btn" data-template="card">بطاقة احترافية</button>
+                    <button class="template-btn" data-template="dashboard">لوحة تحكم</button>
+                </div>
+            </div>
+
+            <div class="prompt-history">
+                <label>📜 السجل:</label>
+                <div class="history-list" id="promptHistoryList">
+                    <div class="history-item">🔄 إعادة بناء واجهة المستخدم</div>
+                    <div class="history-item">🎨 تصميم بطاقة بزجاجية</div>
+                    <div class="history-item">📱 قالب موقع متجاوب</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- أوامر اختصار سريعة                                        -->
+    <!-- ========================================================== -->
+    <div class="shortcuts-panel glass-panel">
+        <h4><i class="fa-solid fa-keyboard"></i> اختصارات لوحة المفاتيح</h4>
+        <div class="shortcuts-grid">
+            <div class="shortcut-item"><kbd>Ctrl+S</kbd> <span>حفظ</span></div>
+            <div class="shortcut-item"><kbd>Ctrl+F</kbd> <span>بحث</span></div>
+            <div class="shortcut-item"><kbd>Ctrl+Z</kbd> <span>تراجع</span></div>
+            <div class="shortcut-item"><kbd>Ctrl+Y</kbd> <span>إعادة</span></div>
+            <div class="shortcut-item"><kbd>Ctrl+A</kbd> <span>تحديد الكل</span></div>
+            <div class="shortcut-item"><kbd>Ctrl+Shift+F</kbd> <span>تنسيق</span></div>
+        </div>
+    </div>
+
+</section>
 
                     <!-- ==========================================================
                     SECTION: HERO (قسم الهيرو)
                     ========================================================== -->
-                    <section id="hero-section" class="section-view">
-                        <div class="section-header">
-                            <h2>
-                                <i class="fa-solid fa-house-laptop"></i>
-                                <span>إدارة الواجهة الرئيسية الاحترافية (Hero Management System)</span>
-                            </h2>
-                            <div class="header-actions">
-                                <span id="hero-autosave-indicator">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    <span id="hero-last-saved-time">تم الحفظ تلقائياً</span>
-                                </span>
-                                <button id="hero-save-draft-btn" class="saas-btn saas-btn-secondary" type="button">
-                                    <i class="fa-solid fa-file-pen"></i> حفظ مسودة
-                                </button>
-                                <button id="hero-publish-btn" class="saas-btn saas-btn-primary" type="button">
-                                    <i class="fa-solid fa-globe"></i> نشر التغييرات
-                                </button>
-                            </div>
+                    <!-- ==========================================================
+SECTION: HERO (قسم الهيرو) - الأساس المتين
+========================================================== -->
+<section id="hero-section" class="section-view">
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>إدارة قسم الهيرو</span>
+        </h2>
+        <div class="header-actions">
+            <button class="saas-btn saas-btn-secondary" id="hero-reset-btn" type="button">
+                <i class="fa-solid fa-rotate-left"></i> استعادة
+            </button>
+            <button class="saas-btn saas-btn-primary" id="hero-publish-btn" type="button">
+                <i class="fa-solid fa-globe"></i> نشر التغييرات
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- المحتوى الرئيسي                                           -->
+    <!-- ========================================================== -->
+    <div class="hero-editor-wrapper">
+
+        <!-- ========================================================== -->
+        <!-- اللوحة اليمنى: النماذج                                   -->
+        <!-- ========================================================== -->
+        <div class="hero-editor-panel">
+
+            <!-- تبويبات التحكم -->
+            <div class="hero-tabs">
+                <button class="hero-tab active" data-tab="hero-content">📝 المحتوى</button>
+                <button class="hero-tab" data-tab="hero-image">🖼️ الصورة</button>
+                <button class="hero-tab" data-tab="hero-buttons">🔘 الأزرار</button>
+                <button class="hero-tab" data-tab="hero-social">🌐 السوشيال</button>
+                <button class="hero-tab" data-tab="hero-stats">📊 الإحصائيات</button>
+                <button class="hero-tab" data-tab="hero-design">🎨 التصميم</button>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: المحتوى                                             -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content active" id="hero-content">
+                <div class="hero-form-group">
+                    <label for="hero-title">العنوان الرئيسي</label>
+                    <input type="text" id="hero-title" value="Hi, I'm Mohamed Abdallah" 
+                           placeholder="أدخل العنوان الرئيسي">
+                    <small>يظهر في أعلى القسم</small>
+                </div>
+
+                <div class="hero-form-group">
+                    <label for="hero-subtitle">العنوان الفرعي (المسمى الوظيفي)</label>
+                    <input type="text" id="hero-subtitle" value="Frontend Web Developer" 
+                           placeholder="أدخل المسمى الوظيفي">
+                </div>
+
+                <div class="hero-form-group">
+                    <label for="hero-typing-text">النصوص المتحركة (مفصولة بفاصلة)</label>
+                    <input type="text" id="hero-typing-text" 
+                           value="Frontend Developer, UI/UX Enthusiast, Mathematics & CS Student">
+                    <small>ستظهر بشكل متحرك واحد تلو الآخر</small>
+                </div>
+
+                <div class="hero-form-group">
+                    <label for="hero-description">الوصف التعريفي</label>
+                    <textarea id="hero-description" rows="4">Passionate frontend web developer specializing in building exceptional digital experiences with modern web technologies. Mathematics & Computer Science student with a strong foundation in problem-solving and algorithms.</textarea>
+                </div>
+
+                <div class="hero-form-row">
+                    <div class="hero-form-group">
+                        <label for="hero-name">الاسم الكامل</label>
+                        <input type="text" id="hero-name" value="Mohamed Abdallah">
+                    </div>
+                    <div class="hero-form-group">
+                        <label for="hero-location">الموقع الجغرافي</label>
+                        <input type="text" id="hero-location" value="Suez, Egypt">
+                    </div>
+                </div>
+
+                <div class="hero-form-row">
+                    <div class="hero-form-group">
+                        <label for="hero-email">البريد الإلكتروني</label>
+                        <input type="email" id="hero-email" value="budiabdallah922@gmail.com">
+                    </div>
+                    <div class="hero-form-group">
+                        <label for="hero-availability">حالة التوفر</label>
+                        <select id="hero-availability">
+                            <option value="Available For Work">✅ متاح للعمل</option>
+                            <option value="Open To Freelance">💼 متاح للعمل الحر</option>
+                            <option value="Busy">⏳ مشغول حالياً</option>
+                            <option value="Not Available">🔴 غير متاح</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="hero-form-group">
+                    <label>
+                        <input type="checkbox" id="hero-enable-typing" checked>
+                        تفعيل الكتابة التلقائية
+                    </label>
+                </div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: الصورة                                              -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content" id="hero-image">
+                <div class="hero-form-group">
+                    <label>صورة الملف الشخصي</label>
+                    <div class="hero-image-upload">
+                        <div class="hero-image-preview" id="hero-image-preview">
+                            <img src="./assets/images/profile/hero.jpg" alt="Profile Image" id="hero-image-preview-img">
                         </div>
-                        
-                        <div class="saas-card skills-toolbar-card">
-                            <div class="toolbar-flex-wrap">
-                                <div class="search-input-wrapper">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    <input type="text" id="hero-settings-search">
-                                </div>
-                                <div>
-                                    <button id="hero-undo-btn" class="saas-btn saas-btn-secondary" type="button">
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </button>
-                                    <button id="hero-redo-btn" class="saas-btn saas-btn-secondary" type="button">
-                                        <i class="fa-solid fa-rotate-right"></i>
-                                    </button>
-                                    <button id="hero-reset-btn" class="saas-btn saas-btn-secondary" type="button">
-                                        <i class="fa-solid fa-trash-can-arrow-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-tabs-header">
-                            <button type="button" class="saas-btn saas-btn-primary tab-btn active-tab" data-tab="hero-tab-content">
-                                <i class="fa-solid fa-heading"></i> النصوص والعناوين
+                        <div class="hero-image-actions">
+                            <input type="file" id="hero-image-input" accept="image/*">
+                            <button class="saas-btn saas-btn-secondary" id="hero-image-upload-btn" type="button">
+                                <i class="fa-solid fa-upload"></i> رفع صورة
                             </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-profile">
-                                <i class="fa-solid fa-user-gear"></i> الصورة والملف الشخصي
-                            </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-buttons">
-                                <i class="fa-solid fa-square-caret-right"></i> الأزرار والروابط
-                            </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-social">
-                                <i class="fa-solid fa-share-nodes"></i> منصات التواصل والشارات
-                            </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-stats">
-                                <i class="fa-solid fa-chart-line"></i> العدادات والإحصائيات
-                            </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-design">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> التصميم والتأثيرات الحية
-                            </button>
-                            <button type="button" class="saas-btn saas-btn-secondary tab-btn" data-tab="hero-tab-preview-canvas">
-                                <i class="fa-solid fa-display"></i> المعاينة الحية (Canvas)
+                            <button class="saas-btn saas-btn-danger" id="hero-image-remove-btn" type="button">
+                                <i class="fa-solid fa-trash"></i> حذف
                             </button>
                         </div>
+                        <small>الصيغ المدعومة: JPG, PNG, WebP (حد أقصى 2MB)</small>
+                        <input type="hidden" id="hero-image-url" value="./assets/images/profile/hero.jpg">
+                    </div>
+                </div>
 
-                        <div class="saas-card">
-                            <div id="hero-tab-content" class="hero-tab-pane">
-                                <h3><i class="fa-solid fa-pen-nib"></i> إدارة نصوص الواجهة الرئيسية</h3>
-                                <div>
-                                    <div>
-                                        <label>العنوان الرئيسي (Main Heading)</label>
-                                        <input type="text" id="hero-main-heading" value="Hi, I'm Mohamed Abdallah">
-                                    </div>
-                                    <div>
-                                        <label>المسمى الوظيفي / العنوان الفرعي</label>
-                                        <input type="text" id="hero-sub-heading" value="Frontend Web Developer">
-                                    </div>
-                                </div>
-                                <div>
-                                    <div>
-                                        <label>النصوص المتحركة (Typing Text - مفصولة بفاصلة)</label>
-                                        <input type="text" id="hero-typing-text" value="Frontend Developer, UI/UX Enthusiast, Supermarket Pro">
-                                    </div>
-                                    <div>
-                                        <label>
-                                            <input type="checkbox" id="hero-enable-typing" checked> تفعيل الكتابة التلقائية
-                                        </label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label>نبذة تعريفية (Description)</label>
-                                    <textarea id="hero-description" rows="3">Passionate frontend web developer specializing in building exceptional digital experiences with modern web technologies.</textarea>
-                                </div>
-                            </div>
-
-                            <div id="hero-tab-profile" class="hero-tab-pane">
-                                <h3><i class="fa-solid fa-image"></i> إدارة صورة الملف الشخصي والبيانات</h3>
-                                <div>
-                                    <div>
-                                        <label>رابط الصورة الشخصية (Image URL)</label>
-                                        <input type="url" id="hero-profile-image" placeholder="https://images.unsplash.com/...">
-                                        <div>
-                                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <p>اسحب الصورة هنا أو اضغط للرفع</p>
-                                            <input type="file" id="hero-image-upload-input">
-                                            <button type="button" id="hero-upload-btn" class="saas-btn saas-btn-secondary">اختر ملفاً</button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <div>
-                                                <label>الاسم الكامل</label>
-                                                <input type="text" id="hero-full-name" value="Mohamed Abdallah">
-                                            </div>
-                                            <div>
-                                                <label>الموقع الجغرافي</label>
-                                                <input type="text" id="hero-location" value="Egypt">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div>
-                                                <label>البريد الإلكتروني</label>
-                                                <input type="email" id="hero-email" value="contact@mohamed.dev">
-                                            </div>
-                                            <div>
-                                                <label>حالة التوفر</label>
-                                                <select id="hero-availability-status">
-                                                    <option value="Available For Work">متاح للعمل (Available)</option>
-                                                    <option value="Open To Freelance">متاح للعمل الحر (Freelance)</option>
-                                                    <option value="Busy">مشغول حالياً (Busy)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="hero-tab-buttons" class="hero-tab-pane">
-                                <div>
-                                    <h3><i class="fa-solid fa-square-caret-right"></i> إدارة أزرار الواجهة (Hero Buttons)</h3>
-                                    <button id="hero-add-button-btn" class="saas-btn saas-btn-primary" type="button">
-                                        <i class="fa-solid fa-plus"></i> إضافة زر جديد
-                                    </button>
-                                </div>
-                                <div id="hero-buttons-container"></div>
-                            </div>
-
-                            <div id="hero-tab-social" class="hero-tab-pane">
-                                <div>
-                                    <h3><i class="fa-solid fa-share-nodes"></i> منصات التواصل والشارات (Badges & Socials)</h3>
-                                    <button id="hero-add-social-btn" class="saas-btn saas-btn-primary" type="button">
-                                        <i class="fa-solid fa-plus"></i> إضافة منصة
-                                    </button>
-                                </div>
-                                <div>
-                                    <div id="hero-socials-container"></div>
-                                    <div>
-                                        <h4>إعدادات الشارات (Badges)</h4>
-                                        <div>
-                                            <label>
-                                                <input type="checkbox" id="hero-badge-available" checked> إظهار شارة "متاح للعمل"
-                                            </label>
-                                            <label>
-                                                <input type="checkbox" id="hero-badge-verified" checked> إظهار شارة الموثوقية (Verified)
-                                            </label>
-                                            <div>
-                                                <label>نص شارة مخصصة (Custom Badge)</label>
-                                                <input type="text" id="hero-custom-badge" value="🔥 Available for Hire">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="hero-tab-stats" class="hero-tab-pane">
-                                <div>
-                                    <h3><i class="fa-solid fa-chart-line"></i> إحصائيات وعدادات الـ Hero (Counters)</h3>
-                                    <button id="hero-add-stat-btn" class="saas-btn saas-btn-primary" type="button">
-                                        <i class="fa-solid fa-plus"></i> إضافة عداد
-                                    </button>
-                                </div>
-                                <div id="hero-stats-container"></div>
-                            </div>
-
-                            <div id="hero-tab-design" class="hero-tab-pane">
-                                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> التصميم، التخطيط والتأثيرات البصرية</h3>
-                                <div>
-                                    <div>
-                                        <label>تخطيط القسم (Layout Alignment)</label>
-                                        <select id="hero-layout-style">
-                                            <option value="image-right">النص يمين والصورة يسار (Image Right)</option>
-                                            <option value="image-left">الصورة يمين والنص يسار (Image Left)</option>
-                                            <option value="center">توسيط كامل (Center Layout)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label>لون خلفية الـ Hero</label>
-                                        <input type="color" id="hero-bg-color" value="#0f172a">
-                                    </div>
-                                    <div>
-                                        <label>تأثيرات بصرية (Visual Effects)</label>
-                                        <div>
-                                            <label>
-                                                <input type="checkbox" id="hero-effect-glow" checked> توهج (Glow)
-                                            </label>
-                                            <label>
-                                                <input type="checkbox" id="hero-effect-float" checked> عائم (Floating)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="hero-tab-preview-canvas" class="hero-tab-pane">
-                                <div>
-                                    <div>
-                                        <button id="hero-preview-desktop-btn" class="saas-btn saas-btn-secondary" type="button" data-device="desktop">
-                                            <i class="fa-solid fa-desktop"></i> حاسوب
-                                        </button>
-                                        <button id="hero-preview-tablet-btn" class="saas-btn saas-btn-secondary" type="button" data-device="tablet">
-                                            <i class="fa-solid fa-tablet-screen-button"></i> تابلت
-                                        </button>
-                                        <button id="hero-preview-mobile-btn" class="saas-btn saas-btn-secondary" type="button" data-device="mobile">
-                                            <i class="fa-solid fa-mobile-screen"></i> موبايل
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button id="hero-preview-theme-btn" class="saas-btn saas-btn-secondary" type="button">
-                                            <i class="fa-solid fa-circle-half-stroke"></i> الوضع
-                                        </button>
-                                        <button id="hero-preview-refresh-btn" class="saas-btn saas-btn-secondary" type="button">
-                                            <i class="fa-solid fa-rotate"></i> تحديث
-                                        </button>
-                                        <button id="hero-open-website-btn" class="saas-btn saas-btn-primary" type="button">
-                                            <i class="fa-solid fa-arrow-up-right-from-square"></i> فتح الموقع
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="hero-canvas-wrapper">
-                                    <div id="hero-live-canvas-box">
-                                        <div>
-                                            <span id="canvas-badge-view" class="saas-badge">
-                                                <i class="fa-solid fa-circle"></i> Available For Work
-                                            </span>
-                                            <span id="canvas-custom-badge-view">🔥 Available for Hire</span>
-                                        </div>
-                                        <div id="canvas-layout-flex">
-                                            <div>
-                                                <h1 id="canvas-main-heading-view">Hi, I'm Mohamed Abdallah</h1>
-                                                <h3 id="canvas-sub-heading-view">Frontend Web Developer</h3>
-                                                <p id="canvas-desc-view">Passionate frontend web developer specializing in building exceptional digital experiences with modern web technologies.</p>
-                                                <div id="canvas-buttons-view">
-                                                    <a href="#" class="saas-btn saas-btn-primary">المشاريع</a>
-                                                    <a href="#" class="saas-btn saas-btn-secondary">تواصل معي</a>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div id="canvas-profile-img-wrap">
-                                                    <i class="fa-solid fa-user"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="canvas-stats-view">
-                                            <div><h4>19+</h4><span>سنة العمر</span></div>
-                                            <div><h4>15+</h4><span>مشروعاً</span></div>
-                                            <div><h4>100%</h4><span>إنجاز</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="hero-form-group">
+                    <label>صورة الخلفية</label>
+                    <div class="hero-image-upload">
+                        <div class="hero-image-preview" id="hero-bg-preview">
+                            <img src="" alt="Background Image" id="hero-bg-preview-img" style="display:none;">
+                            <span class="placeholder-text" id="hero-bg-placeholder">📷 لا توجد خلفية</span>
                         </div>
-                    </section>
+                        <div class="hero-image-actions">
+                            <input type="file" id="hero-bg-input" accept="image/*">
+                            <button class="saas-btn saas-btn-secondary" id="hero-bg-upload-btn" type="button">
+                                <i class="fa-solid fa-upload"></i> رفع خلفية
+                            </button>
+                            <button class="saas-btn saas-btn-danger" id="hero-bg-remove-btn" type="button">
+                                <i class="fa-solid fa-trash"></i> حذف
+                            </button>
+                        </div>
+                        <input type="hidden" id="hero-bg-url" value="">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: الأزرار                                             -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content" id="hero-buttons">
+                <div class="hero-form-group">
+                    <label>إدارة الأزرار</label>
+                    <button class="saas-btn saas-btn-primary" id="hero-add-btn" type="button">
+                        <i class="fa-solid fa-plus"></i> إضافة زر جديد
+                    </button>
+                </div>
+                <div id="hero-buttons-list" class="hero-buttons-list">
+                    <!-- سيتم توليدها بواسطة JavaScript -->
+                    <div class="hero-empty-state">
+                        <i class="fa-solid fa-square-caret-right"></i>
+                        <p>لا توجد أزرار. أضف زراً جديداً.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: السوشيال ميديا                                     -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content" id="hero-social">
+                <div class="hero-form-group">
+                    <label>روابط السوشيال ميديا</label>
+                    <button class="saas-btn saas-btn-primary" id="hero-social-add-btn" type="button">
+                        <i class="fa-solid fa-plus"></i> إضافة منصة
+                    </button>
+                </div>
+                <div id="hero-social-list" class="hero-social-list">
+                    <!-- سيتم توليدها بواسطة JavaScript -->
+                    <div class="hero-empty-state">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        <p>لا توجد روابط سوشيال ميديا.</p>
+                    </div>
+                </div>
+
+                <div class="hero-form-group" style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1.5rem;">
+                    <label>الشارات (Badges)</label>
+                    <div class="hero-form-row">
+                        <div class="hero-form-group">
+                            <label>
+                                <input type="checkbox" id="hero-badge-available" checked>
+                                شارة "متاح للعمل"
+                            </label>
+                        </div>
+                        <div class="hero-form-group">
+                            <label>
+                                <input type="checkbox" id="hero-badge-verified" checked>
+                                شارة "موثق ✓"
+                            </label>
+                        </div>
+                    </div>
+                    <div class="hero-form-group">
+                        <label for="hero-custom-badge">شارة مخصصة</label>
+                        <input type="text" id="hero-custom-badge" value="🔥 Available for Hire" 
+                               placeholder="أدخل نص الشارة المخصصة">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: الإحصائيات                                          -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content" id="hero-stats">
+                <div class="hero-form-group">
+                    <label>إحصائيات سريعة</label>
+                    <button class="saas-btn saas-btn-primary" id="hero-stat-add-btn" type="button">
+                        <i class="fa-solid fa-plus"></i> إضافة إحصائية
+                    </button>
+                </div>
+                <div id="hero-stats-list" class="hero-stats-list">
+                    <!-- سيتم توليدها بواسطة JavaScript -->
+                    <div class="hero-empty-state">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <p>لا توجد إحصائيات. أضف إحصائية جديدة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- تبويب: التصميم                                              -->
+            <!-- ========================================================== -->
+            <div class="hero-tab-content" id="hero-design">
+                <div class="hero-form-row">
+                    <div class="hero-form-group">
+                        <label for="hero-layout">تخطيط القسم</label>
+                        <select id="hero-layout">
+                            <option value="image-right">🖼️ الصورة يمين</option>
+                            <option value="image-left">🖼️ الصورة يسار</option>
+                            <option value="center">📐 توسيط كامل</option>
+                        </select>
+                    </div>
+                    <div class="hero-form-group">
+                        <label for="hero-bg-color">لون الخلفية</label>
+                        <input type="color" id="hero-bg-color" value="#0f172a">
+                    </div>
+                </div>
+
+                <div class="hero-form-row">
+                    <div class="hero-form-group">
+                        <label for="hero-text-color">لون النص</label>
+                        <input type="color" id="hero-text-color" value="#ffffff">
+                    </div>
+                    <div class="hero-form-group">
+                        <label for="hero-accent-color">اللون المميز</label>
+                        <input type="color" id="hero-accent-color" value="#6366f1">
+                    </div>
+                </div>
+
+                <div class="hero-form-group">
+                    <label>التأثيرات البصرية</label>
+                    <div class="hero-form-row">
+                        <div class="hero-form-group">
+                            <label>
+                                <input type="checkbox" id="hero-effect-glow" checked>
+                                توهج (Glow)
+                            </label>
+                        </div>
+                        <div class="hero-form-group">
+                            <label>
+                                <input type="checkbox" id="hero-effect-float" checked>
+                                عائم (Floating)
+                            </label>
+                        </div>
+                        <div class="hero-form-group">
+                            <label>
+                                <input type="checkbox" id="hero-effect-particle" checked>
+                                جسيمات (Particles)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- اللوحة اليسرى: المعاينة الحية                            -->
+        <!-- ========================================================== -->
+        <div class="hero-preview-panel">
+            <div class="hero-preview-header">
+                <h3><i class="fa-solid fa-display"></i> معاينة حية</h3>
+                <div class="hero-preview-controls">
+                    <button class="preview-device-btn active" data-device="desktop">
+                        <i class="fa-solid fa-desktop"></i>
+                    </button>
+                    <button class="preview-device-btn" data-device="tablet">
+                        <i class="fa-solid fa-tablet-screen-button"></i>
+                    </button>
+                    <button class="preview-device-btn" data-device="mobile">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </button>
+                    <button class="preview-theme-btn" id="hero-preview-theme-btn">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-preview-container" id="hero-preview-container">
+                <!-- سيتم توليدها بواسطة JavaScript -->
+                <div class="hero-preview-loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>جاري تحميل المعاينة...</span>
+                </div>
+            </div>
+            <div class="hero-preview-footer">
+                <span id="hero-preview-status">✅ جاهز</span>
+                <button class="saas-btn saas-btn-secondary" id="hero-preview-refresh-btn">
+                    <i class="fa-solid fa-rotate"></i> تحديث
+                </button>
+            </div>
+        </div>
+    </div>
+
+</section>
+
                     <!-- ========================================================== -->
 <!-- 📦 SECTION: SKILLS - المهارات                             -->
 <!-- ========================================================== -->

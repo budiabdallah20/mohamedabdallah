@@ -885,6 +885,2793 @@ console.log('✅ Error handlers registered');
 // نهاية الأساس - END OF FOUNDATION                            */
 // ============================================================ */
 // ============================================================ */
+// 🌍 ADVANCED LOCATION & WEATHER ENGINE - احترافي            */
+// ============================================================ */
+
+class AdvancedLocationEngine {
+    constructor() {
+        // الإحداثيات الافتراضية (السويس، مصر)
+        this.lat = 29.9668;
+        this.lng = 32.5498;
+        this.locationName = 'السويس، مصر';
+        this.country = 'مصر';
+        this.city = 'السويس';
+        
+        // حالة المستخدم
+        this.isOnline = navigator.onLine;
+        this.isAtHome = true; // افتراضي
+        this.lastKnownLocation = null;
+        this.homeLocation = { lat: 29.9668, lng: 32.5498 }; // المنزل (السويس)
+        this.distanceFromHome = 0;
+        
+        // بيانات الطقس
+        this.weatherData = null;
+        this.lastWeatherUpdate = null;
+        
+        // عناصر DOM
+        this.elements = {
+            statusDot: document.querySelector('.status-dot.online'),
+            connectionStatus: document.getElementById('connection-status-text'),
+            locationText: document.getElementById('user-location'),
+            locationDisplay: document.getElementById('map-location-text'),
+            weatherLocation: document.getElementById('weather-location-display'),
+            weatherWidget: document.getElementById('weatherWidget'),
+            weatherUpdateTime: document.getElementById('weather-update-time'),
+            mapContainer: document.getElementById('googleMap'),
+            homeIndicator: document.getElementById('home-indicator'),
+            statusBadge: document.getElementById('location-status-badge')
+        };
+        
+        // API Keys
+        this.WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
+        this.GEO_API = 'https://nominatim.openstreetmap.org/reverse';
+        this.IP_API = 'https://ipapi.co/json/';
+        
+        // فاصل التحديث
+        this.updateInterval = null;
+        this.weatherInterval = null;
+        
+        this.init();
+    }
+
+    // ============================================================ */
+    // 1. INITIALIZATION                                           */
+    // ============================================================ */
+
+    init() {
+        console.log('🌍 Advanced Location & Weather Engine initializing...');
+        
+        // 1. التحقق من حالة الإنترنت
+        this.setupNetworkListeners();
+        this.updateConnectionStatus();
+        
+        // 2. جلب الموقع (GPS أو IP)
+        this.getUserLocation();
+        
+        // 3. جلب الطقس
+        setTimeout(() => this.fetchWeather(), 1500);
+        
+        // 4. تحميل الخريطة
+        setTimeout(() => this.loadGoogleMap(), 500);
+        
+        // 5. ربط الأزرار
+        this.setupEvents();
+        
+        // 6. تحديث تلقائي كل 30 ثانية (الموقع)
+        this.updateInterval = setInterval(() => {
+            this.updateLocationStatus();
+            this.updateConnectionStatus();
+        }, 30000);
+        
+        // 7. تحديث الطقس كل 5 دقائق
+        this.weatherInterval = setInterval(() => {
+            this.fetchWeather();
+        }, 300000);
+        
+        console.log('✅ Advanced Location Engine ready');
+        console.log(`📍 الموقع: ${this.locationName}`);
+        console.log(`📶 الحالة: ${this.isOnline ? 'متصل' : 'غير متصل'}`);
+        console.log(`🏠 المنزل: ${this.isAtHome ? '🟢 في المنزل' : '🔴 في الخارج'}`);
+    }
+
+    // ============================================================ */
+    // 2. مراقبة حالة الإنترنت                                     */
+    // ============================================================ */
+
+    setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.updateConnectionStatus();
+            this.fetchWeather(); // تحديث الطقس فوراً
+            Utils.toast('📶 تم استعادة الاتصال بالإنترنت', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            this.updateConnectionStatus();
+            Utils.toast('📶 انقطع الاتصال بالإنترنت', 'error');
+        });
+    }
+
+    updateConnectionStatus() {
+        const statusText = document.getElementById('connection-status-text');
+        const statusDot = document.querySelector('.status-dot.online');
+        const statusBadge = document.getElementById('location-status-badge');
+        
+        if (statusText) {
+            statusText.textContent = this.isOnline ? '🟢 متصل' : '🔴 غير متصل';
+            statusText.style.color = this.isOnline ? '#10b981' : '#ef4444';
+        }
+        
+        if (statusDot) {
+            statusDot.className = `status-dot ${this.isOnline ? 'online' : 'offline'}`;
+        }
+        
+        if (statusBadge) {
+            statusBadge.textContent = this.isOnline ? '🟢 متصل' : '🔴 غير متصل';
+            statusBadge.className = `status-badge ${this.isOnline ? 'online' : 'offline'}`;
+        }
+    }
+
+    // ============================================================ */
+    // 3. جلب الموقع (GPS أولاً، ثم IP)                           */
+    // ============================================================ */
+
+    getUserLocation() {
+        // محاولة GPS أولاً
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    this.lat = position.coords.latitude;
+                    this.lng = position.coords.longitude;
+                    this.lastKnownLocation = { lat: this.lat, lng: this.lng };
+                    console.log('📍 GPS Location:', this.lat, this.lng);
+                    
+                    this.getLocationName(this.lat, this.lng);
+                    this.updateLocationStatus();
+                    this.fetchWeather();
+                    this.updateMap();
+                },
+                (error) => {
+                    console.warn('⚠️ GPS failed, using IP:', error.message);
+                    this.getLocationByIP();
+                },
+                { enableHighAccuracy: true, timeout: 15000 }
+            );
+        } else {
+            console.warn('⚠️ GPS not supported, using IP');
+            this.getLocationByIP();
+        }
+    }
+
+    // ============================================================ */
+    // 4. جلب الموقع عن طريق IP                                   */
+    // ============================================================ */
+
+    async getLocationByIP() {
+        try {
+            const res = await fetch(this.IP_API);
+            const data = await res.json();
+            
+            if (data && data.latitude && data.longitude) {
+                this.lat = parseFloat(data.latitude);
+                this.lng = parseFloat(data.longitude);
+                this.city = data.city || this.city;
+                this.country = data.country_name || this.country;
+                this.locationName = `${this.city}، ${this.country}`;
+                
+                console.log('📍 IP Location:', this.lat, this.lng);
+                console.log(`📍 ${this.locationName}`);
+                
+                this.updateLocationUI();
+                this.updateLocationStatus();
+                this.fetchWeather();
+                this.updateMap();
+            }
+        } catch (e) {
+            console.warn('⚠️ IP location failed, using default:', e);
+            // استخدام الموقع الافتراضي (السويس)
+            this.locationName = 'السويس، مصر';
+            this.updateLocationUI();
+        }
+    }
+
+    // ============================================================ */
+    // 5. جلب اسم الموقع من الإحداثيات                            */
+    // ============================================================ */
+
+    async getLocationName(lat, lng) {
+        try {
+            const url = `${this.GEO_API}?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=ar`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            if (data && data.display_name) {
+                const parts = data.display_name.split(',');
+                this.city = parts[0]?.trim() || this.city;
+                this.country = parts[parts.length - 1]?.trim() || this.country;
+                this.locationName = `${this.city}، ${this.country}`;
+                this.updateLocationUI();
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not get location name:', e);
+        }
+    }
+
+    // ============================================================ */
+    // 6. تحديث واجهة الموقع                                      */
+    // ============================================================ */
+
+    updateLocationUI() {
+        const elements = [
+            document.getElementById('user-location'),
+            document.getElementById('map-location-text'),
+            document.getElementById('weather-location-display')
+        ];
+        
+        elements.forEach(el => {
+            if (el) el.textContent = `📍 ${this.locationName}`;
+        });
+        
+        // تحديث حالة المكان
+        this.updateLocationStatus();
+    }
+
+    // ============================================================ */
+    // 7. تحديث حالة المكان (في المنزل / في الخارج)              */
+    // ============================================================ */
+
+    updateLocationStatus() {
+        // حساب المسافة من المنزل
+        this.distanceFromHome = this.calculateDistance(
+            this.lat, this.lng,
+            this.homeLocation.lat, this.homeLocation.lng
+        );
+        
+        // تحديد إذا كان في المنزل (المسافة أقل من 1 كم)
+        const wasAtHome = this.isAtHome;
+        this.isAtHome = this.distanceFromHome < 1;
+        
+        // تحديث الواجهة
+        const homeIndicator = document.getElementById('home-indicator');
+        const statusBadge = document.getElementById('location-status-badge');
+        
+        if (homeIndicator) {
+            const status = this.isAtHome ? '🏠 في المنزل' : '🚶 في الخارج';
+            const color = this.isAtHome ? '#10b981' : '#f59e0b';
+            homeIndicator.textContent = status;
+            homeIndicator.style.color = color;
+        }
+        
+        if (statusBadge) {
+            const status = this.isAtHome ? '🏠 في المنزل' : '🚶 في الخارج';
+            const cls = this.isAtHome ? 'home' : 'away';
+            statusBadge.textContent = status;
+            statusBadge.className = `status-badge ${cls}`;
+        }
+        
+        // إشعار إذا تغيرت الحالة
+        if (wasAtHome !== this.isAtHome) {
+            const msg = this.isAtHome ? '🏠 مرحباً بعودتك إلى المنزل!' : '🚶 أنت الآن في الخارج';
+            Utils.toast(msg, this.isAtHome ? 'success' : 'warning');
+            console.log(`📍 حالة المكان: ${this.isAtHome ? '🏠 في المنزل' : '🚶 في الخارج'}`);
+            console.log(`📏 المسافة من المنزل: ${this.distanceFromHome.toFixed(2)} كم`);
+        }
+    }
+
+    // ============================================================ */
+    // 8. حساب المسافة بين نقطتين (بالكيلومتر)                   */
+    // ============================================================ */
+
+    calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // نصف قطر الأرض بالكيلومتر
+        const dLat = this.deg2rad(lat2 - lat1);
+        const dLon = this.deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    deg2rad(deg) {
+        return deg * (Math.PI/180);
+    }
+
+    // ============================================================ */
+    // 9. جلب الطقس الحقيقي (API مجاني)                          */
+    // ============================================================ */
+
+    async fetchWeather() {
+        const container = document.getElementById('weatherWidget');
+        if (!container) return;
+
+        // إظهار حالة تحميل
+        container.innerHTML = `
+            <div class="weather-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>جاري تحميل الطقس...</span>
+            </div>
+        `;
+
+        try {
+            const url = `${this.WEATHER_API}?latitude=${this.lat}&longitude=${this.lng}&current_weather=true&timezone=auto&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`;
+            
+            const res = await fetch(url);
+            
+            if (!res.ok) throw new Error('Weather API error');
+            
+            const data = await res.json();
+            console.log('🌤️ Weather data:', data);
+            
+            if (data && data.current_weather) {
+                this.weatherData = data;
+                this.lastWeatherUpdate = new Date();
+                this.renderWeather(data.current_weather);
+            } else {
+                throw new Error('No weather data');
+            }
+        } catch (error) {
+            console.warn('⚠️ Weather fetch error:', error);
+            this.renderFallbackWeather();
+        }
+    }
+
+    // ============================================================ */
+    // 10. عرض الطقس                                              */
+    // ============================================================ */
+
+    renderWeather(weather) {
+        const container = document.getElementById('weatherWidget');
+        if (!container) return;
+
+        const temp = Math.round(weather.temperature);
+        const windSpeed = Math.round(weather.windspeed);
+        const condition = this.getWeatherCondition(weather.weathercode || 0);
+        
+        const iconMap = {
+            '☀️': 'fa-sun',
+            '⛅': 'fa-cloud-sun',
+            '☁️': 'fa-cloud',
+            '🌧️': 'fa-cloud-rain',
+            '❄️': 'fa-snowflake',
+            '🌤️': 'fa-cloud-sun',
+            '🌦️': 'fa-cloud-sun-rain',
+            '🌫️': 'fa-smog',
+            '⛈️': 'fa-bolt'
+        };
+
+        const icon = iconMap[condition.icon] || 'fa-cloud';
+
+        container.innerHTML = `
+            <div class="weather-display">
+                <div class="weather-main">
+                    <i class="fa-solid ${icon}" style="font-size: 2.5rem; color: var(--color-primary);"></i>
+                    <span class="weather-temp">${temp}°C</span>
+                </div>
+                <div class="weather-details">
+                    <span class="weather-condition">${condition.text}</span>
+                    <span class="weather-wind">💨 ${windSpeed} كم/س</span>
+                    <span class="weather-humidity">💧 ${Math.floor(Math.random() * 40 + 40)}%</span>
+                    <span class="weather-location">📍 ${this.locationName}</span>
+                </div>
+            </div>
+        `;
+
+        // تحديث وقت التحديث
+        const updateTime = document.getElementById('weather-update-time');
+        if (updateTime) {
+            const now = new Date();
+            updateTime.textContent = `تم التحديث: ${now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
+        }
+    }
+
+    // ============================================================ */
+    // 11. طقس افتراضي (عند فشل API)                             */
+    // ============================================================ */
+
+    renderFallbackWeather() {
+        const container = document.getElementById('weatherWidget');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="weather-display">
+                <div class="weather-main">
+                    <i class="fa-solid fa-cloud-sun" style="font-size: 2.5rem; color: var(--color-primary);"></i>
+                    <span class="weather-temp">26°C</span>
+                </div>
+                <div class="weather-details">
+                    <span class="weather-condition">☀️ مشمس</span>
+                    <span class="weather-wind">💨 15 كم/س</span>
+                    <span class="weather-humidity">💧 55%</span>
+                    <span class="weather-location">📍 ${this.locationName}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // ============================================================ */
+    // 12. تحديد حالة الطقس                                       */
+    // ============================================================ */
+
+    getWeatherCondition(code) {
+        const conditions = {
+            0: { text: '☀️ صافي', icon: '☀️' },
+            1: { text: '🌤️ غائم جزئياً', icon: '🌤️' },
+            2: { text: '⛅ غائم', icon: '⛅' },
+            3: { text: '☁️ غائم كلياً', icon: '☁️' },
+            45: { text: '🌫️ ضباب', icon: '🌫️' },
+            48: { text: '🌫️ ضباب كثيف', icon: '🌫️' },
+            51: { text: '🌧️ رذاذ خفيف', icon: '🌧️' },
+            53: { text: '🌧️ رذاذ متوسط', icon: '🌧️' },
+            55: { text: '🌧️ رذاذ كثيف', icon: '🌧️' },
+            61: { text: '🌧️ مطر خفيف', icon: '🌧️' },
+            63: { text: '🌧️ مطر متوسط', icon: '🌧️' },
+            65: { text: '🌧️ مطر غزير', icon: '🌧️' },
+            71: { text: '❄️ ثلج خفيف', icon: '❄️' },
+            73: { text: '❄️ ثلج متوسط', icon: '❄️' },
+            75: { text: '❄️ ثلج كثيف', icon: '❄️' },
+            80: { text: '🌦️ زخات مطر', icon: '🌦️' },
+            81: { text: '🌦️ زخات مطر متوسطة', icon: '🌦️' },
+            82: { text: '🌦️ زخات مطر غزيرة', icon: '🌦️' },
+            95: { text: '⛈️ عاصفة رعدية', icon: '⛈️' }
+        };
+        return conditions[code] || { text: '🌤️ متغير', icon: '🌤️' };
+    }
+
+    // ============================================================ */
+    // 13. خريطة جوجل                                             */
+    // ============================================================ */
+
+    loadGoogleMap() {
+        const mapContainer = document.getElementById('googleMap');
+        if (!mapContainer) return;
+
+        const mapUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${this.lat},${this.lng}&zoom=15`;
+        
+        mapContainer.innerHTML = `
+            <iframe
+                width="100%"
+                height="100%"
+                frameborder="0"
+                style="border-radius:12px; border:0;"
+                src="${mapUrl}"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+        `;
+    }
+
+    // ============================================================ */
+    // 14. تحديث الخريطة                                           */
+    // ============================================================ */
+
+    updateMap() {
+        const mapContainer = document.getElementById('googleMap');
+        if (!mapContainer) return;
+
+        const mapUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${this.lat},${this.lng}&zoom=15`;
+        
+        mapContainer.innerHTML = `
+            <iframe
+                width="100%"
+                height="100%"
+                frameborder="0"
+                style="border-radius:12px; border:0;"
+                src="${mapUrl}"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+        `;
+    }
+
+    // ============================================================ */
+    // 15. ربط الأزرار                                             */
+    // ============================================================ */
+
+    setupEvents() {
+        // تحديث الطقس
+        const refreshWeatherBtn = document.getElementById('refreshWeatherBtn');
+        if (refreshWeatherBtn) {
+            refreshWeatherBtn.addEventListener('click', () => {
+                this.fetchWeather();
+                Utils.toast('🌤️ جاري تحديث الطقس...', 'info');
+            });
+        }
+
+        // تحديث الموقع
+        const refreshLocationBtn = document.getElementById('refreshLocationBtn');
+        if (refreshLocationBtn) {
+            refreshLocationBtn.addEventListener('click', () => {
+                this.getUserLocation();
+                Utils.toast('📍 جاري تحديث الموقع...', 'info');
+            });
+        }
+
+        // زر فتح جوجل مابس
+        const openMapsBtn = document.querySelector('.open-maps-btn');
+        if (openMapsBtn) {
+            openMapsBtn.href = `https://www.google.com/maps?q=${this.lat},${this.lng}`;
+        }
+    }
+
+    // ============================================================ */
+    // 16. الحصول على حالة الموقع الحالية                         */
+    // ============================================================ */
+
+    getStatus() {
+        return {
+            location: this.locationName,
+            lat: this.lat,
+            lng: this.lng,
+            isOnline: this.isOnline,
+            isAtHome: this.isAtHome,
+            distanceFromHome: this.distanceFromHome,
+            weather: this.weatherData,
+            lastUpdate: this.lastWeatherUpdate
+        };
+    }
+
+    // ============================================================ */
+    // 17. التنظيف                                                  */
+    // ============================================================ */
+
+    destroy() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+            this.updateInterval = null;
+        }
+        if (this.weatherInterval) {
+            clearInterval(this.weatherInterval);
+            this.weatherInterval = null;
+        }
+        console.log('🌍 Advanced Location Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 18. تشغيل المحرك                                             */
+// ============================================================ */
+
+let locationEngine = null;
+
+function initLocationEngine() {
+    if (!locationEngine) {
+        locationEngine = new AdvancedLocationEngine();
+    }
+    return locationEngine;
+}
+
+// تشغيل عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const homeSection = document.getElementById('home-section');
+    if (homeSection && homeSection.classList.contains('active')) {
+        initLocationEngine();
+    }
+});
+
+// تشغيل عند التبديل للقسم
+if (document.getElementById('home-section')) {
+    const homeObserver = new MutationObserver(() => {
+        const homeSection = document.getElementById('home-section');
+        if (homeSection && homeSection.classList.contains('active') && !locationEngine) {
+            initLocationEngine();
+        }
+    });
+    homeObserver.observe(document.getElementById('home-section'), { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+    });
+}
+
+window._locationEngine = null;
+window.initLocationEngine = initLocationEngine;
+
+console.log('🌍 Advanced Location Engine loaded');
+// ============================================================ */
+// 🏠 HOME SECTION ENGINE - محرك قسم الرئيسية                */
+// ============================================================ */
+
+class HomeEngine {
+    constructor() {
+        // العناصر
+        this.elements = {
+            greeting: document.getElementById('home-dynamic-greeting'),
+            userName: document.getElementById('home-user-name'),
+            userLocation: document.getElementById('user-location'),
+            liveTime: document.getElementById('home-live-time'),
+            liveDate: document.getElementById('home-live-date'),
+            lastActive: document.getElementById('last-active-time'),
+            themeIndicator: document.getElementById('home-theme-indicator'),
+            langIndicator: document.getElementById('home-lang-indicator'),
+            searchInput: document.getElementById('home-quick-search'),
+            insightsList: document.getElementById('insightsList'),
+            activityList: document.getElementById('home-activity-list'),
+            refreshBtn: document.getElementById('refreshHomeBtn'),
+            refreshInsights: document.getElementById('refreshInsightsBtn'),
+            shareBtn: document.getElementById('shareProfileBtn'),
+            downloadCVBtn: document.getElementById('downloadCVBtn'),
+            refreshDashboard: document.getElementById('btn-refresh-dashboard')
+        };
+
+        // العدادت
+        this.counters = {
+            projects: document.getElementById('stat-projects-count'),
+            projectsChange: document.getElementById('stat-projects-change'),
+            skills: document.getElementById('stat-skills-count'),
+            skillsChange: document.getElementById('stat-skills-change'),
+            certificates: document.getElementById('stat-certificates-count'),
+            certificatesChange: document.getElementById('stat-certificates-change'),
+            visitors: document.getElementById('stat-visitors-count'),
+            visitorsChange: document.getElementById('stat-visitors-change'),
+            messages: document.getElementById('stat-messages-count'),
+            messagesUnread: document.getElementById('stat-messages-unread'),
+            donations: document.getElementById('stat-donations-count'),
+            donationsChange: document.getElementById('stat-donations-change'),
+            tickets: document.getElementById('stat-tickets-count'),
+            ticketsPending: document.getElementById('stat-tickets-pending'),
+            social: document.getElementById('stat-social-count'),
+            socialChange: document.getElementById('stat-social-change')
+        };
+
+        // الحالة
+        this.isInitialized = false;
+        this.updateInterval = null;
+
+        this.init();
+    }
+
+    // ============================================================ */
+    // 1. INITIALIZATION                                           */
+    // ============================================================ */
+
+    init() {
+        console.log('🏠 Home Engine initializing...');
+
+        try {
+            // تحديث الوقت والتاريخ
+            this.updateDateTime();
+            setInterval(() => this.updateDateTime(), 1000);
+
+            // تحديث التحية
+            this.updateGreeting();
+
+            // تحديث العدادت
+            this.updateCounters();
+
+            // تحديث النشاطات
+            this.updateActivity();
+
+            // تحديث التوصيات
+            this.updateInsights();
+
+            // ربط الأحداث
+            this.setupEvents();
+
+            // تحديث تلقائي كل 30 ثانية
+            this.updateInterval = setInterval(() => {
+                this.updateCounters();
+                this.updateInsights();
+            }, 30000);
+
+            this.isInitialized = true;
+            console.log('✅ Home Engine ready');
+
+        } catch (error) {
+            console.error('❌ Home Engine error:', error);
+        }
+    }
+
+    // ============================================================ */
+    // 2. تحديث الوقت والتاريخ                                    */
+    // ============================================================ */
+
+    updateDateTime() {
+        const now = new Date();
+        
+        // الوقت
+        const timeStr = now.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        
+        if (this.elements.liveTime) {
+            this.elements.liveTime.textContent = timeStr;
+        }
+
+        // التاريخ
+        const dateStr = now.toLocaleDateString('ar-EG', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        if (this.elements.liveDate) {
+            this.elements.liveDate.textContent = dateStr;
+        }
+
+        // آخر نشاط
+        if (this.elements.lastActive) {
+            this.elements.lastActive.textContent = 'الآن';
+        }
+    }
+
+    // ============================================================ */
+    // 3. تحديث التحية                                             */
+    // ============================================================ */
+
+    updateGreeting() {
+        const hour = new Date().getHours();
+        let greeting = '';
+        let emoji = '';
+
+        if (hour < 5) {
+            greeting = '🌙 تصبح على خير';
+            emoji = '🌙';
+        } else if (hour < 12) {
+            greeting = '☀️ صباح الخير';
+            emoji = '☀️';
+        } else if (hour < 17) {
+            greeting = '🌤️ مساء الخير';
+            emoji = '🌤️';
+        } else if (hour < 21) {
+            greeting = '🌅 مساء الخير';
+            emoji = '🌅';
+        } else {
+            greeting = '🌙 مساء الخير';
+            emoji = '🌙';
+        }
+
+        if (this.elements.greeting) {
+            this.elements.greeting.textContent = `${emoji} ${greeting}`;
+        }
+    }
+
+    // ============================================================ */
+    // 4. تحديث العدادت                                            */
+    // ============================================================ */
+
+    updateCounters() {
+        // جلب البيانات من localStorage
+        const projects = JSON.parse(localStorage.getItem('dashboard-projects') || '[]');
+        const skills = JSON.parse(localStorage.getItem('dashboard-skills') || '[]');
+        const certificates = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+        const messages = JSON.parse(localStorage.getItem('dashboard-messages') || '[]');
+        const donations = JSON.parse(localStorage.getItem('dashboard-donations') || '[]');
+        const socials = JSON.parse(localStorage.getItem('dashboard-socials') || '[]');
+        const tickets = JSON.parse(localStorage.getItem('dashboard-support-tickets') || '[]');
+
+        // تحديث المشاريع
+        if (this.counters.projects) {
+            this.counters.projects.textContent = projects.length || 0;
+        }
+        if (this.counters.projectsChange) {
+            const change = Math.floor(Math.random() * 5) + 1;
+            this.counters.projectsChange.textContent = change;
+        }
+
+        // تحديث المهارات
+        if (this.counters.skills) {
+            this.counters.skills.textContent = skills.length || 0;
+        }
+        if (this.counters.skillsChange) {
+            const change = Math.floor(Math.random() * 3) + 1;
+            this.counters.skillsChange.textContent = change;
+        }
+
+        // تحديث الشهادات
+        if (this.counters.certificates) {
+            this.counters.certificates.textContent = certificates.length || 0;
+        }
+        if (this.counters.certificatesChange) {
+            const change = Math.floor(Math.random() * 2) + 1;
+            this.counters.certificatesChange.textContent = change;
+        }
+
+        // تحديث الزوار (من localStorage أو افتراضي)
+        if (this.counters.visitors) {
+            const visitors = parseInt(localStorage.getItem('dashboard-visitors') || '0');
+            this.counters.visitors.textContent = visitors || Math.floor(Math.random() * 100) + 50;
+        }
+        if (this.counters.visitorsChange) {
+            const change = Math.floor(Math.random() * 10) + 1;
+            this.counters.visitorsChange.textContent = change;
+        }
+
+        // تحديث الرسائل
+        if (this.counters.messages) {
+            this.counters.messages.textContent = messages.length || 0;
+        }
+        if (this.counters.messagesUnread) {
+            const unread = messages.filter(m => !m.read).length || 0;
+            this.counters.messagesUnread.textContent = unread;
+        }
+
+        // تحديث التبرعات
+        if (this.counters.donations) {
+            const total = donations.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+            this.counters.donations.textContent = `$${total || 0}`;
+        }
+        if (this.counters.donationsChange) {
+            const change = Math.floor(Math.random() * 50) + 10;
+            this.counters.donationsChange.textContent = `$${change}`;
+        }
+
+        // تحديث تذاكر الدعم
+        if (this.counters.tickets) {
+            this.counters.tickets.textContent = tickets.length || 0;
+        }
+        if (this.counters.ticketsPending) {
+            const pending = tickets.filter(t => t.status === 'pending' || t.status === 'in_progress').length || 0;
+            this.counters.ticketsPending.textContent = pending;
+        }
+
+        // تحديث المتابعين (سوشيال ميديا)
+        if (this.counters.social) {
+            const totalFollowers = socials.reduce((sum, s) => sum + (parseInt(s.followers) || 0), 0);
+            this.counters.social.textContent = totalFollowers || 0;
+        }
+        if (this.counters.socialChange) {
+            const change = Math.floor(Math.random() * 20) + 5;
+            this.counters.socialChange.textContent = change;
+        }
+    }
+
+    // ============================================================ */
+    // 5. تحديث التوصيات الذكية                                   */
+    // ============================================================ */
+
+    updateInsights() {
+        if (!this.elements.insightsList) return;
+
+        const insights = this.generateInsights();
+        
+        this.elements.insightsList.innerHTML = insights.map(insight => `
+            <div class="insight-item">
+                <span class="insight-icon">${insight.icon}</span>
+                <div class="insight-content">
+                    <p class="insight-title">${insight.title}</p>
+                    <p class="insight-desc">${insight.desc}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    generateInsights() {
+        const projects = JSON.parse(localStorage.getItem('dashboard-projects') || '[]');
+        const skills = JSON.parse(localStorage.getItem('dashboard-skills') || '[]');
+        const certificates = JSON.parse(localStorage.getItem('dashboard-certificates') || '[]');
+        const messages = JSON.parse(localStorage.getItem('dashboard-messages') || '[]');
+
+        const insights = [];
+
+        // توصيات المشاريع
+        if (projects.length === 0) {
+            insights.push({
+                icon: '📁',
+                title: 'أضف مشاريعك الأولى',
+                desc: 'لم تقم بإضافة أي مشاريع حتى الآن. ابدأ بإضافة مشاريعك لإبراز مهاراتك.'
+            });
+        } else if (projects.length < 3) {
+            insights.push({
+                icon: '🚀',
+                title: `لديك ${projects.length} مشروع فقط`,
+                desc: 'أضف المزيد من المشاريع لعرض محفظتك بشكل أفضل. حاول إضافة 3-5 مشاريع.'
+            });
+        } else {
+            insights.push({
+                icon: '🌟',
+                title: `ممتاز! لديك ${projects.length} مشروع`,
+                desc: 'محفظتك تبدو رائعة. استمر في إضافة مشاريع جديدة لتطوير مهاراتك.'
+            });
+        }
+
+        // توصيات المهارات
+        if (skills.length === 0) {
+            insights.push({
+                icon: '💻',
+                title: 'أضف مهاراتك التقنية',
+                desc: 'لم تقم بإضافة أي مهارات. أضف مهاراتك لتظهر للزوار ما تتقنه.'
+            });
+        } else if (skills.length < 5) {
+            insights.push({
+                icon: '📈',
+                title: `لديك ${skills.length} مهارة فقط`,
+                desc: 'حاول إضافة المزيد من المهارات لتغطية مجالات أوسع.'
+            });
+        }
+
+        // توصيات الشهادات
+        if (certificates.length === 0) {
+            insights.push({
+                icon: '🏅',
+                title: 'أضف شهاداتك المهنية',
+                desc: 'الشهادات تزيد من مصداقيتك. أضف شهاداتك لإبراز إنجازاتك.'
+            });
+        }
+
+        // توصيات الرسائل
+        const unread = messages.filter(m => !m.read).length;
+        if (unread > 0) {
+            insights.push({
+                icon: '✉️',
+                title: `لديك ${unread} رسالة غير مقروءة`,
+                desc: 'تأكد من الرد على رسائل الزوار للحفاظ على التواصل الجيد.'
+            });
+        }
+
+        // توصية عامة
+        if (insights.length < 3) {
+            insights.push({
+                icon: '💡',
+                title: 'أنت على المسار الصحيح!',
+                desc: 'استمر في تطوير محتوى البورتفوليو الخاص بك. كل شيء يبدو رائعاً!'
+            });
+        }
+
+        return insights;
+    }
+
+    // ============================================================ */
+    // 6. تحديث النشاطات                                           */
+    // ============================================================ */
+
+    updateActivity() {
+        if (!this.elements.activityList) return;
+
+        const activities = [
+            { text: 'تم تحميل لوحة التحكم', time: 'الآن', dot: 'blue' },
+            { text: 'تم تحديث البيانات بنجاح', time: 'منذ دقيقة', dot: 'green' },
+            { text: 'تم فتح الموقع الرئيسي', time: 'منذ 5 دقائق', dot: 'gold' },
+            { text: 'تم إضافة مشروع جديد', time: 'منذ 10 دقائق', dot: 'purple' }
+        ];
+
+        // إضافة نشاطات من localStorage
+        const logs = JSON.parse(localStorage.getItem('dashboard-logs') || '[]');
+        if (logs.length > 0) {
+            const recentLogs = logs.slice(0, 3);
+            recentLogs.forEach(log => {
+                const time = new Date(log.date);
+                const timeAgo = this.getTimeAgo(time);
+                activities.push({
+                    text: log.message || 'نشاط جديد',
+                    time: timeAgo,
+                    dot: this.getLogTypeColor(log.type)
+                });
+            });
+        }
+
+        // عرض آخر 5 نشاطات
+        const recent = activities.slice(0, 5);
+        
+        this.elements.activityList.innerHTML = recent.map(activity => `
+            <div class="activity-item">
+                <span class="activity-dot ${activity.dot}"></span>
+                <div class="activity-details">
+                    <span class="activity-text">${activity.text}</span>
+                    <span class="activity-time">${activity.time}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    getTimeAgo(date) {
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000);
+
+        if (diff < 60) return 'الآن';
+        if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+        if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+        if (diff < 2592000) return `منذ ${Math.floor(diff / 86400)} يوم`;
+        return `منذ ${Math.floor(diff / 2592000)} شهر`;
+    }
+
+    getLogTypeColor(type) {
+        const colors = {
+            success: 'green',
+            error: 'rose',
+            warning: 'gold',
+            info: 'blue',
+            skill: 'purple',
+            project: 'blue',
+            certificate: 'gold',
+            donation: 'green',
+            message: 'rose',
+            support: 'purple'
+        };
+        return colors[type] || 'blue';
+    }
+
+    // ============================================================ */
+    // 7. ربط الأحداث                                              */
+    // ============================================================ */
+
+    setupEvents() {
+        // زر تحديث الكل
+        if (this.elements.refreshBtn) {
+            this.elements.refreshBtn.addEventListener('click', () => {
+                this.updateCounters();
+                this.updateInsights();
+                this.updateActivity();
+                Utils.toast('🔄 تم تحديث جميع البيانات', 'success');
+            });
+        }
+
+        // زر تحديث التوصيات
+        if (this.elements.refreshInsights) {
+            this.elements.refreshInsights.addEventListener('click', () => {
+                this.updateInsights();
+                Utils.toast('💡 تم تحديث التوصيات', 'info');
+            });
+        }
+
+        // زر مشاركة الملف الشخصي
+        if (this.elements.shareBtn) {
+            this.elements.shareBtn.addEventListener('click', () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Mohamed Abdallah - Portfolio',
+                        text: 'تعرف على مشاريعي ومهاراتي',
+                        url: window.location.href
+                    }).catch(() => {});
+                } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    Utils.toast('📋 تم نسخ الرابط', 'success');
+                }
+            });
+        }
+
+        // زر تحميل السيرة الذاتية
+        if (this.elements.downloadCVBtn) {
+            this.elements.downloadCVBtn.addEventListener('click', () => {
+                Utils.toast('📄 جاري تحميل السيرة الذاتية...', 'info');
+                // محاكاة تحميل
+                setTimeout(() => {
+                    Utils.toast('✅ تم تحميل السيرة الذاتية', 'success');
+                }, 1500);
+            });
+        }
+
+        // زر تحديث لوحة التحكم
+        if (this.elements.refreshDashboard) {
+            this.elements.refreshDashboard.addEventListener('click', () => {
+                location.reload();
+            });
+        }
+
+        // البحث السريع
+        if (this.elements.searchInput) {
+            this.elements.searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                    const query = e.target.value.trim();
+                    Utils.toast(`🔍 جاري البحث عن: "${query}"`, 'info');
+                    
+                    // محاكاة البحث
+                    setTimeout(() => {
+                        Utils.toast(`✅ تم العثور على نتائج لـ "${query}"`, 'success');
+                    }, 1000);
+                }
+            });
+
+            // اختصار ⌘K
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    this.elements.searchInput.focus();
+                    this.elements.searchInput.select();
+                }
+            });
+        }
+
+        // الاستماع لتحديثات الأقسام الأخرى
+        document.addEventListener('dashboard:projects-updated', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        document.addEventListener('dashboard:skills-updated', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        document.addEventListener('dashboard:certificates-updated', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        document.addEventListener('dashboard:new-message', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        document.addEventListener('dashboard:new-ticket', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        document.addEventListener('dashboard:donation-received', () => {
+            setTimeout(() => this.updateCounters(), 500);
+        });
+
+        console.log('✅ Home events setup complete');
+    }
+
+    // ============================================================ */
+    // 8. التنظيف                                                   */
+    // ============================================================ */
+
+    destroy() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+            this.updateInterval = null;
+        }
+        this.isInitialized = false;
+        console.log('🏠 Home Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 9. تشغيل المحرك                                              */
+// ============================================================ */
+
+let homeEngine = null;
+
+function initHomeEngine() {
+    if (!homeEngine) {
+        homeEngine = new HomeEngine();
+    }
+    return homeEngine;
+}
+
+// تشغيل عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const homeSection = document.getElementById('home-section');
+    if (homeSection && homeSection.classList.contains('active')) {
+        initHomeEngine();
+    }
+});
+
+// تشغيل عند التبديل للقسم
+if (document.getElementById('home-section')) {
+    const homeObserver = new MutationObserver(() => {
+        const homeSection = document.getElementById('home-section');
+        if (homeSection && homeSection.classList.contains('active') && !homeEngine) {
+            initHomeEngine();
+        }
+    });
+    homeObserver.observe(document.getElementById('home-section'), { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+    });
+}
+
+console.log('🏠 Home Engine loaded');
+// ============================================================ */
+// 📝 UPDATER SECTION ENGINE - محرك محرر الكود                */
+// ============================================================ */
+
+class UpdaterEngine {
+    constructor() {
+        // ============================================================ */
+        // DOM Elements
+        // ============================================================ */
+        
+        this.editor = document.getElementById('codeEditorContent');
+        this.lineNumbers = document.getElementById('codeLineNumbers');
+        this.langSelect = document.getElementById('codeLanguageSelect');
+        this.lineCount = document.getElementById('codeLineCount');
+        this.consoleOutput = document.getElementById('devConsoleOutput');
+        this.codeStats = document.getElementById('codeStats');
+        
+        // Prompt Elements
+        this.promptEditor = document.getElementById('promptEditor');
+        this.promptHistory = document.getElementById('promptHistoryList');
+        this.templateBtns = document.querySelectorAll('.template-btn');
+        
+        // Buttons
+        this.buttons = {
+            format: document.getElementById('formatCodeBtn'),
+            beautify: document.getElementById('beautifyCodeBtn'),
+            minify: document.getElementById('minifyCodeBtn'),
+            copy: document.getElementById('copyCodeBtn'),
+            download: document.getElementById('downloadCodeBtn'),
+            clear: document.getElementById('clearCodeBtn'),
+            save: document.getElementById('saveCodeBtn'),
+            copyPrompt: document.getElementById('copyPromptBtn'),
+            clearPrompt: document.getElementById('clearPromptBtn'),
+            aiGenerate: document.getElementById('aiGenerateBtn')
+        };
+
+        // ============================================================ */
+        // State
+        // ============================================================ */
+        
+        this.history = [];
+        this.currentLanguage = 'html';
+        this.isInitialized = false;
+        
+        // ============================================================ */
+        // Templates
+        // ============================================================ */
+        
+        this.templates = {
+            hero: `<section class="hero">
+  <div class="hero__container">
+    <div class="hero__content">
+      <h1 class="hero__title">مرحباً بك في موقعي</h1>
+      <p class="hero__description">أنا مطور واجهات أمامية</p>
+      <a href="#contact" class="btn btn-primary">تواصل معي</a>
+    </div>
+  </div>
+</section>`,
+            
+            navbar: `<nav class="navbar">
+  <div class="navbar__logo">
+    <a href="#">Logo</a>
+  </div>
+  <ul class="navbar__menu">
+    <li><a href="#home">الرئيسية</a></li>
+    <li><a href="#about">من أنا</a></li>
+    <li><a href="#services">الخدمات</a></li>
+    <li><a href="#contact">اتصل بنا</a></li>
+  </ul>
+  <button class="navbar__toggle">
+    <span></span><span></span><span></span>
+  </button>
+</nav>`,
+            
+            footer: `<footer class="footer">
+  <div class="footer__container">
+    <div class="footer__logo">
+      <h2>اسم الموقع</h2>
+      <p>جميع الحقوق محفوظة</p>
+    </div>
+    <div class="footer__links">
+      <a href="#">سياسة الخصوصية</a>
+      <a href="#">شروط الاستخدام</a>
+    </div>
+    <div class="footer__social">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
+</footer>`,
+            
+            contact: `<form class="contact-form">
+  <div class="form-group">
+    <label for="name">الاسم</label>
+    <input type="text" id="name" placeholder="أدخل اسمك" required>
+  </div>
+  <div class="form-group">
+    <label for="email">البريد الإلكتروني</label>
+    <input type="email" id="email" placeholder="أدخل بريدك" required>
+  </div>
+  <div class="form-group">
+    <label for="message">الرسالة</label>
+    <textarea id="message" rows="5" placeholder="اكتب رسالتك" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">إرسال</button>
+</form>`,
+            
+            card: `<div class="card glass-panel">
+  <div class="card__image">
+    <img src="https://via.placeholder.com/300x200" alt="Card Image">
+  </div>
+  <div class="card__content">
+    <h3 class="card__title">عنوان البطاقة</h3>
+    <p class="card__description">هذا وصف مختصر للبطاقة يوضح محتواها</p>
+    <a href="#" class="card__link">اقرأ المزيد →</a>
+  </div>
+</div>`,
+            
+            dashboard: `<div class="dashboard-grid">
+  <div class="dashboard-card">
+    <div class="card-icon"><i class="fas fa-users"></i></div>
+    <h3>الزوار</h3>
+    <p class="card-number">1,234</p>
+    <span class="card-change positive">+12%</span>
+  </div>
+  <div class="dashboard-card">
+    <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+    <h3>المشاريع</h3>
+    <p class="card-number">15</p>
+    <span class="card-change positive">+3</span>
+  </div>
+  <div class="dashboard-card">
+    <div class="card-icon"><i class="fas fa-envelope"></i></div>
+    <h3>الرسائل</h3>
+    <p class="card-number">42</p>
+    <span class="card-change negative">-2</span>
+  </div>
+</div>`
+        };
+
+        this.init();
+    }
+
+    // ============================================================ */
+    // 1. INITIALIZATION                                           */
+    // ============================================================ */
+
+    init() {
+        console.log('📝 Updater Engine initializing...');
+
+        try {
+            // تحميل المحتوى المحفوظ
+            this.loadSavedContent();
+            
+            // تحديث أرقام السطور
+            this.updateLineNumbers();
+            
+            // تحديث الإحصائيات
+            this.updateStats();
+            
+            // ربط الأحداث
+            this.setupEvents();
+            
+            // تحميل السجل
+            this.loadHistory();
+            
+            this.isInitialized = true;
+            console.log('✅ Updater Engine ready');
+            this.log('تم تحميل محرر الكود بنجاح', 'success');
+
+        } catch (error) {
+            console.error('❌ Updater Engine error:', error);
+            this.log('❌ خطأ في تحميل المحرر', 'error');
+        }
+    }
+
+    // ============================================================ */
+    // 2. تحميل المحتوى المحفوظ                                   */
+    // ============================================================ */
+
+    loadSavedContent() {
+        try {
+            const saved = localStorage.getItem('updater-content');
+            if (saved && this.editor) {
+                this.editor.value = saved;
+            }
+            
+            const savedLang = localStorage.getItem('updater-language');
+            if (savedLang && this.langSelect) {
+                this.langSelect.value = savedLang;
+                this.currentLanguage = savedLang;
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not load saved content:', e);
+        }
+    }
+
+    // ============================================================ */
+    // 3. حفظ المحتوى                                              */
+    // ============================================================ */
+
+    saveContent() {
+        try {
+            if (this.editor) {
+                localStorage.setItem('updater-content', this.editor.value);
+            }
+            if (this.langSelect) {
+                localStorage.setItem('updater-language', this.langSelect.value);
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not save content:', e);
+        }
+    }
+
+    // ============================================================ */
+    // 4. تحديث أرقام السطور                                      */
+    // ============================================================ */
+
+    updateLineNumbers() {
+        if (!this.editor || !this.lineNumbers) return;
+
+        const lines = this.editor.value.split('\n').length;
+        const maxLines = Math.max(lines, 10);
+        
+        let html = '';
+        for (let i = 1; i <= maxLines; i++) {
+            const activeClass = i === this.getCurrentLine() ? 'active' : '';
+            html += `<span class="${activeClass}">${i}</span>`;
+        }
+        
+        this.lineNumbers.innerHTML = html;
+        
+        // تحديث عدد السطور
+        if (this.lineCount) {
+            this.lineCount.textContent = `السطور: ${lines}`;
+        }
+    }
+
+    getCurrentLine() {
+        if (!this.editor) return 1;
+        const pos = this.editor.selectionStart;
+        const text = this.editor.value.substring(0, pos);
+        return text.split('\n').length;
+    }
+
+    // ============================================================ */
+    // 5. تحديث الإحصائيات                                        */
+    // ============================================================ */
+
+    updateStats() {
+        if (!this.editor || !this.codeStats) return;
+
+        const text = this.editor.value;
+        const lines = text.split('\n').length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const chars = text.length;
+        
+        this.codeStats.textContent = `📊 السطور: ${lines} | الكلمات: ${words} | الأحرف: ${chars}`;
+    }
+
+    // ============================================================ */
+    // 6. تسجيل في الكونسول                                        */
+    // ============================================================ */
+
+    log(message, type = 'info') {
+        if (!this.consoleOutput) return;
+        
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        
+        this.consoleOutput.textContent = `${icons[type] || 'ℹ️'} ${message}`;
+        this.consoleOutput.className = `console-output ${type}`;
+    }
+
+    // ============================================================ */
+    // 7. معالجة الكود                                              */
+    // ============================================================ */
+
+    // 7.1 تنسيق الكود
+    formatCode() {
+        if (!this.editor) return;
+        
+        try {
+            const text = this.editor.value;
+            const formatted = this.prettyPrint(text);
+            this.editor.value = formatted;
+            this.updateLineNumbers();
+            this.updateStats();
+            this.saveContent();
+            this.log('✅ تم تنسيق الكود بنجاح', 'success');
+        } catch (e) {
+            this.log('❌ فشل تنسيق الكود: ' + e.message, 'error');
+        }
+    }
+
+    // 7.2 تجميل الكود
+    beautifyCode() {
+        if (!this.editor) return;
+        
+        try {
+            let text = this.editor.value;
+            // إزالة المسافات الزائدة
+            text = text.replace(/\s+/g, ' ').trim();
+            // إضافة سطور جديدة بعد الأقواس
+            text = text.replace(/{/g, '{\n  ').replace(/}/g, '\n}');
+            text = text.replace(/;/g, ';\n');
+            // تنظيف السطور الفارغة المتكررة
+            text = text.replace(/\n\s*\n/g, '\n');
+            
+            this.editor.value = text;
+            this.updateLineNumbers();
+            this.updateStats();
+            this.saveContent();
+            this.log('✨ تم تجميل الكود', 'success');
+        } catch (e) {
+            this.log('❌ فشل تجميل الكود: ' + e.message, 'error');
+        }
+    }
+
+    // 7.3 تصغير الكود
+    minifyCode() {
+        if (!this.editor) return;
+        
+        try {
+            let text = this.editor.value;
+            // إزالة التعليقات
+            text = text.replace(/\/\/.*$/gm, '');
+            text = text.replace(/\/\*[\s\S]*?\*\//g, '');
+            // إزالة المسافات والتباعد
+            text = text.replace(/\s+/g, ' ');
+            text = text.replace(/{\s+/g, '{');
+            text = text.replace(/\s+}/g, '}');
+            text = text.replace(/;\s+/g, ';');
+            text = text.trim();
+            
+            this.editor.value = text;
+            this.updateLineNumbers();
+            this.updateStats();
+            this.saveContent();
+            this.log('📦 تم تصغير الكود', 'success');
+        } catch (e) {
+            this.log('❌ فشل تصغير الكود: ' + e.message, 'error');
+        }
+    }
+
+    // 7.4 نسخ الكود
+    copyCode() {
+        if (!this.editor) return;
+        
+        try {
+            navigator.clipboard.writeText(this.editor.value);
+            this.log('📋 تم نسخ الكود إلى الحافظة', 'success');
+        } catch (e) {
+            // Fallback
+            this.editor.select();
+            document.execCommand('copy');
+            this.log('📋 تم نسخ الكود إلى الحافظة', 'success');
+        }
+    }
+
+    // 7.5 تحميل الكود
+    downloadCode() {
+        if (!this.editor) return;
+        
+        try {
+            const content = this.editor.value;
+            const lang = this.langSelect?.value || 'html';
+            const ext = this.getFileExtension(lang);
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `code.${ext}`;
+            a.click();
+            URL.revokeObjectURL(url);
+            this.log(`📥 تم تحميل الملف (${ext})`, 'success');
+        } catch (e) {
+            this.log('❌ فشل تحميل الملف: ' + e.message, 'error');
+        }
+    }
+
+    getFileExtension(lang) {
+        const extensions = {
+            html: 'html',
+            css: 'css',
+            javascript: 'js',
+            json: 'json',
+            python: 'py',
+            sql: 'sql'
+        };
+        return extensions[lang] || 'txt';
+    }
+
+    // 7.6 مسح الكود
+    clearCode() {
+        if (!this.editor) return;
+        
+        if (confirm('هل أنت متأكد من مسح كل الكود؟')) {
+            this.editor.value = '';
+            this.updateLineNumbers();
+            this.updateStats();
+            this.saveContent();
+            this.log('🗑️ تم مسح الكود', 'warning');
+        }
+    }
+
+    // 7.7 حفظ الكود
+    saveCode() {
+        this.saveContent();
+        this.log('💾 تم حفظ الكود', 'success');
+    }
+
+    // ============================================================ */
+    // 8. Pretty Print                                             */
+    // ============================================================ */
+
+    prettyPrint(text) {
+        // محاولة تنسيق JSON إذا كان JSON
+        try {
+            const parsed = JSON.parse(text);
+            return JSON.stringify(parsed, null, 2);
+        } catch (e) {
+            // ليس JSON، استمر
+        }
+        
+        // تنسيق HTML/CSS/JS بسيط
+        let formatted = text;
+        
+        // إضافة مسافات للـ HTML
+        formatted = formatted.replace(/>/g, '>\n  ');
+        formatted = formatted.replace(/</g, '\n<');
+        formatted = formatted.replace(/\n\s*\n/g, '\n');
+        
+        // تنظيم المسافات
+        formatted = formatted.split('\n').map(line => {
+            const indent = (line.match(/^\s*/) || [''])[0];
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+            return indent + trimmed;
+        }).join('\n');
+        
+        return formatted.trim();
+    }
+
+    // ============================================================ */
+    // 9. Prompt Functions                                          */
+    // ============================================================ */
+
+    // 9.1 نسخ البرومت
+    copyPrompt() {
+        if (!this.promptEditor) return;
+        
+        const text = this.promptEditor.value.trim();
+        if (!text) {
+            this.log('⚠️ لا يوجد نص لنسخه', 'warning');
+            return;
+        }
+        
+        try {
+            navigator.clipboard.writeText(text);
+            this.log('📋 تم نسخ البرومت', 'success');
+        } catch (e) {
+            this.promptEditor.select();
+            document.execCommand('copy');
+            this.log('📋 تم نسخ البرومت', 'success');
+        }
+    }
+
+    // 9.2 مسح البرومت
+    clearPrompt() {
+        if (!this.promptEditor) return;
+        this.promptEditor.value = '';
+        this.log('🗑️ تم مسح البرومت', 'info');
+    }
+
+    // 9.3 إضافة إلى السجل
+    addToHistory(text) {
+        if (!text || !this.promptHistory) return;
+        
+        // إضافة إلى السجل
+        this.history.unshift(text);
+        if (this.history.length > 10) {
+            this.history.pop();
+        }
+        
+        // حفظ السجل
+        try {
+            localStorage.setItem('updater-prompt-history', JSON.stringify(this.history));
+        } catch (e) {}
+        
+        // تحديث الواجهة
+        this.renderHistory();
+    }
+
+    // 9.4 تحميل السجل
+    loadHistory() {
+        try {
+            const saved = localStorage.getItem('updater-prompt-history');
+            if (saved) {
+                this.history = JSON.parse(saved);
+            }
+        } catch (e) {
+            this.history = [];
+        }
+        
+        this.renderHistory();
+    }
+
+    // 9.5 عرض السجل
+    renderHistory() {
+        if (!this.promptHistory) return;
+        
+        if (this.history.length === 0) {
+            this.promptHistory.innerHTML = `
+                <div class="history-item" style="opacity:0.5;border-left-color:var(--text-muted);">
+                    📭 لا يوجد سجل بعد
+                </div>
+            `;
+            return;
+        }
+        
+        this.promptHistory.innerHTML = this.history.map(item => `
+            <div class="history-item" onclick="window._updaterEngine?.loadPrompt('${this.escapeHtml(item)}')">
+                ${item.length > 50 ? item.substring(0, 50) + '...' : item}
+            </div>
+        `).join('');
+    }
+
+    // 9.6 تحميل برومت من السجل
+    loadPrompt(text) {
+        if (!this.promptEditor) return;
+        this.promptEditor.value = text;
+        this.promptEditor.focus();
+        this.log('📂 تم تحميل البرومت من السجل', 'info');
+    }
+
+    // 9.7 Escape HTML
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // 9.8 AI Generate (محاكاة)
+    generateAI() {
+        if (!this.promptEditor || !this.editor) return;
+        
+        const prompt = this.promptEditor.value.trim();
+        if (!prompt) {
+            this.log('⚠️ الرجاء كتابة طلب (Prompt) أولاً', 'warning');
+            this.promptEditor.focus();
+            return;
+        }
+        
+        this.log('🤖 جاري توليد الكود...', 'info');
+        
+        // إضافة إلى السجل
+        this.addToHistory(prompt);
+        
+        // محاكاة توليد AI
+        setTimeout(() => {
+            const generated = this.simulateAIGeneration(prompt);
+            this.editor.value = generated;
+            this.updateLineNumbers();
+            this.updateStats();
+            this.saveContent();
+            this.log('🤖 تم توليد الكود بنجاح!', 'success');
+        }, 1500);
+    }
+
+    // 9.9 محاكاة توليد AI
+    simulateAIGeneration(prompt) {
+        const lowerPrompt = prompt.toLowerCase();
+        
+        if (lowerPrompt.includes('هيرو') || lowerPrompt.includes('hero')) {
+            return this.templates.hero;
+        }
+        if (lowerPrompt.includes('navbar') || lowerPrompt.includes('شريط')) {
+            return this.templates.navbar;
+        }
+        if (lowerPrompt.includes('footer') || lowerPrompt.includes('تذييل')) {
+            return this.templates.footer;
+        }
+        if (lowerPrompt.includes('contact') || lowerPrompt.includes('تواصل')) {
+            return this.templates.contact;
+        }
+        if (lowerPrompt.includes('card') || lowerPrompt.includes('بطاقة')) {
+            return this.templates.card;
+        }
+        if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('لوحة')) {
+            return this.templates.dashboard;
+        }
+        
+        // توليد عشوائي
+        return `<!-- تم توليد الكود بناءً على: "${prompt}" -->\n\n<div class="generated-content">\n  <h2>مرحباً بك</h2>\n  <p>هذا كود تم توليده بواسطة الذكاء الاصطناعي بناءً على طلبك</p>\n  <p>📝 طلبك: ${prompt}</p>\n</div>`;
+    }
+
+    // ============================================================ */
+    // 10. Template Loading                                         */
+    // ============================================================ */
+
+    loadTemplate(templateName) {
+        if (!this.editor) return;
+        
+        const template = this.templates[templateName];
+        if (!template) {
+            this.log('⚠️ القالب غير موجود', 'warning');
+            return;
+        }
+        
+        this.editor.value = template;
+        this.updateLineNumbers();
+        this.updateStats();
+        this.saveContent();
+        this.log(`📄 تم تحميل قالب: ${templateName}`, 'success');
+    }
+
+    // ============================================================ */
+    // 11. Event Setup                                              */
+    // ============================================================ */
+
+    setupEvents() {
+        // ---- محرر الكود ----
+        
+        // تحديث عند الكتابة
+        if (this.editor) {
+            this.editor.addEventListener('input', () => {
+                this.updateLineNumbers();
+                this.updateStats();
+                this.saveContent();
+            });
+            
+            this.editor.addEventListener('keydown', (e) => {
+                // Tab = 2 مسافات
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.editor.selectionStart;
+                    const end = this.editor.selectionEnd;
+                    this.editor.value = this.editor.value.substring(0, start) + '  ' + this.editor.value.substring(end);
+                    this.editor.selectionStart = this.editor.selectionEnd = start + 2;
+                    this.updateLineNumbers();
+                }
+            });
+            
+            this.editor.addEventListener('scroll', () => {
+                if (this.lineNumbers) {
+                    this.lineNumbers.scrollTop = this.editor.scrollTop;
+                }
+            });
+        }
+        
+        // تغيير اللغة
+        if (this.langSelect) {
+            this.langSelect.addEventListener('change', () => {
+                this.currentLanguage = this.langSelect.value;
+                this.saveContent();
+                this.log(`🌐 تم تغيير اللغة إلى: ${this.langSelect.value}`, 'info');
+            });
+        }
+        
+        // ---- الأزرار ----
+        
+        if (this.buttons.format) {
+            this.buttons.format.addEventListener('click', () => this.formatCode());
+        }
+        if (this.buttons.beautify) {
+            this.buttons.beautify.addEventListener('click', () => this.beautifyCode());
+        }
+        if (this.buttons.minify) {
+            this.buttons.minify.addEventListener('click', () => this.minifyCode());
+        }
+        if (this.buttons.copy) {
+            this.buttons.copy.addEventListener('click', () => this.copyCode());
+        }
+        if (this.buttons.download) {
+            this.buttons.download.addEventListener('click', () => this.downloadCode());
+        }
+        if (this.buttons.clear) {
+            this.buttons.clear.addEventListener('click', () => this.clearCode());
+        }
+        if (this.buttons.save) {
+            this.buttons.save.addEventListener('click', () => this.saveCode());
+        }
+        
+        // ---- Prompt ----
+        
+        if (this.buttons.copyPrompt) {
+            this.buttons.copyPrompt.addEventListener('click', () => this.copyPrompt());
+        }
+        if (this.buttons.clearPrompt) {
+            this.buttons.clearPrompt.addEventListener('click', () => this.clearPrompt());
+        }
+        if (this.buttons.aiGenerate) {
+            this.buttons.aiGenerate.addEventListener('click', () => this.generateAI());
+        }
+        
+        // ---- Templates ----
+        
+        this.templateBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const template = btn.dataset.template;
+                if (template) {
+                    this.loadTemplate(template);
+                }
+            });
+        });
+        
+        // ---- Keyboard Shortcuts ----
+        
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+S = حفظ
+            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                if (document.activeElement === this.editor) {
+                    e.preventDefault();
+                    this.saveCode();
+                }
+            }
+            
+            // Ctrl+Shift+F = تنسيق
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
+                if (document.activeElement === this.editor) {
+                    e.preventDefault();
+                    this.formatCode();
+                }
+            }
+            
+            // Escape = إلغاء التحديد
+            if (e.key === 'Escape' && document.activeElement === this.editor) {
+                this.editor.selectionStart = this.editor.selectionEnd = this.editor.value.length;
+            }
+        });
+        
+        console.log('✅ Updater events setup complete');
+    }
+
+    // ============================================================ */
+    // 12. Cleanup                                                  */
+    // ============================================================ */
+
+    destroy() {
+        this.isInitialized = false;
+        console.log('📝 Updater Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 13. تشغيل المحرك                                              */
+// ============================================================ */
+
+let updaterEngine = null;
+
+function initUpdaterEngine() {
+    if (!updaterEngine) {
+        updaterEngine = new UpdaterEngine();
+    }
+    return updaterEngine;
+}
+
+// تشغيل عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const updaterSection = document.getElementById('updater-section');
+    if (updaterSection && updaterSection.classList.contains('active')) {
+        initUpdaterEngine();
+    }
+});
+
+// تشغيل عند التبديل للقسم
+if (document.getElementById('updater-section')) {
+    const updaterObserver = new MutationObserver(() => {
+        const updaterSection = document.getElementById('updater-section');
+        if (updaterSection && updaterSection.classList.contains('active') && !updaterEngine) {
+            initUpdaterEngine();
+        }
+    });
+    updaterObserver.observe(document.getElementById('updater-section'), { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+    });
+}
+
+// جعل المحرك متاحاً عالمياً
+window._updaterEngine = null;
+window.initUpdaterEngine = initUpdaterEngine;
+
+console.log('📝 Updater Engine loaded');
+
+
+// ============================================================ */
+// 🎯 HERO SECTION ENGINE - محرك قسم الهيرو                   */
+// ============================================================ */
+
+class HeroEngine {
+    constructor() {
+        // ============================================================ */
+        // DOM Elements
+        // ============================================================ */
+        
+        // النصوص
+        this.title = document.getElementById('hero-title');
+        this.subtitle = document.getElementById('hero-subtitle');
+        this.typingText = document.getElementById('hero-typing-text');
+        this.description = document.getElementById('hero-description');
+        this.name = document.getElementById('hero-name');
+        this.location = document.getElementById('hero-location');
+        this.email = document.getElementById('hero-email');
+        this.availability = document.getElementById('hero-availability');
+        this.enableTyping = document.getElementById('hero-enable-typing');
+        
+        // الصور
+        this.imageInput = document.getElementById('hero-image-input');
+        this.imageUrl = document.getElementById('hero-image-url');
+        this.imagePreview = document.getElementById('hero-image-preview-img');
+        this.imageUploadBtn = document.getElementById('hero-image-upload-btn');
+        this.imageRemoveBtn = document.getElementById('hero-image-remove-btn');
+        
+        this.bgInput = document.getElementById('hero-bg-input');
+        this.bgUrl = document.getElementById('hero-bg-url');
+        this.bgPreview = document.getElementById('hero-bg-preview-img');
+        this.bgPlaceholder = document.getElementById('hero-bg-placeholder');
+        this.bgUploadBtn = document.getElementById('hero-bg-upload-btn');
+        this.bgRemoveBtn = document.getElementById('hero-bg-remove-btn');
+        
+        // التصميم
+        this.layout = document.getElementById('hero-layout');
+        this.bgColor = document.getElementById('hero-bg-color');
+        this.textColor = document.getElementById('hero-text-color');
+        this.accentColor = document.getElementById('hero-accent-color');
+        this.effectGlow = document.getElementById('hero-effect-glow');
+        this.effectFloat = document.getElementById('hero-effect-float');
+        this.effectParticle = document.getElementById('hero-effect-particle');
+        
+        // الشارات
+        this.badgeAvailable = document.getElementById('hero-badge-available');
+        this.badgeVerified = document.getElementById('hero-badge-verified');
+        this.customBadge = document.getElementById('hero-custom-badge');
+        
+        // الأزرار والإحصائيات والسوشيال
+        this.buttonsList = document.getElementById('hero-buttons-list');
+        this.socialList = document.getElementById('hero-social-list');
+        this.statsList = document.getElementById('hero-stats-list');
+        
+        // أزرار الإضافة
+        this.addBtn = document.getElementById('hero-add-btn');
+        this.addSocialBtn = document.getElementById('hero-social-add-btn');
+        this.addStatBtn = document.getElementById('hero-stat-add-btn');
+        
+        // أزرار التحكم
+        this.publishBtn = document.getElementById('hero-publish-btn');
+        this.resetBtn = document.getElementById('hero-reset-btn');
+        this.refreshPreviewBtn = document.getElementById('hero-preview-refresh-btn');
+        this.themeBtn = document.getElementById('hero-preview-theme-btn');
+        
+        // المعاينة
+        this.previewContainer = document.getElementById('hero-preview-container');
+        this.previewStatus = document.getElementById('hero-preview-status');
+        this.deviceBtns = document.querySelectorAll('.preview-device-btn');
+        
+        // ============================================================ */
+        // State
+        // ============================================================ */
+        
+        this.items = {
+            buttons: [],
+            socials: [],
+            stats: []
+        };
+        
+        this.previewTheme = 'light';
+        this.currentDevice = 'desktop';
+        this.isInitialized = false;
+        
+        // ============================================================ */
+        // Default Data
+        // ============================================================ */
+        
+        this.defaultData = {
+            buttons: [
+                { id: 'btn-1', label: 'المشاريع', url: '#projects', type: 'primary' },
+                { id: 'btn-2', label: 'تواصل معي', url: '#contact', type: 'secondary' }
+            ],
+            socials: [
+                { id: 'social-1', platform: 'GitHub', url: 'https://github.com/budiabdallah20', icon: 'fa-brands fa-github' },
+                { id: 'social-2', platform: 'LinkedIn', url: 'https://linkedin.com/in/budiabdallah', icon: 'fa-brands fa-linkedin' },
+                { id: 'social-3', platform: 'YouTube', url: 'https://youtube.com', icon: 'fa-brands fa-youtube' }
+            ],
+            stats: [
+                { id: 'stat-1', label: 'المشاريع', value: '15+' },
+                { id: 'stat-2', label: 'سنوات الخبرة', value: '3+' },
+                { id: 'stat-3', label: 'شهادة معتمدة', value: '5+' }
+            ]
+        };
+        
+        this.init();
+    }
+
+    // ============================================================ */
+    // 1. INITIALIZATION                                           */
+    // ============================================================ */
+
+    init() {
+        console.log('🎯 Hero Engine initializing...');
+        
+        try {
+            // تحميل البيانات المحفوظة
+            this.loadData();
+            
+            // عرض البيانات في النماذج
+            this.renderButtons();
+            this.renderSocials();
+            this.renderStats();
+            
+            // ربط الأحداث
+            this.setupEvents();
+            
+            // تحديث المعاينة
+            setTimeout(() => this.updatePreview(), 300);
+            
+            // ربط التبويبات
+            this.setupTabs();
+            
+            // ربط أجهزة المعاينة
+            this.setupDeviceButtons();
+            
+            this.isInitialized = true;
+            console.log('✅ Hero Engine ready');
+            
+        } catch (error) {
+            console.error('❌ Hero Engine error:', error);
+        }
+    }
+
+    // ============================================================ */
+    // 2. تحميل البيانات                                           */
+    // ============================================================ */
+
+    loadData() {
+        try {
+            const saved = localStorage.getItem('hero-data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                this.items.buttons = data.buttons || this.defaultData.buttons;
+                this.items.socials = data.socials || this.defaultData.socials;
+                this.items.stats = data.stats || this.defaultData.stats;
+            } else {
+                this.items.buttons = [...this.defaultData.buttons];
+                this.items.socials = [...this.defaultData.socials];
+                this.items.stats = [...this.defaultData.stats];
+                this.saveData();
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not load data:', e);
+            this.items.buttons = [...this.defaultData.buttons];
+            this.items.socials = [...this.defaultData.socials];
+            this.items.stats = [...this.defaultData.stats];
+        }
+    }
+
+    // ============================================================ */
+    // 3. حفظ البيانات                                             */
+    // ============================================================ */
+
+    saveData() {
+        try {
+            const data = {
+                buttons: this.items.buttons,
+                socials: this.items.socials,
+                stats: this.items.stats
+            };
+            localStorage.setItem('hero-data', JSON.stringify(data));
+        } catch (e) {
+            console.warn('⚠️ Could not save data:', e);
+        }
+    }
+
+    // ============================================================ */
+    // 4. عرض الأزرار                                              */
+    // ============================================================ */
+
+    renderButtons() {
+        if (!this.buttonsList) return;
+        
+        if (this.items.buttons.length === 0) {
+            this.buttonsList.innerHTML = `
+                <div class="hero-empty-state">
+                    <i class="fa-solid fa-square-caret-right"></i>
+                    <p>لا توجد أزرار. أضف زراً جديداً.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        this.buttonsList.innerHTML = this.items.buttons.map((btn, index) => `
+            <div class="hero-item" data-id="${btn.id}">
+                <div class="item-info">
+                    <span class="item-icon">🔘</span>
+                    <span>${btn.label}</span>
+                    <span style="font-size:0.7rem;color:var(--text-muted);">${btn.type}</span>
+                </div>
+                <div class="item-actions">
+                    <button class="edit-btn" onclick="window._heroEngine?.editButton('${btn.id}')">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="delete-btn" onclick="window._heroEngine?.deleteButton('${btn.id}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================================ */
+    // 5. عرض السوشيال ميديا                                      */
+    // ============================================================ */
+
+    renderSocials() {
+        if (!this.socialList) return;
+        
+        if (this.items.socials.length === 0) {
+            this.socialList.innerHTML = `
+                <div class="hero-empty-state">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <p>لا توجد روابط سوشيال ميديا.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        this.socialList.innerHTML = this.items.socials.map((social, index) => `
+            <div class="hero-item" data-id="${social.id}">
+                <div class="item-info">
+                    <span class="item-icon"><i class="${social.icon}"></i></span>
+                    <span>${social.platform}</span>
+                </div>
+                <div class="item-actions">
+                    <button class="edit-btn" onclick="window._heroEngine?.editSocial('${social.id}')">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="delete-btn" onclick="window._heroEngine?.deleteSocial('${social.id}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================================ */
+    // 6. عرض الإحصائيات                                          */
+    // ============================================================ */
+
+    renderStats() {
+        if (!this.statsList) return;
+        
+        if (this.items.stats.length === 0) {
+            this.statsList.innerHTML = `
+                <div class="hero-empty-state">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <p>لا توجد إحصائيات. أضف إحصائية جديدة.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        this.statsList.innerHTML = this.items.stats.map((stat, index) => `
+            <div class="hero-item" data-id="${stat.id}">
+                <div class="item-info">
+                    <span class="item-icon">📊</span>
+                    <span>${stat.label}: <strong>${stat.value}</strong></span>
+                </div>
+                <div class="item-actions">
+                    <button class="edit-btn" onclick="window._heroEngine?.editStat('${stat.id}')">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="delete-btn" onclick="window._heroEngine?.deleteStat('${stat.id}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================================ */
+    // 7. إدارة الأزرار                                            */
+    // ============================================================ */
+
+    addButton() {
+        const label = prompt('📝 أدخل نص الزر:');
+        if (!label) return;
+        
+        const url = prompt('🔗 أدخل الرابط (مثال: #projects):', '#');
+        if (!url) return;
+        
+        const type = confirm('✅ هل تريد زر أساسي (OK) أم ثانوي (Cancel)؟') ? 'primary' : 'secondary';
+        
+        const newBtn = {
+            id: 'btn-' + Date.now(),
+            label: label.trim(),
+            url: url.trim(),
+            type: type
+        };
+        
+        this.items.buttons.push(newBtn);
+        this.saveData();
+        this.renderButtons();
+        this.updatePreview();
+        Utils.toast('✅ تم إضافة الزر', 'success');
+    }
+
+    editButton(id) {
+        const btn = this.items.buttons.find(b => b.id === id);
+        if (!btn) return;
+        
+        const newLabel = prompt('📝 تعديل نص الزر:', btn.label);
+        if (newLabel === null) return;
+        
+        const newUrl = prompt('🔗 تعديل الرابط:', btn.url);
+        if (newUrl === null) return;
+        
+        btn.label = newLabel.trim() || btn.label;
+        btn.url = newUrl.trim() || btn.url;
+        
+        this.saveData();
+        this.renderButtons();
+        this.updatePreview();
+        Utils.toast('✅ تم تعديل الزر', 'success');
+    }
+
+    deleteButton(id) {
+        if (!confirm('هل أنت متأكد من حذف هذا الزر؟')) return;
+        
+        this.items.buttons = this.items.buttons.filter(b => b.id !== id);
+        this.saveData();
+        this.renderButtons();
+        this.updatePreview();
+        Utils.toast('🗑️ تم حذف الزر', 'info');
+    }
+
+    // ============================================================ */
+    // 8. إدارة السوشيال ميديا                                    */
+    // ============================================================ */
+
+    addSocial() {
+        const platform = prompt('📱 أدخل اسم المنصة (مثال: GitHub):');
+        if (!platform) return;
+        
+        const url = prompt('🔗 أدخل رابط البروفايل:', 'https://');
+        if (!url) return;
+        
+        const iconMap = {
+            'github': 'fa-brands fa-github',
+            'linkedin': 'fa-brands fa-linkedin',
+            'youtube': 'fa-brands fa-youtube',
+            'twitter': 'fa-brands fa-twitter',
+            'instagram': 'fa-brands fa-instagram',
+            'facebook': 'fa-brands fa-facebook',
+            'tiktok': 'fa-brands fa-tiktok',
+            'whatsapp': 'fa-brands fa-whatsapp',
+            'telegram': 'fa-brands fa-telegram'
+        };
+        
+        const key = platform.toLowerCase();
+        const icon = iconMap[key] || 'fa-solid fa-link';
+        
+        const newSocial = {
+            id: 'social-' + Date.now(),
+            platform: platform.trim(),
+            url: url.trim(),
+            icon: icon
+        };
+        
+        this.items.socials.push(newSocial);
+        this.saveData();
+        this.renderSocials();
+        this.updatePreview();
+        Utils.toast('✅ تم إضافة منصة ' + platform, 'success');
+    }
+
+    editSocial(id) {
+        const social = this.items.socials.find(s => s.id === id);
+        if (!social) return;
+        
+        const newPlatform = prompt('📱 تعديل اسم المنصة:', social.platform);
+        if (newPlatform === null) return;
+        
+        const newUrl = prompt('🔗 تعديل الرابط:', social.url);
+        if (newUrl === null) return;
+        
+        social.platform = newPlatform.trim() || social.platform;
+        social.url = newUrl.trim() || social.url;
+        
+        this.saveData();
+        this.renderSocials();
+        this.updatePreview();
+        Utils.toast('✅ تم تعديل المنصة', 'success');
+    }
+
+    deleteSocial(id) {
+        if (!confirm('هل أنت متأكد من حذف هذه المنصة؟')) return;
+        
+        this.items.socials = this.items.socials.filter(s => s.id !== id);
+        this.saveData();
+        this.renderSocials();
+        this.updatePreview();
+        Utils.toast('🗑️ تم حذف المنصة', 'info');
+    }
+
+    // ============================================================ */
+    // 9. إدارة الإحصائيات                                        */
+    // ============================================================ */
+
+    addStat() {
+        const label = prompt('📊 أدخل عنوان الإحصائية (مثال: المشاريع):');
+        if (!label) return;
+        
+        const value = prompt('🔢 أدخل القيمة (مثال: 15+):');
+        if (!value) return;
+        
+        const newStat = {
+            id: 'stat-' + Date.now(),
+            label: label.trim(),
+            value: value.trim()
+        };
+        
+        this.items.stats.push(newStat);
+        this.saveData();
+        this.renderStats();
+        this.updatePreview();
+        Utils.toast('✅ تم إضافة الإحصائية', 'success');
+    }
+
+    editStat(id) {
+        const stat = this.items.stats.find(s => s.id === id);
+        if (!stat) return;
+        
+        const newLabel = prompt('📊 تعديل عنوان الإحصائية:', stat.label);
+        if (newLabel === null) return;
+        
+        const newValue = prompt('🔢 تعديل القيمة:', stat.value);
+        if (newValue === null) return;
+        
+        stat.label = newLabel.trim() || stat.label;
+        stat.value = newValue.trim() || stat.value;
+        
+        this.saveData();
+        this.renderStats();
+        this.updatePreview();
+        Utils.toast('✅ تم تعديل الإحصائية', 'success');
+    }
+
+    deleteStat(id) {
+        if (!confirm('هل أنت متأكد من حذف هذه الإحصائية؟')) return;
+        
+        this.items.stats = this.items.stats.filter(s => s.id !== id);
+        this.saveData();
+        this.renderStats();
+        this.updatePreview();
+        Utils.toast('🗑️ تم حذف الإحصائية', 'info');
+    }
+
+    // ============================================================ */
+    // 10. التبويبات                                               */
+    // ============================================================ */
+
+    setupTabs() {
+        const tabs = document.querySelectorAll('.hero-tab');
+        const contents = document.querySelectorAll('.hero-tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const content = document.getElementById(target);
+                if (content) content.classList.add('active');
+            });
+        });
+    }
+
+    // ============================================================ */
+    // 11. أجهزة المعاينة                                          */
+    // ============================================================ */
+
+    setupDeviceButtons() {
+        this.deviceBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const device = btn.dataset.device;
+                this.currentDevice = device;
+                
+                this.deviceBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                this.previewContainer.className = 'hero-preview-container preview-' + device;
+            });
+        });
+    }
+
+    // ============================================================ */
+    // 12. تحديث المعاينة                                          */
+    // ============================================================ */
+
+    updatePreview() {
+        if (!this.previewContainer) return;
+        
+        // جلب القيم
+        const title = this.title?.value || 'Hi, I\'m Mohamed Abdallah';
+        const subtitle = this.subtitle?.value || 'Frontend Web Developer';
+        const description = this.description?.value || '';
+        const name = this.name?.value || 'Mohamed Abdallah';
+        const location = this.location?.value || 'Suez, Egypt';
+        const imageUrl = this.imageUrl?.value || './assets/images/profile/hero.jpg';
+        const bgColor = this.bgColor?.value || '#0f172a';
+        const textColor = this.textColor?.value || '#ffffff';
+        const accentColor = this.accentColor?.value || '#6366f1';
+        const layout = this.layout?.value || 'image-right';
+        const availability = this.availability?.value || 'Available For Work';
+        const showBadgeAvailable = this.badgeAvailable?.checked !== false;
+        const showBadgeVerified = this.badgeVerified?.checked !== false;
+        const customBadge = this.customBadge?.value || '';
+        const enableTyping = this.enableTyping?.checked !== false;
+        
+        // بناء HTML المعاينة
+        const buttonsHtml = this.items.buttons.map(btn => `
+            <a href="${btn.url}" class="btn btn-${btn.type}">${btn.label}</a>
+        `).join('');
+        
+        const socialsHtml = this.items.socials.map(social => `
+            <a href="${social.url}" target="_blank" style="color:var(--text-secondary);font-size:1.2rem;transition:all 0.3s ease;">
+                <i class="${social.icon}"></i>
+            </a>
+        `).join('');
+        
+        const statsHtml = this.items.stats.map(stat => `
+            <div style="text-align:center;">
+                <h3 style="font-size:1.5rem;font-weight:700;margin:0;color:${accentColor};">${stat.value}</h3>
+                <span style="font-size:0.8rem;color:var(--text-muted);">${stat.label}</span>
+            </div>
+        `).join('');
+        
+        const badgesHtml = `
+            ${showBadgeAvailable ? `<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:0.2rem 0.8rem;border-radius:20px;font-size:0.7rem;">✅ Available</span>` : ''}
+            ${showBadgeVerified ? `<span style="background:rgba(99,102,241,0.15);color:#6366f1;padding:0.2rem 0.8rem;border-radius:20px;font-size:0.7rem;">✓ Verified</span>` : ''}
+            ${customBadge ? `<span style="background:rgba(245,158,11,0.15);color:#f59e0b;padding:0.2rem 0.8rem;border-radius:20px;font-size:0.7rem;">${customBadge}</span>` : ''}
+        `;
+        
+        // بناء المعاينة الكاملة
+        this.previewContainer.innerHTML = `
+            <div class="hero-preview-content" style="background:${bgColor};color:${textColor};border-radius:12px;padding:2rem;">
+                <div class="hero-preview-inner ${layout}">
+                    <div class="hero-preview-text">
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+                            ${badgesHtml}
+                        </div>
+                        <div class="greeting">👋 Hello, I'm</div>
+                        <h1 class="title" style="color:${textColor};">${title}</h1>
+                        <h2 class="subtitle" style="color:${accentColor};">${subtitle}</h2>
+                        ${enableTyping ? `<div class="typing-text" style="color:${accentColor};font-weight:500;min-height:2rem;">▎</div>` : ''}
+                        <p class="description" style="color:${textColor}99;">${description}</p>
+                        <div class="buttons">
+                            ${buttonsHtml}
+                        </div>
+                        <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
+                            ${socialsHtml}
+                        </div>
+                    </div>
+                    <div class="hero-preview-image">
+                        <img src="${imageUrl}" alt="${name}" style="border-color:${accentColor};">
+                    </div>
+                </div>
+                ${statsHtml ? `<div style="display:flex;gap:2rem;justify-content:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">${statsHtml}</div>` : ''}
+            </div>
+        `;
+        
+        // تحديث الحالة
+        if (this.previewStatus) {
+            this.previewStatus.textContent = '✅ تم تحديث المعاينة';
+        }
+    }
+
+    // ============================================================ */
+    // 13. نشر التغييرات                                           */
+    // ============================================================ */
+
+    publish() {
+        const data = {
+            title: this.title?.value || '',
+            subtitle: this.subtitle?.value || '',
+            description: this.description?.value || '',
+            name: this.name?.value || '',
+            location: this.location?.value || '',
+            email: this.email?.value || '',
+            availability: this.availability?.value || '',
+            imageUrl: this.imageUrl?.value || '',
+            bgUrl: this.bgUrl?.value || '',
+            layout: this.layout?.value || '',
+            bgColor: this.bgColor?.value || '',
+            textColor: this.textColor?.value || '',
+            accentColor: this.accentColor?.value || '',
+            buttons: this.items.buttons,
+            socials: this.items.socials,
+            stats: this.items.stats,
+            badges: {
+                available: this.badgeAvailable?.checked !== false,
+                verified: this.badgeVerified?.checked !== false,
+                custom: this.customBadge?.value || ''
+            },
+            effects: {
+                glow: this.effectGlow?.checked !== false,
+                float: this.effectFloat?.checked !== false,
+                particle: this.effectParticle?.checked !== false
+            }
+        };
+        
+        // حفظ في localStorage
+        localStorage.setItem('hero-published-data', JSON.stringify(data));
+        
+        // إرسال إشعار
+        document.dispatchEvent(new CustomEvent('hero:published', { detail: data }));
+        
+        Utils.toast('✅ تم نشر التغييرات بنجاح!', 'success');
+        console.log('📤 Hero published:', data);
+    }
+
+    // ============================================================ */
+    // 14. إعادة ضبط                                               */
+    // ============================================================ */
+
+    reset() {
+        if (!confirm('هل أنت متأكد من استعادة الإعدادات الافتراضية؟')) return;
+        
+        this.items.buttons = [...this.defaultData.buttons];
+        this.items.socials = [...this.defaultData.socials];
+        this.items.stats = [...this.defaultData.stats];
+        
+        this.saveData();
+        this.renderButtons();
+        this.renderSocials();
+        this.renderStats();
+        this.updatePreview();
+        
+        Utils.toast('🔄 تم استعادة الإعدادات الافتراضية', 'info');
+    }
+
+    // ============================================================ */
+    // 15. رفع الصور                                               */
+    // ============================================================ */
+
+    uploadImage(file, type = 'profile') {
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64 = e.target.result;
+            
+            if (type === 'profile') {
+                this.imagePreview.src = base64;
+                this.imageUrl.value = base64;
+            } else {
+                this.bgPreview.src = base64;
+                this.bgPreview.style.display = 'block';
+                this.bgPlaceholder.style.display = 'none';
+                this.bgUrl.value = base64;
+            }
+            
+            this.updatePreview();
+            Utils.toast('✅ تم رفع الصورة بنجاح', 'success');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    removeImage(type = 'profile') {
+        if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
+        
+        if (type === 'profile') {
+            this.imagePreview.src = '';
+            this.imageUrl.value = '';
+        } else {
+            this.bgPreview.src = '';
+            this.bgPreview.style.display = 'none';
+            this.bgPlaceholder.style.display = 'block';
+            this.bgUrl.value = '';
+        }
+        
+        this.updatePreview();
+        Utils.toast('🗑️ تم حذف الصورة', 'info');
+    }
+
+    // ============================================================ */
+    // 16. ربط الأحداث                                             */
+    // ============================================================ */
+
+    setupEvents() {
+        // تحديث المعاينة عند تغيير أي حقل
+        const inputs = document.querySelectorAll('.hero-form-group input, .hero-form-group select, .hero-form-group textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => this.updatePreview());
+            input.addEventListener('change', () => this.updatePreview());
+        });
+        
+        // الأزرار
+        if (this.addBtn) {
+            this.addBtn.addEventListener('click', () => this.addButton());
+        }
+        if (this.addSocialBtn) {
+            this.addSocialBtn.addEventListener('click', () => this.addSocial());
+        }
+        if (this.addStatBtn) {
+            this.addStatBtn.addEventListener('click', () => this.addStat());
+        }
+        
+        // النشر والإعادة
+        if (this.publishBtn) {
+            this.publishBtn.addEventListener('click', () => this.publish());
+        }
+        if (this.resetBtn) {
+            this.resetBtn.addEventListener('click', () => this.reset());
+        }
+        if (this.refreshPreviewBtn) {
+            this.refreshPreviewBtn.addEventListener('click', () => {
+                this.updatePreview();
+                Utils.toast('🔄 تم تحديث المعاينة', 'info');
+            });
+        }
+        
+        // ثيم المعاينة
+        if (this.themeBtn) {
+            this.themeBtn.addEventListener('click', () => {
+                this.previewTheme = this.previewTheme === 'light' ? 'dark' : 'light';
+                this.themeBtn.innerHTML = this.previewTheme === 'light' ? 
+                    '<i class="fa-solid fa-moon"></i>' : 
+                    '<i class="fa-solid fa-sun"></i>';
+                
+                const container = document.querySelector('.hero-preview-content');
+                if (container) {
+                    container.style.background = this.previewTheme === 'light' ? '#ffffff' : '#0f172a';
+                    container.style.color = this.previewTheme === 'light' ? '#0f172a' : '#ffffff';
+                }
+            });
+        }
+        
+        // رفع الصور
+        if (this.imageUploadBtn && this.imageInput) {
+            this.imageUploadBtn.addEventListener('click', () => this.imageInput.click());
+            this.imageInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    this.uploadImage(e.target.files[0], 'profile');
+                }
+            });
+        }
+        
+        if (this.imageRemoveBtn) {
+            this.imageRemoveBtn.addEventListener('click', () => this.removeImage('profile'));
+        }
+        
+        if (this.bgUploadBtn && this.bgInput) {
+            this.bgUploadBtn.addEventListener('click', () => this.bgInput.click());
+            this.bgInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    this.uploadImage(e.target.files[0], 'background');
+                }
+            });
+        }
+        
+        if (this.bgRemoveBtn) {
+            this.bgRemoveBtn.addEventListener('click', () => this.removeImage('background'));
+        }
+        
+        console.log('✅ Hero events setup complete');
+    }
+
+    // ============================================================ */
+    // 17. التنظيف                                                  */
+    // ============================================================ */
+
+    destroy() {
+        this.isInitialized = false;
+        console.log('🎯 Hero Engine destroyed');
+    }
+}
+
+// ============================================================ */
+// 18. تشغيل المحرك                                             */
+// ============================================================ */
+
+let heroEngine = null;
+
+function initHeroEngine() {
+    if (!heroEngine) {
+        heroEngine = new HeroEngine();
+        window._heroEngine = heroEngine;
+    }
+    return heroEngine;
+}
+
+// تشغيل عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    const heroSection = document.getElementById('hero-section');
+    if (heroSection && heroSection.classList.contains('active')) {
+        initHeroEngine();
+    }
+});
+
+// تشغيل عند التبديل للقسم
+if (document.getElementById('hero-section')) {
+    const heroObserver = new MutationObserver(() => {
+        const heroSection = document.getElementById('hero-section');
+        if (heroSection && heroSection.classList.contains('active') && !heroEngine) {
+            initHeroEngine();
+        }
+    });
+    heroObserver.observe(document.getElementById('hero-section'), { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+    });
+}
+
+console.log('🎯 Hero Engine loaded');
+
+
+// ============================================================ */
 // 💻 SKILLS ENGINE - محرك المهارات الاحترافي                 */
 // ============================================================ */
 /*

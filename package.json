@@ -1,14 +1,21 @@
 {
-  "name": "dashboard-portfolio",
-  "version": "2.7.0",
-  "description": "Dashboard Desktop App",
-  "main": "main.cjs",
+  "name": "Mohamed Abdallah Dashboard",
+  "version": "5.0.0",
+  "description": "Dashboard Pro - Smart Control Panel",
+  "main": "./dashboard/dashboard.html",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win --x64"
+    "start": "npx http-server . -p 5500",
+    "build": "echo 'Build complete'",
+    "clean": "rm -rf node_modules package-lock.json dist build"
   },
+  "keywords": [
+    "dashboard",
+    "admin",
+    "control-panel"
+  ],
+  "author": "Mohamed Abdallah",
+  "license": "MIT",
   "devDependencies": {
-    "electron": "^43.2.0",
-    "electron-builder": "^24.9.0"
+    "http-server": "^14.1.1"
   }
 }
